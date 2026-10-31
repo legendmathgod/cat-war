@@ -492,6 +492,22 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
 .t-info b{font-family:var(--display);font-weight:400;font-size:2.8cqw;color:var(--btn)}
 /* ---------- 보물도감 ---------- */
 .home-back{z-index:2}
+/* 레전드 스테이지 목록 (원작처럼 홈 왼쪽 메뉴 자리에 뜸) */
+.lg-list{position:absolute;left:2.5cqw;top:9.5cqw;width:40cqw;display:flex;flex-direction:column;gap:1.6cqw;z-index:1}
+.lg-ribbon{align-self:flex-start;display:flex;align-items:center;gap:.8cqw;padding:.4cqw 2.4cqw .4cqw 1cqw;background:linear-gradient(#5a3a1a,#3e2610);
+  border:.35cqw solid var(--ink);border-radius:0 2cqw 2cqw 0;font-family:var(--display);font-size:2.2cqw;color:var(--cream)}
+.lg-ribbon svg{width:3cqw;height:2.4cqw}
+.lg-items{display:flex;flex-direction:column;gap:2.2cqw;max-height:30cqw;overflow-y:auto;padding:.4cqw 1cqw 1.2cqw .4cqw}
+.lg-item{position:relative;display:flex;align-items:center;justify-content:center;min-height:7.4cqw;cursor:pointer;font-family:var(--display);font-size:3.4cqw;color:var(--ink);
+  background:linear-gradient(var(--btn-hi),var(--btn) 48%,var(--btn-lo));border:.5cqw solid var(--ink);border-radius:2cqw;box-shadow:inset 0 -.7cqw 0 rgba(0,0,0,.15),0 .7cqw 0 var(--ink)}
+.lg-item:active{transform:translateY(.5cqw);box-shadow:inset 0 -.7cqw 0 rgba(0,0,0,.15),0 .2cqw 0 var(--ink)}
+.lg-item .lg-clear{position:absolute;left:1cqw;bottom:-1.9cqw;font-size:1.7cqw;color:var(--red);-webkit-text-stroke:.18cqw var(--ink);paint-order:stroke fill}
+.lg-item .lg-prog{position:absolute;right:1.4cqw;bottom:-1.9cqw;font-size:1.6cqw;color:var(--cream);-webkit-text-stroke:.18cqw var(--ink);paint-order:stroke fill}
+.lg-item .lg-talkicon{position:absolute;right:-1.6cqw;top:-1.4cqw;width:4.2cqw;height:3.6cqw}
+.lg-talk{position:absolute;right:3cqw;top:12cqw;width:33cqw;padding:2.4cqw 2cqw;background:rgba(38,58,48,.92);border:.4cqw solid #f4f1e6;border-radius:3cqw;
+  color:#fff;font-size:2cqw;line-height:1.6;text-align:center;z-index:1}
+.lg-talk::after{content:"";position:absolute;right:9cqw;bottom:-2.6cqw;border:1.3cqw solid transparent;border-top-color:#f4f1e6}
+.st-rw.cans{background:#ffb3a1}
 .tb-open{position:absolute;left:12cqw;bottom:2cqw;z-index:2;display:flex;flex-direction:column;align-items:center;gap:.2cqw;padding:0;border:none;background:none;cursor:pointer}
 .tb-open svg{width:8cqw;height:8cqw;filter:drop-shadow(0 .5cqw 0 var(--ink))}
 .tb-open span{font-family:var(--display);font-size:2.2cqw}
@@ -646,6 +662,12 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
         캐릭터 편성
       </button>
     </div>
+
+    <div class="lg-list" id="lg-list" hidden>
+      <div class="lg-ribbon"><svg viewBox="0 0 100 80" aria-hidden="true"><use href="#icon-legend"/></svg>레전드 스테이지</div>
+      <div class="lg-items" id="lg-items"></div>
+    </div>
+    <div class="lg-talk" id="lg-talk" hidden>레전드 스테이지는 깰 때마다<br>통조림을 <b>100개</b>씩 받을 수 있다냥!</div>
 
     <div class="gachas">
       <button class="gacha" id="btn-gacha" aria-label="냥코뽑기">
@@ -2740,10 +2762,11 @@ document.getElementById('welcome-ok').addEventListener('click', () => {
   }
   // 홈 → 장 선택
   document.getElementById('home-back').addEventListener('click', () => {
+    if (window.legendListOpen && window.legendListOpen()) { window.closeLegendList(); return; }   // 레전드 목록 닫기
     if (SELECTED_CH === 'L') { SELECTED_CH = 1; modes.hidden = false; return; }   // 레전드 스토리 → 모드 선택으로
     renderChapters(); chs.hidden = false;
   });
-  document.getElementById('mode-legend').addEventListener('click', () => { SELECTED_CH = 'L'; modes.hidden = true; showWelcome(); });
+  document.getElementById('mode-legend').addEventListener('click', () => { SELECTED_CH = 'L'; if (window.closeLegendList) window.closeLegendList(); modes.hidden = true; showWelcome(); });
   document.getElementById('mode-school').addEventListener('click', () => { renderChapters(); modes.hidden = true; chs.hidden = false; });
   document.getElementById('c-back').addEventListener('click', () => { chs.hidden = true; modes.hidden = false; });
 })();
@@ -3359,17 +3382,23 @@ const DORM_STAGES = [];
 })();
 
 // ---------- 레전드 스토리 (모드 선택에서 들어감, 학교와 따로) ----------
-const LEGEND_STAGES = [
-  { id: 'L1', no: 1, name: '김지솔을 이겨라!', catBaseHp: 1500, reward: { money: 8000 },
-    spawns: [
-      { enemy: 'phone',    first: 2,  every: 7,  maxAlive: 4 },
-      { enemy: 'blanket',  first: 8,  every: 14, maxAlive: 2 },
-      { enemy: 'cupramen', first: 5,  every: 9,  maxAlive: 3 },
-      { enemy: 'alarm',    first: 12, every: 12, maxAlive: 2 },
-      { enemy: 'boar',     first: 16, every: 15, maxAlive: 2 },
-      { enemy: 'hippo',    first: 40, every: 60, maxAlive: 1 },
-    ] },
+// 레전드 스테이지 목록 (원작의 '싱귤래리티 마을' 같은 칸). 칸을 누르면 그 안의 스테이지가 학교처럼 하나씩 열림
+const LEGEND_GROUPS = [
+  { id: 'jisol', name: '김지솔을 이겨라!' },
 ];
+// '김지솔을 이겨라!' 스테이지 6개. 깰 때마다(매번) 통조림 100개. 보스는 사진 받으면 넣을 자리(bossSlot)
+const LEGEND_STAGES = [
+  { id: 'J1', name: '전설의 똥팬 사건',  enemies: ['sock', 'mosquito', 'pig', 'snake'] },
+  { id: 'J2', name: '전설의 내성발톱',   enemies: ['slipper', 'sock', 'hedgehog', 'mosquito'] },
+  { id: 'J3', name: '샤워 100분',        enemies: ['alarm', 'cupramen', 'blanket', 'raccoon'] },
+  { id: 'J4', name: '전교 2등의 시작',   enemies: ['phone', 'alarm', 'pillow', 'eagle'] },
+  { id: 'J5', name: '자칭 알파메일',     enemies: ['boar', 'blanket', 'pillow', 'bear'] },
+  { id: 'J6', name: '간사의 왕',         enemies: ['phone', 'blanket', 'cupramen', 'alarm', 'boar', 'hippo'] },
+].map((st, i) => ({
+  id: st.id, no: i + 1, name: st.name, group: 'jisol', catBaseHp: 1500, bossSlot: true,
+  spawns: st.enemies.map((e, j) => ({ enemy: e, first: 2 + j * 5, every: [5, 9, 13, 16, 20, 40][j], maxAlive: [6, 3, 2, 2, 2, 1][j] })),
+  reward: { money: 5000 + i * 600, cans: 100 },
+}));
 const LEGEND_CH = { no: 'L', name: '레전드 스토리', enemyMult: 1, baseMult: 1, rewardMult: 1, stages: LEGEND_STAGES };
 (function(){
   // 난이도: 2장 기숙사 마지막(새벽 탈출)과 같은 수준
@@ -3377,10 +3406,12 @@ const LEGEND_CH = { no: 'L', name: '레전드 스토리', enemyMult: 1, baseMult
     const e = ENEMIES[sp.enemy];
     return a + Math.sqrt(e.hp * e.ap / e.attackInterval) * (sp.count ? 0.6 : Math.min(1, 10 / sp.every));
   }, 0);
-  const DORM_END = 1.2 * 1000 * Math.pow(1.0558, 33) * 4 * 2.6;
-  LEGEND_STAGES.forEach(st => {
-    st.mult = +(DORM_END / power(st)).toFixed(2);
-    st.enemyBaseHp = 120000;
+  // 난이도: 2장 기숙사 마지막 즈음에서 시작해 6번째(간사의 왕)는 새벽 탈출 수준까지
+  const DORM_END = 1.2 * 1000 * Math.pow(1.0558, 33) * 4;
+  const RAMP = [1.3, 1.5, 1.7, 1.9, 2.2, 2.6];
+  LEGEND_STAGES.forEach((st, i) => {
+    st.mult = +(DORM_END * RAMP[i] / power(st)).toFixed(2);
+    st.enemyBaseHp = 60000 + i * 16000;
   });
 })();
 
@@ -3951,6 +3982,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
       const gain = Math.round(r.money * tfx('stone') * studyMul());
       PLAYER.money += gain;
       rw.innerHTML = '<div>돈 +' + gain.toLocaleString() + '</div>';
+      if (r.cans) { PLAYER.cans = (PLAYER.cans || 0) + r.cans; rw.innerHTML += '<div class="first">통조림 +' + r.cans + '</div>'; }   // 레전드: 깰 때마다
       if (first) {
         PLAYER.cleared.push(S.stage.key);
         if (r.nyankoTicket) { PLAYER.nyankoTicket += r.nyankoTicket; rw.innerHTML += '<div class="first">냥코 티켓 +' + r.nyankoTicket + ' (최초 클리어)</div>'; }
@@ -4959,7 +4991,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
       b.className = 'st-card' + (i === sel ? ' center' : '') + (stageLabel(st).length > 6 ? ' long' : '');
       b.style.setProperty('--off', i - sel);
       b.innerHTML = (cleared ? '<span class="clear">CLEAR!</span><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="#ff9a3d" stroke="#2a1708" stroke-width="3"/><path d="M20 8 L23 16 L32 16 L25 21 L28 30 L20 25 L12 30 L15 21 L8 16 L17 16 Z" fill="#ffcc1f" stroke="#2a1708" stroke-width="2"/></svg>' : '') + '<span class="st-label">' + stageLabel(st) + '</span>' +
-        (ticketLabel(st.reward) ? '<span class="st-rw ' + (st.reward.platinumTicket ? 'plat' : st.reward.rareTicket ? 'rare' : 'nyan') + (cleared ? ' got' : '') + '">' + ticketLabel(st.reward) + ((st.reward.rareTicket || 0) > 1 ? ' ×' + st.reward.rareTicket : '') + (cleared ? ' 받음' : '') + '</span>' : '');
+        (st.reward.cans ? '<span class="st-rw cans">통조림 ' + st.reward.cans + '개</span>' : '') + (ticketLabel(st.reward) ? '<span class="st-rw ' + (st.reward.platinumTicket ? 'plat' : st.reward.rareTicket ? 'rare' : 'nyan') + (cleared ? ' got' : '') + '">' + ticketLabel(st.reward) + ((st.reward.rareTicket || 0) > 1 ? ' ×' + st.reward.rareTicket : '') + (cleared ? ' 받음' : '') + '</span>' : '');
       b.addEventListener('click', () => { sel = i; renderStages(); });
       cardsEl.appendChild(b);
     });
@@ -4969,6 +5001,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     const notYet = !PLAYER.cleared.includes(st.key);
     const ticket = ticketLabel(st.reward) ? ticketLabel(st.reward) + ' ' + (st.reward.platinumTicket || st.reward.rareTicket || st.reward.nyankoTicket) : '';
     infoEl.innerHTML = '<span>클리어</span><b>' + cnt + ' 회</b><span>보상 돈</span><b>' + st.reward.money.toLocaleString() + '</b>' +
+      (st.reward.cans ? '<span>통조림</span><b>' + st.reward.cans + '개</b>' : '') +
       (notYet && ticket ? '<span>최초 클리어</span><b>' + ticket + '</b>' : '');
 
     // 지도: 점선 길 + 빨간 점 + 고양이
@@ -5049,11 +5082,33 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
   window.addEventListener('pointercancel', stSwipeEnd);
   cardsEl.addEventListener('click', e => { if (stSwipeJust) { e.stopPropagation(); e.preventDefault(); } }, true);   // 민 뒤에는 카드 눌림 무시
 
+  // ---------- 레전드 스테이지 목록 ----------
+  const lgList = document.getElementById('lg-list'), lgItems = document.getElementById('lg-items'), lgTalk = document.getElementById('lg-talk');
+  const homeMenu = document.querySelector('.home .menu');
+  function openLegendList(){
+    lgItems.innerHTML = '';
+    LEGEND_GROUPS.forEach(g => {
+      const list = chapterStageList('L').filter(st => st.group === g.id);
+      const done = list.filter(st => PLAYER.cleared.includes(st.key)).length;
+      const b = document.createElement('button');
+      b.className = 'lg-item';
+      b.innerHTML = '<span>' + g.name + '</span>' + (done === list.length ? '<span class="lg-clear">CLEAR!</span>' : '') +
+        '<span class="lg-prog">' + done + ' / ' + list.length + '</span>' +
+        '<svg class="lg-talkicon" viewBox="0 0 48 40" aria-hidden="true"><path d="M6 4 H42 A4 4 0 0 1 46 8 V26 A4 4 0 0 1 42 30 H18 L8 38 L10 30 H6 A4 4 0 0 1 2 26 V8 A4 4 0 0 1 6 4 Z" fill="#fff" stroke="#2a1708" stroke-width="3"/><circle cx="14" cy="17" r="3" fill="#2a1708"/><circle cx="24" cy="17" r="3" fill="#2a1708"/><circle cx="34" cy="17" r="3" fill="#2a1708"/></svg>';
+      b.addEventListener('click', () => { curCh = 'L'; sel = Math.max(0, openStages().length - 1); renderStages(); stagesEl.hidden = false; });
+      lgItems.appendChild(b);
+    });
+    lgList.hidden = false; lgTalk.hidden = false; homeMenu.style.visibility = 'hidden';
+  }
+  window.closeLegendList = () => { lgList.hidden = true; lgTalk.hidden = true; homeMenu.style.visibility = ''; };
+  window.legendListOpen = () => !lgList.hidden;
+
   document.getElementById('btn-battle').addEventListener('click', () => {
+    if (SELECTED_CH === 'L') { openLegendList(); return; }   // 레전드 스토리: 레전드 스테이지 목록부터
     curCh = chapterOpen(SELECTED_CH) ? SELECTED_CH : 1;
     sel = openStages().length - 1; renderStages(); stagesEl.hidden = false;
   });
-  document.getElementById('btn-stage-back').addEventListener('click', () => { stagesEl.hidden = true; });
+  document.getElementById('btn-stage-back').addEventListener('click', () => { stagesEl.hidden = true; if (curCh === 'L') openLegendList(); });
   document.getElementById('btn-go').addEventListener('click', () => {
     const ov = document.getElementById('go-overlay');
     ov.hidden = false;
@@ -5062,6 +5117,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
   renderPlayer();
   document.getElementById('btn-exit').addEventListener('click', () => {
     battle.hidden = true; cancelAnimationFrame(raf);
+    if (S && S.stage && S.stage.ch === 'L') openLegendList();   // 레전드: 목록(진행도) 새로고침
     if (S && S.pvp) { leaveRoom(); S = null; document.getElementById('modes').hidden = false; }   // PvP 나가기 → 모드 선택 화면
   });
 })();
