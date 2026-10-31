@@ -237,6 +237,13 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
   font-family:var(--display);font-size:1.6cqw;color:var(--ink)}
 .st-rw.nyan{background:#c9d3dc}.st-rw.rare{background:var(--btn)}.st-rw.plat{background:linear-gradient(90deg,#e8f0f8,#9fb3c8,#e8f0f8)}
 .st-rw.got{opacity:.55}
+.st-rw.plat{overflow:hidden;background:linear-gradient(110deg,#c9d6e3 0%,#ffffff 20%,#9fb3c8 40%,#e8f0f8 60%,#ffffff 75%,#b8c8d8 100%);background-size:250% 100%;
+  animation:platShine 1.6s linear infinite;box-shadow:0 0 .8cqw .2cqw rgba(200,225,255,.9)}
+.st-rw.plat.got{opacity:1;color:#2a1708;box-shadow:0 0 1.2cqw .4cqw rgba(255,255,255,.95),0 0 2.4cqw .6cqw rgba(160,200,255,.8);animation:platShine 1.2s linear infinite,platPulse .9s ease-in-out infinite alternate}
+.st-rw.plat::after{content:"";position:absolute;top:0;bottom:0;width:30%;left:-40%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.95),transparent);transform:skewX(-20deg);animation:platSweep 1.8s ease-in-out infinite}
+@keyframes platShine{to{background-position:-250% 0}}
+@keyframes platPulse{to{transform:translateX(-50%) scale(1.12)}}
+@keyframes platSweep{0%{left:-40%}60%,100%{left:120%}}
 .st-card.long{font-size:2.2cqw}
 .st-card{position:absolute;top:0;left:50%;width:22cqw;height:8cqw;padding:0;cursor:pointer;
   font-family:var(--display);font-size:3.4cqw;color:var(--ink);background:#fff;border:.5cqw solid var(--ink);border-radius:.4cqw;
@@ -2689,6 +2696,7 @@ STAGES.forEach((st, i) => st.no = i + 1);                   // 1 ~ 48
 STAGES.forEach(st => {
   const rw = { money: st.reward.money };
   if (st.no === 24) rw.platinumTicket = 1;
+  else if (st.name === '기숙사로 향하는 문') rw.rareTicket = 3;     // 마지막 스테이지: 레어 티켓 3장
   else if (st.no % 5 === 0) rw.rareTicket = 1;
   else rw.nyankoTicket = 1;
   st.reward = rw;
@@ -3774,7 +3782,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
       b.className = 'st-card' + (i === sel ? ' center' : '') + (stageLabel(st).length > 6 ? ' long' : '');
       b.style.setProperty('--off', i - sel);
       b.innerHTML = (cleared ? '<span class="clear">CLEAR!</span><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="#ff9a3d" stroke="#2a1708" stroke-width="3"/><path d="M20 8 L23 16 L32 16 L25 21 L28 30 L20 25 L12 30 L15 21 L8 16 L17 16 Z" fill="#ffcc1f" stroke="#2a1708" stroke-width="2"/></svg>' : '') + '<span class="st-label">' + stageLabel(st) + '</span>' +
-        '<span class="st-rw ' + (st.reward.platinumTicket ? 'plat' : st.reward.rareTicket ? 'rare' : 'nyan') + (cleared ? ' got' : '') + '">' + ticketLabel(st.reward) + (cleared ? ' 받음' : '') + '</span>';
+        '<span class="st-rw ' + (st.reward.platinumTicket ? 'plat' : st.reward.rareTicket ? 'rare' : 'nyan') + (cleared ? ' got' : '') + '">' + ticketLabel(st.reward) + ((st.reward.rareTicket || 0) > 1 ? ' ×' + st.reward.rareTicket : '') + (cleared ? ' 받음' : '') + '</span>';
       b.addEventListener('click', () => { sel = i; renderStages(); });
       cardsEl.appendChild(b);
     });
@@ -3782,7 +3790,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     const st = list[sel];
     const cnt = (PLAYER.clearCount || {})[st.key] || 0;
     const notYet = !PLAYER.cleared.includes(st.key);
-    const ticket = ticketLabel(st.reward) ? ticketLabel(st.reward) + ' 1' : '';
+    const ticket = ticketLabel(st.reward) ? ticketLabel(st.reward) + ' ' + (st.reward.platinumTicket || st.reward.rareTicket || st.reward.nyankoTicket) : '';
     infoEl.innerHTML = '<span>클리어</span><b>' + cnt + ' 회</b><span>보상 돈</span><b>' + st.reward.money.toLocaleString() + '</b>' +
       (notYet && ticket ? '<span>최초 클리어</span><b>' + ticket + '</b>' : '');
 
