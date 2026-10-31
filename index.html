@@ -535,6 +535,13 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
 .pv-code{font-family:var(--display);font-size:9cqw;letter-spacing:1.6cqw;color:var(--btn);line-height:1}
 .pv-msg{position:absolute;left:0;right:0;bottom:4cqw;margin:0;text-align:center;font-family:var(--display);font-size:2.4cqw;color:var(--cream);-webkit-text-stroke:.3cqw var(--ink);paint-order:stroke fill}
 .pv-btn:focus-visible,.pv-join input:focus-visible{outline:.5cqw solid var(--ink);outline-offset:.3cqw}
+.cat-back{position:absolute;top:50%;z-index:4;width:13cqw;height:12cqw;transform:translateY(-50%);cursor:pointer;
+  font-family:var(--display);font-size:2.6cqw;color:var(--ink);background:linear-gradient(var(--btn-hi),var(--btn) 50%,var(--btn-lo));
+  border:.5cqw solid var(--ink);border-radius:1cqw;box-shadow:0 .6cqw 0 var(--ink)}
+.cat-back.l{left:1.5cqw}.cat-back.r{right:1.5cqw}
+.cat-back:active{transform:translateY(calc(-50% + .5cqw));box-shadow:none}
+.cat-back:focus-visible{outline:.5cqw solid var(--cream);outline-offset:.3cqw}
+.card.empty{background:#e8dcc4}
 .dev-code{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9;width:40cqw;padding:2cqw;display:flex;flex-direction:column;gap:1.2cqw;
   background:var(--cream);color:var(--ink);border:.5cqw solid var(--ink);border-radius:1.6cqw;box-shadow:0 .8cqw 0 var(--ink)}
 .dev-code label{font-family:var(--display);font-size:2.6cqw}
@@ -645,9 +652,11 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
       <div class="wallet-bar"><span class="pill" title="돈"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#icon-coin"/></svg><b id="pw-money">0</b></span></div>
     </div>
     <div class="p-cost" id="p-cost"></div>
-    <div class="p-label">캐릭터</div>
+    <div class="p-label" id="p-label">캐릭터</div>
 
     <div class="carousel">
+      <button class="cat-back l" id="p-back-l" hidden>돌아가기</button>
+      <button class="cat-back r" id="p-back-r" hidden>돌아가기</button>
       <button class="arrow l" id="prev" aria-label="이전 캐릭터"><svg viewBox="0 0 30 50" aria-hidden="true"><path d="M20 12 L9 25 L20 38" fill="none" stroke="var(--cream)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div class="c-track" id="track"></div>
       <button class="arrow r" id="next" aria-label="다음 캐릭터"><svg viewBox="0 0 30 50" aria-hidden="true"><path d="M10 12 L21 25 L10 38" fill="none" stroke="var(--cream)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -727,9 +736,11 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
       <div class="t-row"><span class="t-page">1<small>페이지</small></span><div class="t-grid" id="t-row1"></div></div>
       <div class="t-row"><span class="t-page">2<small>페이지</small></span><div class="t-grid" id="t-row2"></div></div>
     </div>
-    <div class="t-label">캐릭터</div>
+    <div class="t-label" id="t-label">캐릭터</div>
     <button class="btn t-info-btn" id="t-info-btn">캐릭터 설명</button>
     <div class="carousel t-carousel">
+      <button class="cat-back l" id="t-back-l" hidden>돌아가기</button>
+      <button class="cat-back r" id="t-back-r" hidden>돌아가기</button>
       <button class="arrow l" id="t-prev" aria-label="이전"><svg viewBox="0 0 30 50" aria-hidden="true"><path d="M20 12 L9 25 L20 38" fill="none" stroke="var(--cream)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div class="c-track" id="t-track"></div>
       <button class="arrow r" id="t-next" aria-label="다음"><svg viewBox="0 0 30 50" aria-hidden="true"><path d="M10 12 L21 25 L10 38" fill="none" stroke="var(--cream)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -1651,7 +1662,7 @@ function levelCost(u){
       return cats.slice().reverse().concat(basics);   // 기본 캐릭터 왼쪽에 등급 칸
     }
     const units = UNITS.filter(u => u.rarity === mode && isOwned(u)).map(u => ({ type:'unit', unit:u }));
-    return units.length ? [{type:'back'}].concat(units, [{type:'back'}]) : [{type:'back'}];
+    return units.length ? units : [{type:'empty'}];   // 등급 칸 안: 캐릭터만 (돌아가기는 양옆 고정 버튼)
   }
 
   function cardHTML(it){
@@ -1668,6 +1679,7 @@ function levelCost(u){
         '<span class="card-art"><svg class="folder" viewBox="0 0 100 80" aria-hidden="true"><path d="M8 18 H38 L46 26 H92 V72 H8 Z" fill="' + it.cat.color + '" stroke="#2a1708" stroke-width="5" stroke-linejoin="round"/><path d="M8 34 H92" stroke="#2a1708" stroke-width="4"/></svg></span>' +
         '<span class="card-lv">캐릭터 <b>' + n + '</b></span>';
     }
+    if (it.type === 'empty') return '<span class="card-name">비어 있음</span><span class="card-art"></span>';
     return '<span class="card-name back-name">돌아가기</span>' +
       '<span class="card-art"><svg class="folder" viewBox="0 0 40 40" aria-hidden="true"><path d="M12 14 H26 A9 9 0 0 1 26 32 H16" fill="none" stroke="#2a1708" stroke-width="5" stroke-linecap="round"/><path d="M17 8 L10 14 L17 20" fill="none" stroke="#2a1708" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
   }
@@ -1690,7 +1702,7 @@ function levelCost(u){
   }
 
   function enter(it){
-    if (it.type === 'cat') { basicIdx = idx; mode = it.cat.id; idx = 0; build(); if (items.length > 1) { idx = 1; render(); } }   // 첫 캐릭터를 가운데로 → 돌아가기가 양옆에
+    if (it.type === 'cat') { basicIdx = idx; mode = it.cat.id; idx = 0; build(); }
     else if (it.type === 'back') { mode = 'basic'; idx = basicIdx; build(); }
   }
 
@@ -1719,7 +1731,13 @@ function levelCost(u){
     }
     prev.disabled = idx === 0;
     next.disabled = idx === items.length - 1;
+    const inCat = mode !== 'basic';
+    document.getElementById('p-back-l').hidden = document.getElementById('p-back-r').hidden = !inCat;
+    prev.hidden = next.hidden = inCat;
+    document.getElementById('p-label').textContent = inCat ? CATEGORIES.find(c => c.id === mode).name : '캐릭터';
+    if (it.type === 'empty') desc.textContent = '이 칸에는 아직 캐릭터가 없어요.';
   }
+  ['p-back-l', 'p-back-r'].forEach(id => document.getElementById(id).addEventListener('click', () => { mode = 'basic'; idx = basicIdx; build(); }));
 
   levelBtn.addEventListener('click', () => {
     const it = items[idx];
@@ -1820,7 +1838,7 @@ function getDeck(){
       return cats.slice().reverse().concat(basics);
     }
     const units = UNITS.filter(u => u.rarity === mode && isOwned(u)).map(u => ({ type:'unit', unit:u }));
-    return units.length ? [{type:'back'}].concat(units, [{type:'back'}]) : [{type:'back'}];
+    return units.length ? units : [{type:'empty'}];   // 등급 칸 안: 캐릭터만 (돌아가기는 양옆 고정 버튼)
   }
 
   function cardHTML(it){
@@ -1835,6 +1853,7 @@ function getDeck(){
         '<span class="card-art"><svg class="folder" viewBox="0 0 100 80" aria-hidden="true"><path d="M8 18 H38 L46 26 H92 V72 H8 Z" fill="' + it.cat.color + '" stroke="#2a1708" stroke-width="5" stroke-linejoin="round"/><path d="M8 34 H92" stroke="#2a1708" stroke-width="4"/></svg></span>' +
         '<span class="card-lv">캐릭터 <b>' + n + '</b></span>';
     }
+    if (it.type === 'empty') return '<span class="card-name">비어 있음</span><span class="card-art"></span>';
     return '<span class="card-name back-name">돌아가기</span><span class="card-art"><svg class="folder" viewBox="0 0 40 40" aria-hidden="true"><path d="M12 14 H26 A9 9 0 0 1 26 32 H16" fill="none" stroke="#2a1708" stroke-width="5" stroke-linecap="round"/><path d="M17 8 L10 14 L17 20" fill="none" stroke="#2a1708" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
   }
 
@@ -1856,7 +1875,8 @@ function getDeck(){
 
   // 가운데 카드를 한 번 더 누르면: 캐릭터는 편성/해제, 등급 칸은 들어가기, 돌아가기는 나오기
   function press(it){
-    if (it.type === 'cat') { basicIdx = idx; mode = it.cat.id; idx = 0; build(); if (items.length > 1) { idx = 1; render(); } return; }
+    if (it.type === 'empty') return;
+    if (it.type === 'cat') { basicIdx = idx; mode = it.cat.id; idx = 0; build(); return; }
     if (it.type === 'back') { mode = 'basic'; idx = basicIdx; build(); return; }
     const ids = deckIds();
     if (ids.includes(it.unit.id)) setDeck(ids.filter(x => x !== it.unit.id));
@@ -1883,7 +1903,13 @@ function getDeck(){
     info.hidden = true;
     prev.disabled = idx === 0;
     next.disabled = idx === items.length - 1;
+    const inCat = mode !== 'basic';
+    document.getElementById('t-back-l').hidden = document.getElementById('t-back-r').hidden = !inCat;
+    prev.hidden = next.hidden = inCat;
+    document.getElementById('t-label').textContent = inCat ? CATEGORIES.find(c => c.id === mode).name : '캐릭터';
+    if (it.type === 'empty') hint.textContent = '이 칸에는 아직 캐릭터가 없어요.';
   }
+  ['t-back-l', 't-back-r'].forEach(id => document.getElementById(id).addEventListener('click', () => { mode = 'basic'; idx = basicIdx; build(); }));
 
   // ---------- 드래그로 편성 ----------
   // 캐릭터 카드 → 슬롯에 놓으면 그 칸에 들어감(그 칸에 있던 캐릭터는 빠짐)
