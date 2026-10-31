@@ -2533,7 +2533,7 @@ const GACHA = (function(){
       const b = document.createElement('button');
       b.className = 'r-tab' + (i === cur ? ' on' : '');
       b.textContent = x.name;
-      b.addEventListener('click', () => { cur = i; render(); if (!x.platinum) openLineup(x); });   // 축제 탭을 누르면 캐릭터 목록
+      b.addEventListener('click', () => { cur = i; render(); });
       tabs.appendChild(b);
     });
     const bn = document.getElementById('r-banner');
@@ -2573,6 +2573,13 @@ const GACHA = (function(){
     }).join('');
     document.getElementById('lineup').hidden = false;
   }
+  // 배너를 누르면 캐릭터 목록
+  const bannerEl = document.getElementById('r-banner');
+  bannerEl.setAttribute('role', 'button'); bannerEl.setAttribute('tabindex', '0'); bannerEl.setAttribute('aria-label', '뽑기 캐릭터 목록 보기');
+  bannerEl.style.cursor = 'pointer';
+  const openCur = () => { const sr = RARE_SERIES[cur]; if (!sr.platinum) openLineup(sr); };
+  bannerEl.addEventListener('click', openCur);
+  bannerEl.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCur(); } });
   document.getElementById('lu-close').addEventListener('click', () => { document.getElementById('lineup').hidden = true; });
 
   function roll(n, kind, cost){
