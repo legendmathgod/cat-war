@@ -232,6 +232,11 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
 .route{position:absolute;inset:0;width:100%;height:100%}
 .st-cards{position:absolute;left:0;right:0;top:1.5cqw;height:15cqw}
 .st-label{display:block;padding:0 .8cqw;line-height:1.05}
+.st-card{overflow:visible}
+.st-rw{position:absolute;left:50%;top:calc(100% + .6cqw);transform:translateX(-50%);white-space:nowrap;padding:.1cqw 1cqw;border:.3cqw solid var(--ink);border-radius:2cqw;
+  font-family:var(--display);font-size:1.6cqw;color:var(--ink)}
+.st-rw.nyan{background:#c9d3dc}.st-rw.rare{background:var(--btn)}.st-rw.plat{background:linear-gradient(90deg,#e8f0f8,#9fb3c8,#e8f0f8)}
+.st-rw.got{opacity:.55}
 .st-card.long{font-size:2.2cqw}
 .st-card{position:absolute;top:0;left:50%;width:22cqw;height:8cqw;padding:0;cursor:pointer;
   font-family:var(--display);font-size:3.4cqw;color:var(--ink);background:#fff;border:.5cqw solid var(--ink);border-radius:.4cqw;
@@ -240,7 +245,7 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
 .st-card .clear{position:absolute;left:.6cqw;top:-2.2cqw;font-size:1.6cqw;color:var(--red);-webkit-text-stroke:.2cqw var(--ink);paint-order:stroke fill}
 .st-card .star{position:absolute;right:-2cqw;top:-1.6cqw;width:4.4cqw;height:4.4cqw}
 .st-card:focus-visible{outline:.5cqw solid var(--cream);outline-offset:.4cqw}
-.st-info{position:absolute;left:50%;top:9.5cqw;transform:translateX(-50%);display:grid;grid-template-columns:auto auto;gap:.2cqw 3cqw;
+.st-info{position:absolute;left:50%;top:12.6cqw;transform:translateX(-50%);display:grid;grid-template-columns:auto auto;gap:.2cqw 3cqw;
   font-size:2cqw;color:var(--ink)}
 .st-info b{font-family:var(--display);font-weight:400;color:var(--red);text-align:right}
 .go{position:absolute;right:3cqw;top:24cqw;width:31cqw;font-size:4.6cqw;padding:1.6cqw 0 1.8cqw}
@@ -2680,6 +2685,15 @@ const NAMED_RARE = ['우유 도둑의 감옥', '변기6', '4층 계단', '본교
   });
 })();
 STAGES.forEach((st, i) => st.no = i + 1);                   // 1 ~ 48
+// 최초 클리어 티켓: 24번째(우유 도둑의 감옥) 플래티넘 티켓, 5의 배수 스테이지 레어 티켓, 나머지 냥코 티켓
+STAGES.forEach(st => {
+  const rw = { money: st.reward.money };
+  if (st.no === 24) rw.platinumTicket = 1;
+  else if (st.no % 5 === 0) rw.rareTicket = 1;
+  else rw.nyankoTicket = 1;
+  st.reward = rw;
+});
+function ticketLabel(r){ return r.platinumTicket ? '플래티넘 티켓' : r.rareTicket ? '레어 티켓' : r.nyankoTicket ? '냥코 티켓' : ''; }
 function stageLabel(st){ return st.name || st.id + '반'; }
 
 
@@ -3156,6 +3170,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
         PLAYER.cleared.push(S.stage.key);
         if (r.nyankoTicket) { PLAYER.nyankoTicket += r.nyankoTicket; rw.innerHTML += '<div class="first">냥코 티켓 +' + r.nyankoTicket + ' (최초 클리어)</div>'; }
         if (r.rareTicket) { PLAYER.rareTicket += r.rareTicket; rw.innerHTML += '<div class="first">레어 티켓 +' + r.rareTicket + ' (최초 클리어)</div>'; }
+        if (r.platinumTicket) { PLAYER.platinumTicket = (PLAYER.platinumTicket || 0) + r.platinumTicket; rw.innerHTML += '<div class="first">플래티넘 티켓 +' + r.platinumTicket + ' (최초 클리어)</div>'; }
         const got = treasuresOfStage(S.stage);
         const chName = S.stage.chName;
         if (S.stage.ch === 1 && !PLAYER.ch1Reward && chapterCleared(1)) {        // 1장 첫 클리어 보상
@@ -3758,7 +3773,8 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
       const b = document.createElement('button');
       b.className = 'st-card' + (i === sel ? ' center' : '') + (stageLabel(st).length > 6 ? ' long' : '');
       b.style.setProperty('--off', i - sel);
-      b.innerHTML = (cleared ? '<span class="clear">CLEAR!</span><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="#ff9a3d" stroke="#2a1708" stroke-width="3"/><path d="M20 8 L23 16 L32 16 L25 21 L28 30 L20 25 L12 30 L15 21 L8 16 L17 16 Z" fill="#ffcc1f" stroke="#2a1708" stroke-width="2"/></svg>' : '') + '<span class="st-label">' + stageLabel(st) + '</span>';
+      b.innerHTML = (cleared ? '<span class="clear">CLEAR!</span><svg class="star" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="#ff9a3d" stroke="#2a1708" stroke-width="3"/><path d="M20 8 L23 16 L32 16 L25 21 L28 30 L20 25 L12 30 L15 21 L8 16 L17 16 Z" fill="#ffcc1f" stroke="#2a1708" stroke-width="2"/></svg>' : '') + '<span class="st-label">' + stageLabel(st) + '</span>' +
+        '<span class="st-rw ' + (st.reward.platinumTicket ? 'plat' : st.reward.rareTicket ? 'rare' : 'nyan') + (cleared ? ' got' : '') + '">' + ticketLabel(st.reward) + (cleared ? ' 받음' : '') + '</span>';
       b.addEventListener('click', () => { sel = i; renderStages(); });
       cardsEl.appendChild(b);
     });
@@ -3766,7 +3782,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     const st = list[sel];
     const cnt = (PLAYER.clearCount || {})[st.key] || 0;
     const notYet = !PLAYER.cleared.includes(st.key);
-    const ticket = st.reward.rareTicket ? '레어 티켓 ' + st.reward.rareTicket : st.reward.nyankoTicket ? '냥코 티켓 ' + st.reward.nyankoTicket : '';
+    const ticket = ticketLabel(st.reward) ? ticketLabel(st.reward) + ' 1' : '';
     infoEl.innerHTML = '<span>클리어</span><b>' + cnt + ' 회</b><span>보상 돈</span><b>' + st.reward.money.toLocaleString() + '</b>' +
       (notYet && ticket ? '<span>최초 클리어</span><b>' + ticket + '</b>' : '');
 
