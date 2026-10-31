@@ -2788,10 +2788,10 @@ const RARE_SERIES = [
   { id:'ultra', name:'울트라 한일고양이 축제', c1:'#5a1f8a', c2:'#e8468a', sub:'모든 레어 냥코가 한 곳에!', pool:[] },
 ];
 RARE_SERIES[0].pool = UNITS.filter(u => u.gacha === 'rare').map(u => u.id);
-// 리센느 콜라보 이벤트: 레어·슈퍼레어는 울트라 한일고양이 축제와 같고, 기존 울트라슈퍼레어·레전드레어는 안 나옴.
-// 콜라보 전용 울트라슈퍼레어·레전드레어는 gacha: 'rescene' 으로 추가하면 여기에만 나옴.
-RARE_SERIES.push({ id:'rescene', name:'리센느 콜라보 이벤트', c1:'#9d8ad8', c2:'#f4eeff', sub:'콜라보 한정 캐릭터 등장!', collab: true,
-  pool: UNITS.filter(u => (u.gacha === 'rare' && (u.rarity === 'rare' || u.rarity === 'super')) || u.gacha === 'rescene').map(u => u.id) });
+// 한일 콜라보 이벤트: 레어·슈퍼레어는 울트라 한일고양이 축제와 같고, 기존 울트라슈퍼레어·레전드레어는 안 나옴.
+// 콜라보 전용 울트라슈퍼레어·레전드레어는 gacha: 'collab' 으로 추가하면 여기에만 나옴.
+RARE_SERIES.push({ id:'hanil-collab', name:'한일 콜라보 이벤트', c1:'#9d8ad8', c2:'#f4eeff', sub:'콜라보 한정 캐릭터 등장!', collab: true,
+  pool: UNITS.filter(u => (u.gacha === 'rare' && (u.rarity === 'rare' || u.rarity === 'super')) || u.gacha === 'collab').map(u => u.id) });
 // 플래티넘 뽑기: 플래티넘 티켓으로만, 울트라슈퍼레어만 100%
 RARE_SERIES.push({ id:'platinum', name:'플래티넘 뽑기', c1:'#5c6b7a', c2:'#dfe7ee', sub:'울트라슈퍼레어 확정!', platinum: true,
   pool: UNITS.filter(u => u.gacha === 'rare' && u.rarity === 'uber').map(u => u.id) });
