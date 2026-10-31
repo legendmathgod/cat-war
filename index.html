@@ -397,7 +397,12 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
 .team{position:absolute;inset:0;z-index:4;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#fff2c2,#f3cf7a 70%,#d9a548)}
 .t-slots{position:absolute;left:2cqw;right:2cqw;top:8cqw;padding:2.4cqw 2cqw 1.2cqw;display:flex;flex-direction:column;gap:1cqw;
   background:rgba(255,247,230,.75);border:.45cqw solid var(--ink);border-radius:1.6cqw}
-.t-slot-label{position:absolute;left:2cqw;top:-1.6cqw;font-family:var(--display);font-size:2cqw;color:var(--cream);background:var(--ink);padding:.1cqw 1.4cqw;border-radius:2cqw}
+.t-slot-head{position:absolute;left:2cqw;top:-1.8cqw;display:flex;align-items:center;gap:.8cqw}
+.t-slot-tabs{display:flex;gap:.5cqw}
+.t-slot-tabs button{width:3.6cqw;height:3.2cqw;padding:0;cursor:pointer;font-family:var(--display);font-size:1.9cqw;color:var(--ink);background:#e8dcc4;border:.3cqw solid var(--ink);border-radius:.8cqw}
+.t-slot-tabs button.on{background:var(--btn);box-shadow:0 0 0 .25cqw var(--cream)}
+.t-slot-tabs button:focus-visible{outline:.4cqw solid var(--ink);outline-offset:.2cqw}
+.t-slot-label{font-family:var(--display);font-size:2cqw;color:var(--cream);background:var(--ink);padding:.1cqw 1.4cqw;border-radius:2cqw}
 .t-row{display:flex;align-items:center;gap:1.4cqw}
 .t-page{width:6cqw;flex:none;text-align:center;font-family:var(--display);font-size:3.2cqw;line-height:1;color:var(--ink)}
 .t-page small{display:block;font-family:var(--body);font-size:1.5cqw}
@@ -713,7 +718,12 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
   <div class="team" id="team" hidden>
     <div class="topbar"><h1 class="outline">캐릭터 편성</h1></div>
     <div class="t-slots">
-      <span class="t-slot-label">출진 슬롯 1</span>
+      <div class="t-slot-head">
+        <span class="t-slot-label" id="t-slot-label">출진 슬롯 1</span>
+        <div class="t-slot-tabs" id="t-slot-tabs">
+          <button type="button" data-s="0">1</button><button type="button" data-s="1">2</button><button type="button" data-s="2">3</button>
+        </div>
+      </div>
       <div class="t-row"><span class="t-page">1<small>페이지</small></span><div class="t-grid" id="t-row1"></div></div>
       <div class="t-row"><span class="t-page">2<small>페이지</small></span><div class="t-grid" id="t-row2"></div></div>
     </div>
@@ -1737,10 +1747,19 @@ function levelCost(u){
 })();
 
 // ---------- 캐릭터 편성 (출진 슬롯 10칸) ----------
-// PLAYER.deck 에 캐릭터 id 10칸 저장. 비어 있으면 가진 캐릭터를 순서대로 채움.
+// 출진 슬롯마다 캐릭터 id 10칸 저장. 처음엔 1번 슬롯을 가진 캐릭터로 채움.
+// 출진 슬롯 3개: PLAYER.decks[0~2], 지금 고른 슬롯은 PLAYER.deckSel. 전투·PvP 는 고른 슬롯으로 출전
+function ensureDecks(){
+  if (!PLAYER.decks) {
+    const first = PLAYER.deck || UNITS.filter(u => !u.passive && isOwned(u)).slice(0, 10).map(u => u.id);
+    PLAYER.decks = [first, [], []]; PLAYER.deckSel = 0;
+  }
+  while (PLAYER.decks.length < 3) PLAYER.decks.push([]);
+  if (!(PLAYER.deckSel >= 0 && PLAYER.deckSel < 3)) PLAYER.deckSel = 0;
+}
 function getDeck(){
-  if (!PLAYER.deck) PLAYER.deck = UNITS.filter(u => !u.passive && isOwned(u)).slice(0, 10).map(u => u.id);
-  return PLAYER.deck.map(id => UNITS.find(u => u.id === id)).filter(u => u && isOwned(u));
+  ensureDecks();
+  return PLAYER.decks[PLAYER.deckSel].map(id => UNITS.find(u => u.id === id)).filter(u => u && isOwned(u));
 }
 (function(){
   const scr = document.getElementById('team'), track = document.getElementById('t-track');
@@ -1749,14 +1768,23 @@ function getDeck(){
   let mode = 'basic', items = [], cards = [], idx = 0, basicIdx = 0;
 
   function deckIds(){ return getDeck().map(u => u.id); }
-  function setDeck(ids){ PLAYER.deck = ids; savePlayer(); }
+  function setDeck(ids){ ensureDecks(); PLAYER.decks[PLAYER.deckSel] = ids; savePlayer(); }
   function art(u, crop){
     return crop ? '<svg viewBox="' + (u.iconBox || '22 24 196 168') + '" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#' + (u.art || 'soldier') + '"/></svg>'
                 : '<svg viewBox="0 0 240 260" aria-hidden="true"><use href="#' + (u.art || 'soldier') + '"/></svg>';
   }
 
   // preview: 드래그 중 '밀어내기' 미리보기 { ids, hole, moved }
+  function renderSlotTabs(){
+    ensureDecks();
+    document.getElementById('t-slot-label').textContent = '출진 슬롯 ' + (PLAYER.deckSel + 1);
+    document.querySelectorAll('#t-slot-tabs button').forEach(b => b.classList.toggle('on', +b.dataset.s === PLAYER.deckSel));
+  }
+  document.querySelectorAll('#t-slot-tabs button').forEach(b => b.addEventListener('click', () => {
+    ensureDecks(); PLAYER.deckSel = +b.dataset.s; savePlayer(); renderSlots(); render();
+  }));
   function renderSlots(preview){
+    renderSlotTabs();
     const ids = preview ? preview.ids : deckIds();
     [document.getElementById('t-row1'), document.getElementById('t-row2')].forEach((row, r) => {
       row.innerHTML = '';
