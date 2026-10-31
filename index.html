@@ -1682,7 +1682,7 @@ function levelCost(u){
       b.className = 'card ' + it.type;
       b.setAttribute('aria-label', itemName(it));
       b.innerHTML = cardHTML(it);
-      b.addEventListener('click', () => (i === idx ? enter(it) : (idx = i, render())));
+      b.addEventListener('click', () => (it.type === 'back' || i === idx ? enter(it) : (idx = i, render())));   // 돌아가기는 한 번만 눌러도 바로
       track.appendChild(b);
       return b;
     });
@@ -1690,7 +1690,7 @@ function levelCost(u){
   }
 
   function enter(it){
-    if (it.type === 'cat') { basicIdx = idx; mode = it.cat.id; idx = 0; build(); }
+    if (it.type === 'cat') { basicIdx = idx; mode = it.cat.id; idx = 0; build(); if (items.length > 1) { idx = 1; render(); } }   // 첫 캐릭터를 가운데로 → 돌아가기가 양옆에
     else if (it.type === 'back') { mode = 'basic'; idx = basicIdx; build(); }
   }
 
@@ -1846,7 +1846,7 @@ function getDeck(){
       b.className = 'card ' + it.type;
       b.setAttribute('aria-label', it.type === 'unit' ? it.unit.name : it.type === 'cat' ? it.cat.name : '돌아가기');
       b.innerHTML = cardHTML(it);
-      b.addEventListener('click', () => { if (dragJustEnded) return; i === idx ? press(it) : (idx = i, render()); });
+      b.addEventListener('click', () => { if (dragJustEnded) return; it.type === 'back' || i === idx ? press(it) : (idx = i, render()); });   // 돌아가기는 한 번만 눌러도 바로
       if (it.type === 'unit') b.addEventListener('pointerdown', e => startPress(e, it.unit, 'card'));
       track.appendChild(b);
       return b;
@@ -1856,7 +1856,7 @@ function getDeck(){
 
   // 가운데 카드를 한 번 더 누르면: 캐릭터는 편성/해제, 등급 칸은 들어가기, 돌아가기는 나오기
   function press(it){
-    if (it.type === 'cat') { basicIdx = idx; mode = it.cat.id; idx = 0; build(); return; }
+    if (it.type === 'cat') { basicIdx = idx; mode = it.cat.id; idx = 0; build(); if (items.length > 1) { idx = 1; render(); } return; }
     if (it.type === 'back') { mode = 'basic'; idx = basicIdx; build(); return; }
     const ids = deckIds();
     if (ids.includes(it.unit.id)) setDeck(ids.filter(x => x !== it.unit.id));
