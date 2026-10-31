@@ -512,6 +512,22 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
 .auth-msg{margin:0;min-height:2.2cqw;font-size:1.9cqw;color:var(--red-lo);text-align:center}
 .auth-tab:focus-visible,.auth-go:focus-visible{outline:.4cqw solid var(--ink);outline-offset:.2cqw}
 .nick-pill b{color:var(--cream)!important}
+.pvp-card{background:linear-gradient(#7fb7ff,#3a7be0)!important}
+.pvp-card .m-sub{color:var(--cream)}
+.pvp-card svg{width:5cqw!important;height:5cqw}
+.pvp-lobby{position:absolute;inset:0;z-index:6;overflow:hidden;background:linear-gradient(#3a7be0,#8fd3ff 70%,#d8f1ff)}
+.pvp-lobby .back{z-index:2}
+.pv-box{position:absolute;left:50%;top:13cqw;transform:translateX(-50%);width:50cqw;padding:2.4cqw;display:flex;flex-direction:column;align-items:center;gap:1.6cqw;
+  background:var(--cream);border:.55cqw solid var(--ink);border-radius:2cqw;box-shadow:0 .9cqw 0 var(--ink);color:var(--ink)}
+.pv-btn{width:100%;font-size:3.2cqw;padding:1cqw 0 1.2cqw}
+.pv-join{display:flex;gap:1cqw;width:100%}
+.pv-join input{flex:1;min-width:0;font-family:var(--display);font-size:3cqw;text-align:center;letter-spacing:.6cqw;border:.4cqw solid var(--ink);border-radius:1.2cqw}
+.pv-join .pv-btn{width:auto;flex:1.2}
+.pv-note,.pv-status{margin:0;font-size:1.9cqw;text-align:center;line-height:1.4}
+.pv-code-label{font-family:var(--display);font-size:2.2cqw}
+.pv-code{font-family:var(--display);font-size:9cqw;letter-spacing:1.6cqw;color:var(--btn);line-height:1}
+.pv-msg{position:absolute;left:0;right:0;bottom:4cqw;margin:0;text-align:center;font-family:var(--display);font-size:2.4cqw;color:var(--cream);-webkit-text-stroke:.3cqw var(--ink);paint-order:stroke fill}
+.pv-btn:focus-visible,.pv-join input:focus-visible{outline:.5cqw solid var(--ink);outline-offset:.3cqw}
 .dev-code{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9;width:40cqw;padding:2cqw;display:flex;flex-direction:column;gap:1.2cqw;
   background:var(--cream);color:var(--ink);border:.5cqw solid var(--ink);border-radius:1.6cqw;box-shadow:0 .8cqw 0 var(--ink)}
 .dev-code label{font-family:var(--display);font-size:2.6cqw}
@@ -830,7 +846,7 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
       <button class="m-card" disabled><svg class="lock" viewBox="0 0 40 40" aria-hidden="true"><use href="#icon-lock"/></svg><span class="m-name outline">세계</span><span class="m-sub">준비 중</span></button>
       <button class="m-card" disabled><svg class="lock" viewBox="0 0 40 40" aria-hidden="true"><use href="#icon-lock"/></svg><span class="m-name outline">우주</span><span class="m-sub">준비 중</span></button>
       <button class="m-card" disabled><svg class="lock" viewBox="0 0 40 40" aria-hidden="true"><use href="#icon-lock"/></svg><span class="m-name outline">레전드 스토리</span><span class="m-sub">준비 중</span></button>
-      <button class="m-card wide" disabled><svg class="lock" viewBox="0 0 40 40" aria-hidden="true"><use href="#icon-lock"/></svg><span class="m-name outline">PvP 모드</span><span class="m-sub">준비 중</span></button>
+      <button class="m-card wide pvp-card" id="mode-pvp"><svg viewBox="0 0 40 40" aria-hidden="true"><use href="#icon-vs"/></svg><span class="m-name outline">PvP 모드</span><span class="m-sub">친구와 실시간 대결</span></button>
     </div>
   </div>
 
@@ -839,6 +855,29 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
     <div class="m-title outline">학교</div>
     <div class="c-grid" id="c-grid"></div>
     <button class="back" id="c-back" aria-label="모드 선택으로 돌아가기">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M12 14 H26 A9 9 0 0 1 26 32 H16" fill="none" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/><path d="M17 8 L10 14 L17 20" fill="none" stroke="var(--ink)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <!-- PvP 로비: 방 만들기 / 방 들어가기 -->
+  <div class="pvp-lobby" id="pvp-lobby" hidden>
+    <div class="m-title outline">PvP 모드</div>
+    <div class="pv-box" id="pv-menu">
+      <button class="btn pv-btn" id="pv-create">방 만들기</button>
+      <div class="pv-join">
+        <input id="pv-code" inputmode="numeric" maxlength="4" placeholder="방 번호 4자리" aria-label="방 번호">
+        <button class="btn pv-btn" id="pv-join">방 들어가기</button>
+      </div>
+      <p class="pv-note">돈 오르는 속도·지갑·캐릭터 레벨은 각자 자기 기록대로 적용돼요. 대결은 2배속으로 진행돼요.</p>
+    </div>
+    <div class="pv-box" id="pv-wait" hidden>
+      <div class="pv-code-label">방 번호</div>
+      <div class="pv-code outline" id="pv-code-show">0000</div>
+      <p class="pv-status" id="pv-wait-msg">친구에게 방 번호를 알려 주세요. 상대를 기다리는 중…</p>
+      <button class="btn pv-btn" id="pv-cancel">방 나가기</button>
+    </div>
+    <p class="pv-msg" id="pv-msg" role="alert"></p>
+    <button class="back" id="pv-back" aria-label="모드 선택으로 돌아가기">
       <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M12 14 H26 A9 9 0 0 1 26 32 H16" fill="none" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/><path d="M17 8 L10 14 L17 20" fill="none" stroke="var(--ink)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
   </div>
@@ -1124,6 +1163,11 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
       <circle cx="50" cy="50" r="44" fill="#9b6633"/>
       <rect x="44" y="18" width="5" height="66" fill="#c48a4c"/>
       <path d="M49 20 L82 30 L49 42 Z" fill="#e8463a"/>
+    </g>
+
+    <g id="icon-vs" stroke="#2a1708" stroke-width="2.5" stroke-linejoin="round">
+      <circle cx="20" cy="20" r="17" fill="#e8463a"/>
+      <text x="20" y="26" text-anchor="middle" font-family="Black Han Sans, sans-serif" font-size="16" fill="#fff7e6" stroke="#2a1708" stroke-width="1.5" paint-order="stroke">VS</text>
     </g>
 
     <!-- 패시브 아이콘 -->
@@ -1980,7 +2024,7 @@ const SUPA_URL = 'https://ndgvcdwvnndciogsbdqf.supabase.co';
 const SUPA_KEY = 'sb_publishable_OD0w4bGVanj2O4p7H3zpag_3ZD6S7GH';   // 공개용 키 (게임에 넣어도 되는 키)
 const AUTH = (function(){
   const ONLINE = /(^|\.)github\.io$/.test(location.hostname);       // claude.ai 안에서는 외부 연결이 막혀 있어 계정 없이 진행
-  let supa = null, user = null, saveTimer = 0, mode = 'signup';
+  let supa = null, user = null, saveTimer = 0, mode = 'signup', myNick = '';
   const $ = id => document.getElementById(id);
   const msg = t => { $('auth-msg').textContent = t || ''; };
 
@@ -2007,7 +2051,7 @@ const AUTH = (function(){
   async function afterLoading(){
     if (!ONLINE || DEV) { goModes(); return; }                      // claude.ai 페이지·개발자 모드는 기기 저장 그대로
     if (!window.supabase) { $('auth').hidden = false; msg('서버에 연결하지 못했어요. 인터넷을 확인하고 새로 고침해 주세요.'); $('auth-go').disabled = true; return; }
-    supa = window.supabase.createClient(SUPA_URL, SUPA_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+    supa = window.supabase.createClient(SUPA_URL, SUPA_KEY, { auth: { persistSession: true, autoRefreshToken: true }, realtime: { params: { eventsPerSecond: 20 } } });
     let auto = false;
     try { auto = localStorage.getItem('catwar-autologin') === '1'; } catch (e) {}
     const { data } = await supa.auth.getSession();
@@ -2027,6 +2071,7 @@ const AUTH = (function(){
     if (row.data && row.data.data && Object.keys(row.data.data).length) replacePlayer(row.data.data);   // 계정에 저장된 기록 불러오기
     else await cloudSave();                                          // 새 계정: 지금 이 기기의 기록으로 시작
     try { localStorage.setItem(saveKey, JSON.stringify(PLAYER)); } catch (e) {}
+    myNick = nick;
     if (nick) { $('nick-name').textContent = nick; $('nick-pill').hidden = false; }
     renderPlayer();
     goModes();
@@ -2073,7 +2118,7 @@ const AUTH = (function(){
     }
   });
 
-  return { afterLoading, queueCloudSave };
+  return { afterLoading, queueCloudSave, client: () => supa, user: () => user, nick: () => myNick, online: () => ONLINE && !!supa && !!user };
 })();
 
 // ---------- 처음 홈에 들어오면 환영 메시지 + 레어 티켓 3장 ----------
@@ -2683,6 +2728,27 @@ function killMoneyMul(){ return 1 + 0.05 * (pLv('accounting') - 1) + 0.5 * treas
 // 공부력: 클리어 보상 돈 레벨당 +5%
 function studyMul(){ return 1 + 0.05 * (pLv('study') - 1); }
 
+// ---------- PvP: 내 대결 정보 (각자 자기 기록 기준) ----------
+function myPvpLoadout(){
+  const work = UNITS.find(u => u.id === 'work-rate'), wallet = UNITS.find(u => u.id === 'wallet');
+  return {
+    nick: (typeof AUTH !== 'undefined' && AUTH.nick()) || '상대',
+    income: (15 + 3 * (totalLevel(work) - 1)) * tfx('drink'),
+    workLv: totalLevel(work), walletLv: totalLevel(wallet), safe: treasurePct('safe'),
+    castle: castleHp(),
+    cannon: { time: cannonCharge(), dmg: Math.round(cannonDamage()), reach: cannonReach() },
+    deck: getDeck().map(u => ({
+      id: u.id, name: u.name, art: u.art || 'soldier', size: u.size || 70, fly: !!u.fly, hand: u.hand || null,
+      cost: u.cost, cd: u.cooldown < 2 ? u.cooldown : Math.max(2, u.cooldown - tfx('clock') - 0.2 * (pLv('research') - 1)),
+      hp: Math.round(unitHp(u) * tfx('shield')), ap: Math.round(unitAp(u) * tfx('sword') * 10) / 10,
+      range: u.range, kb: u.kb, speed: u.speed, attackType: u.attackType, attackInterval: u.attackInterval,
+      foreswing: u.foreswing, backswing: u.backswing, motion: u.motion,
+    })),
+  };
+}
+function walletCap(walletLv, safe, workerLv){ return walletLv * 100 + safe * 10 + walletLv * 50 * (workerLv - 1); }
+function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1) + 40 : 20 * workLv - 40) * workerLv; }
+
 // ---------- 전투 ----------
 (function(){
   const WORLD = 1600, ENEMY_BASE_X = 110, CAT_BASE_X = 1490, BASE_HALF = 60, SPEED_SCALE = 6;
@@ -2742,6 +2808,7 @@ function studyMul(){ return 1 + 0.05 * (pLv('study') - 1); }
     if (S.over || S.workerLv >= S.workerMax) return;
     const cost = workerCost();
     if (S.money < cost) return;
+    if (S.guest) { pvpSend({ t: 'in', a: 'worker' }); return; }
     S.money -= cost;
     S.workerLv++;
     const w = passive('wallet');
@@ -2751,6 +2818,7 @@ function studyMul(){ return 1 + 0.05 * (pLv('study') - 1); }
   document.getElementById('worker').addEventListener('click', upgradeWorker);
   document.getElementById('cannon').addEventListener('click', () => {
     if (!S || S.over || S.cannon.charge < 1 || S.cannon.wave) return;
+    if (S.guest) { pvpSend({ t: 'in', a: 'cannon' }); return; }
     S.cannon.charge = 0;
     S.cannon.wave = { t: 0, hit: new Set() };
     S.shake = 0.3;
@@ -2773,6 +2841,7 @@ function studyMul(){ return 1 + 0.05 * (pLv('study') - 1); }
 
   function produce(d){
     if (S.over || d.cd > 0 || S.money < d.unit.cost) return;
+    if (S.guest) { pvpSend({ t: 'in', a: 'spawn', i: S.deck.indexOf(d) }); return; }
     S.money -= d.unit.cost;
     d.cdMax = d.unit.cooldown < 2 ? d.unit.cooldown : Math.max(2, d.unit.cooldown - tfx('clock') - 0.2 * (pLv('research') - 1));
     d.cd = d.cdMax;
@@ -2786,8 +2855,9 @@ function studyMul(){ return 1 + 0.05 * (pLv('study') - 1); }
   }
 
   // 사정거리 안의 가장 앞에 있는 적(또는 기지)
+  let UID = 0;
   function makeFighter(d, hp, ap, x, dir, extra){
-    return Object.assign({
+    return Object.assign({ id: ++UID,
       x, dir, hp, max: hp, ap, range: d.range, speed: d.speed, kb: d.kb || 1, kbDone: 0,
       type: d.attackType || 'single', fore: d.foreswing, back: d.backswing, interval: d.attackInterval,
       motion: d.motion, state: 'move', st: 0, cdAtk: 0, hitDone: false, dying: false,
@@ -2954,6 +3024,7 @@ function studyMul(){ return 1 + 0.05 * (pLv('study') - 1); }
     S.money = Math.min(S.walletMax, S.money + S.income * dt);
     S.deck.forEach(d => { if (d) d.cd = Math.max(0, d.cd - dt); });
 
+    if (S.pvp) updatePvpP2(dt);
     S.stage.spawns.forEach((sp, i) => {
       const st = S.spawnState[i];
       if (S.t >= st.next) {
@@ -2982,7 +3053,7 @@ function studyMul(){ return 1 + 0.05 * (pLv('study') - 1); }
     }
     stepSide(S.cats, S.enemies, S.enemyBase, ENEMY_BASE_X, dt);
     stepSide(S.enemies, S.cats, S.catBase, CAT_BASE_X, dt);
-    for (const e of S.enemies) if (e.dead && !e.paid) {       // 적 처치 머니
+    if (!S.pvp) for (const e of S.enemies) if (e.dead && !e.paid) {       // 적 처치 머니
       e.paid = true;
       S.money = Math.min(S.walletMax, S.money + Math.round((ENEMIES[e.key].money || 0) * killMoneyMul()));
     }
@@ -2994,6 +3065,7 @@ function studyMul(){ return 1 + 0.05 * (pLv('study') - 1); }
   }
 
   function finish(win){
+    if (S.pvp) { finishPvp(win); return; }
     S.over = true;
     const rw = document.getElementById('rewards');
     rw.innerHTML = '';
@@ -3093,6 +3165,21 @@ function studyMul(){ return 1 + 0.05 * (pLv('study') - 1); }
     ctx.restore();
   }
 
+  // 대포 빔: fromRight = 오른쪽 기지에서 왼쪽으로, 아니면 왼쪽 기지에서 오른쪽으로
+  function drawWave(cn, fromRight, k, gy){
+    if (!cn || !cn.wave) return;
+    const w = cn.wave, q = Math.min(1, w.t / CANNON.sweepTime);
+    const sx = fromRight ? CAT_BASE_X - BASE_HALF : ENEMY_BASE_X + BASE_HALF, d = fromRight ? -1 : 1;
+    const x0 = sx * k, front = (sx + d * cn.reach * q) * k;
+    const fade = w.t > CANNON.sweepTime ? 1 - (w.t - CANNON.sweepTime) / 0.3 : 1;
+    ctx.save(); ctx.globalAlpha = Math.max(0, fade);
+    const g = ctx.createLinearGradient(front, 0, x0, 0);
+    g.addColorStop(0, 'rgba(255,255,255,.95)'); g.addColorStop(.15, fromRight ? 'rgba(255,120,200,.8)' : 'rgba(120,180,255,.8)'); g.addColorStop(1, fromRight ? 'rgba(255,120,200,.15)' : 'rgba(120,180,255,.15)');
+    ctx.fillStyle = g; ctx.fillRect(Math.min(front, x0), gy - 70 * k, Math.abs(x0 - front), 60 * k);
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(front, gy - 40 * k, 22 * k, 46 * k, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
   function draw(){
     const k = cw / WORLD;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -3105,21 +3192,12 @@ function studyMul(){ return 1 + 0.05 * (pLv('study') - 1); }
     ctx.fillStyle = '#4e9a26'; ctx.fillRect(0, gy + (ch - gy) * .45, cw, ch - gy);
     ctx.strokeStyle = '#2a1708'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(cw, gy); ctx.stroke();
 
-    drawBase(ENEMY_BASE_X, S.enemyBase, false, k, gy);
+    drawBase(ENEMY_BASE_X, S.enemyBase, !!S.pvp, k, gy);
     drawBase(CAT_BASE_X, S.catBase, true, k, gy);
     S.enemies.forEach(u => drawUnit(u, k, gy + 4 * k));
     S.cats.forEach(u => drawUnit(u, k, gy + 10 * k));
-    if (S.cannon.wave) {                             // 대포 빔: 기지에서 왼쪽으로 쓸고 지나감
-      const w = S.cannon.wave, q = Math.min(1, w.t / CANNON.sweepTime);
-      const x0 = (CAT_BASE_X - BASE_HALF) * k, front = (CAT_BASE_X - BASE_HALF - S.cannon.reach * q) * k;
-      const fade = w.t > CANNON.sweepTime ? 1 - (w.t - CANNON.sweepTime) / 0.3 : 1;
-      ctx.save(); ctx.globalAlpha = Math.max(0, fade);
-      const g = ctx.createLinearGradient(front, 0, x0, 0);
-      g.addColorStop(0, 'rgba(255,255,255,.95)'); g.addColorStop(.15, 'rgba(255,120,200,.8)'); g.addColorStop(1, 'rgba(255,120,200,.15)');
-      ctx.fillStyle = g; ctx.fillRect(front, gy - 70 * k, x0 - front, 60 * k);
-      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(front, gy - 40 * k, 22 * k, 46 * k, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.restore();
-    }
+    drawWave(S.cannon, true, k, gy);
+    if (S.cannon2) drawWave(S.cannon2, false, k, gy);
     // 침 발사체
     S.fx.forEach(f => {
       const p = f.t / f.dur, x = (f.x + (f.tx - f.x) * p) * k, y = gy - 40 * k - Math.sin(Math.PI * p) * 30 * k;
@@ -3301,13 +3379,222 @@ function studyMul(){ return 1 + 0.05 * (pLv('study') - 1); }
 
   function loop(now){
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    if (S.guest) { guestFrame(now); draw(); hud(); if (!battle.hidden) raf = requestAnimationFrame(loop); return; }
     for (let i = 1; i < gameSpeed; i++) update(dt);   // 배속만큼 한 프레임에 여러 번 진행
     const eh = S.enemyBase.hp, chp = S.catBase.hp;
     update(dt);
     S.enemyBase.hit = S.enemyBase.hp < eh; S.catBase.hit = S.catBase.hp < chp;
     draw(); hud();
+    if (S.pvp && S.host && now - (S.lastSend || 0) > 120) { S.lastSend = now; pvpSend({ t: 's', d: snapshot() }); }
     if (!battle.hidden) raf = requestAnimationFrame(loop);
   }
+
+  // ===================== PvP (방장이 전투를 계산하고, 상대에게 화면 정보를 보냄) =====================
+  let PV = null;                       // { ch, role, other }
+  function pvpSend(m){ if (PV && PV.ch) PV.ch.send({ type: 'broadcast', event: 'm', payload: m }); }
+
+  function pvpBase(){
+    return { id: 'PvP', key: 'pvp', spawns: [], reward: { money: 0 } };
+  }
+  function startPvpCommon(){
+    document.getElementById('stage-tag').textContent = 'PvP · ' + (PV.other || '상대');
+    buildSlots();
+    result.hidden = true; battle.hidden = false;
+    PV.prevSpeed = gameSpeed; gameSpeed = 2;                         // PvP 는 기본 2배속
+    speedBtn.hidden = true;
+    resize(); last = performance.now();
+    cancelAnimationFrame(raf); raf = requestAnimationFrame(loop);
+  }
+  // 방장: 내 쪽(오른쪽) = 원래 전투와 같음, 상대(왼쪽) = 상대 정보로 계산
+  function startPvpHost(lo2){
+    start(pvpBase());
+    cancelAnimationFrame(raf);
+    S.pvp = true; S.host = true; S.lo2 = lo2;
+    S.enemyBase = { hp: lo2.castle, max: lo2.castle };
+    S.p2 = { money: 0, workerLv: 1, walletMax: walletCap(lo2.walletLv, lo2.safe, 1), income: lo2.income,
+             cds: lo2.deck.map(() => 0), cannon: { charge: 0, time: lo2.cannon.time, dmg: lo2.cannon.dmg, reach: lo2.cannon.reach, wave: null } };
+    S.cannon2 = S.p2.cannon;
+    startPvpCommon();
+  }
+  function updatePvpP2(dt){
+    const p = S.p2;
+    p.money = Math.min(p.walletMax, p.money + p.income * dt);
+    p.cds = p.cds.map(c => Math.max(0, c - dt));
+    const cn = p.cannon;
+    if (!cn.wave) cn.charge = Math.min(1, cn.charge + dt / cn.time);
+    else {                                           // 상대 대포: 왼쪽 기지에서 오른쪽으로
+      cn.wave.t += dt;
+      const front = ENEMY_BASE_X + BASE_HALF + cn.reach * Math.min(1, cn.wave.t / CANNON.sweepTime);
+      for (const e of S.cats) {
+        if (e.dead || e.dying || cn.wave.hit.has(e) || e.x > front) continue;
+        cn.wave.hit.add(e);
+        e.hp = Math.max(0, e.hp - cn.dmg);
+        if (e.hp <= 0) e.dying = true;
+        knockback(e);
+      }
+      if (cn.wave.t > CANNON.sweepTime + 0.3) cn.wave = null;
+    }
+  }
+  // 방장이 받은 상대 입력 처리
+  function hostInput(m){
+    if (!S || !S.pvp || S.over) return;
+    const p = S.p2, lo = S.lo2;
+    if (m.a === 'spawn') {
+      const d = lo.deck[m.i];
+      if (!d || p.cds[m.i] > 0 || p.money < d.cost) return;
+      p.money -= d.cost; p.cds[m.i] = d.cd;
+      S.enemies.push(makeFighter(d, d.hp, d.ap, ENEMY_BASE_X + BASE_HALF, 1, { img: d.art, size: d.size, fly: d.fly, hand: d.hand }));
+    } else if (m.a === 'worker') {
+      if (p.workerLv >= 8) return;
+      const cost = workerUpCost(lo.workLv, p.workerLv);
+      if (p.money < cost) return;
+      p.money -= cost; p.workerLv++;
+      p.walletMax = walletCap(lo.walletLv, lo.safe, p.workerLv);
+      p.income = lo.income * (1 + 0.15 * (p.workerLv - 1));
+    } else if (m.a === 'cannon') {
+      if (p.cannon.charge < 1 || p.cannon.wave) return;
+      p.cannon.charge = 0; p.cannon.wave = { t: 0, hit: new Set() }; S.shake = 0.3;
+    }
+  }
+  function unitData(u){
+    return { id: u.id, x: Math.round(u.x * 10) / 10, dir: u.dir, img: u.img, size: u.size, fly: u.fly, hand: u.hand, state: u.state, st: u.st,
+             fore: u.fore, back: u.back, motion: u.motion, dead: u.dead, dust: u.dust, hitDone: u.hitDone, walk: u.walk };
+  }
+  function snapshot(){
+    return {
+      u1: S.cats.map(unitData), u2: S.enemies.map(unitData),
+      b1: S.catBase, b2: S.enemyBase,
+      c1: { charge: S.cannon.charge, reach: S.cannon.reach, wave: S.cannon.wave ? { t: S.cannon.wave.t } : null },
+      c2: { charge: S.p2.cannon.charge, reach: S.p2.cannon.reach, wave: S.p2.cannon.wave ? { t: S.p2.cannon.wave.t } : null },
+      p2: { money: S.p2.money, walletMax: S.p2.walletMax, workerLv: S.p2.workerLv, cds: S.p2.cds },
+      fx: S.fx.map(f => Object.assign({}, f, { dustOf: f.dustOf ? 1 : undefined })),
+      sh: S.shake, fl: S.flash || 0,
+    };
+  }
+  function finishPvp(hostWon){
+    if (S.over) return;
+    S.over = true;
+    pvpSend({ t: 'end', w: hostWon ? 'host' : 'guest' });
+    showPvpResult(hostWon);
+  }
+  function showPvpResult(won, note){
+    S.over = true;
+    document.getElementById('rewards').innerHTML = note ? '<div>' + note + '</div>' : '';
+    resultText.textContent = won ? '승리!' : '패배...';
+    result.classList.toggle('lose', !won);
+    setTimeout(() => { result.hidden = false; }, 700);
+  }
+
+  // 상대: 받은 화면 정보를 좌우를 뒤집어서 그림 (내 성이 오른쪽에 오도록)
+  function startPvpGuest(){
+    S = {
+      stage: pvpBase(), t: 0, over: false, pvp: true, guest: true,
+      money: 0, walletMax: 0, workerLv: 1, workerMax: 8, income: 0,
+      cannon: { charge: 0, reach: 0, wave: null }, cannon2: { charge: 0, reach: 0, wave: null },
+      catBase: { hp: 1, max: 1 }, enemyBase: { hp: 1, max: 1 },
+      cats: [], enemies: [], fx: [], shake: 0, flash: 0,
+      deck: getDeck().map(u => ({ unit: u, cd: 0 })),
+      snapAt: 0, posFrom: {}, posTo: {},
+    };
+    startPvpCommon();
+  }
+  const MIRROR = x => WORLD - x;
+  function guestSnapshot(d){
+    if (!S || !S.guest) return;
+    const now = performance.now(), from = {};
+    [...S.cats, ...S.enemies].forEach(u => from[u.id] = u.x);       // 지금 보이는 위치에서 새 위치로 부드럽게
+    const conv = u => Object.assign({}, u, { x: MIRROR(u.x), dir: -u.dir });
+    S.cats = d.u2.map(conv); S.enemies = d.u1.map(conv);
+    S.posFrom = {}; S.posTo = {};
+    [...S.cats, ...S.enemies].forEach(u => { S.posTo[u.id] = u.x; S.posFrom[u.id] = from[u.id] !== undefined ? from[u.id] : u.x; });
+    S.snapAt = now;
+    const ehit = S.enemyBase.hp > d.b1.hp, chit = S.catBase.hp > d.b2.hp;
+    S.catBase = Object.assign({}, d.b2, { hit: chit }); S.enemyBase = Object.assign({}, d.b1, { hit: ehit });
+    S.cannon = d.c2; S.cannon2 = d.c1;
+    S.money = d.p2.money; S.walletMax = d.p2.walletMax; S.workerLv = d.p2.workerLv;
+    S.deck.forEach((dk, i) => { if (dk) { dk.cd = d.p2.cds[i] || 0; dk.cdMax = dk.cdMax || Math.max(dk.cd, 0.01); if (dk.cd > dk.cdMax) dk.cdMax = dk.cd; if (dk.cd === 0) dk.cdMax = 0; } });
+    S.fx = d.fx.map(f => Object.assign({}, f, { x: f.x !== undefined ? MIRROR(f.x) : f.x, tx: f.tx !== undefined ? MIRROR(f.tx) : f.tx, dir: f.dir !== undefined ? -f.dir : f.dir }));
+    S.shake = d.sh; S.flash = d.fl;
+  }
+  function guestFrame(now){
+    const q = Math.min(1, (now - S.snapAt) / 125);
+    [...S.cats, ...S.enemies].forEach(u => {
+      const a = S.posFrom[u.id], b = S.posTo[u.id];
+      if (a !== undefined && b !== undefined) u.x = a + (b - a) * q;
+      if (u.state === 'move' && !u.dead) u.walk += 0.16 * 2;
+    });
+  }
+
+  // 방 연결
+  function leaveRoom(){
+    if (PV && PV.ch) { try { AUTH.client().removeChannel(PV.ch); } catch (e) {} }
+    if (PV && PV.prevSpeed) { gameSpeed = PV.prevSpeed; }
+    speedBtn.hidden = false;
+    PV = null;
+  }
+  function openRoom(code, role, onReady){
+    const supa = AUTH.client(), me = AUTH.user();
+    const ch = supa.channel('catwar-room-' + code, { config: { broadcast: { self: false }, presence: { key: me.id } } });
+    PV = { ch, role, code, started: false };
+    ch.on('broadcast', { event: 'm' }, ({ payload: m }) => onMessage(m));
+    ch.on('presence', { event: 'leave' }, () => {
+      if (PV && PV.started && S && S.pvp && !S.over) { showPvpResult(true, '상대가 대결에서 나갔어요'); }
+    });
+    ch.subscribe(async status => {
+      if (status === 'SUBSCRIBED') { await ch.track({ role, nick: AUTH.nick() }); onReady(ch); }
+      else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') lobbyMsg('서버에 연결하지 못했어요. 다시 해 주세요.');
+    });
+    return ch;
+  }
+  function onMessage(m){
+    if (!PV) return;
+    if (PV.role === 'host') {
+      if (m.t === 'join' && !PV.started) {                          // 상대가 들어옴 → 대결 시작
+        PV.started = true; PV.other = m.lo.nick;
+        pvpSend({ t: 'start', nick: AUTH.nick() });
+        lobbyEl.hidden = true;
+        startPvpHost(m.lo);
+      } else if (m.t === 'join' && PV.started) pvpSend({ t: 'full' });
+      else if (m.t === 'in') hostInput(m);
+    } else {
+      if (m.t === 'start' && !PV.started) {
+        PV.started = true; PV.other = m.nick; clearTimeout(PV.joinTimer);
+        lobbyEl.hidden = true;
+        startPvpGuest();
+      } else if (m.t === 'full' && !PV.started) { lobbyMsg('이미 대결 중인 방이에요.'); leaveRoom(); showMenu(); }
+      else if (m.t === 's') guestSnapshot(m.d);
+      else if (m.t === 'end' && S && S.guest) showPvpResult(m.w === 'guest');
+    }
+  }
+
+  // 로비 화면
+  const lobbyEl = document.getElementById('pvp-lobby');
+  function lobbyMsg(t){ document.getElementById('pv-msg').textContent = t || ''; }
+  function showMenu(){ document.getElementById('pv-menu').hidden = false; document.getElementById('pv-wait').hidden = true; }
+  document.getElementById('mode-pvp').addEventListener('click', () => {
+    document.getElementById('modes').hidden = true; lobbyEl.hidden = false; showMenu();
+    lobbyMsg(AUTH.online() ? '' : 'PvP는 계정에 로그인한 상태로 GitHub 링크(legendmathgod.github.io/cat-war)에서 할 수 있어요.');
+  });
+  document.getElementById('pv-back').addEventListener('click', () => { leaveRoom(); lobbyEl.hidden = true; document.getElementById('modes').hidden = false; });
+  document.getElementById('pv-create').addEventListener('click', () => {
+    if (!AUTH.online()) return;
+    const code = String(Math.floor(1000 + Math.random() * 9000));
+    document.getElementById('pv-code-show').textContent = code;
+    document.getElementById('pv-menu').hidden = true; document.getElementById('pv-wait').hidden = false;
+    lobbyMsg('');
+    openRoom(code, 'host', () => {});
+  });
+  document.getElementById('pv-cancel').addEventListener('click', () => { leaveRoom(); showMenu(); lobbyMsg(''); });
+  document.getElementById('pv-join').addEventListener('click', () => {
+    if (!AUTH.online()) return;
+    const code = document.getElementById('pv-code').value.trim();
+    if (!/^\d{4}$/.test(code)) { lobbyMsg('방 번호 4자리를 입력해 주세요.'); return; }
+    lobbyMsg('방에 들어가는 중…');
+    openRoom(code, 'guest', () => {
+      pvpSend({ t: 'join', lo: myPvpLoadout() });
+      PV.joinTimer = setTimeout(() => { if (PV && !PV.started) { lobbyMsg('방을 찾을 수 없어요. 방 번호를 확인해 주세요.'); leaveRoom(); } }, 6000);
+    });
+  });
 
   const stagesEl = document.getElementById('stages'), cardsEl = document.getElementById('st-cards');
   const infoEl = document.getElementById('st-info'), routeEl = document.getElementById('route');
@@ -3393,7 +3680,7 @@ function studyMul(){ return 1 + 0.05 * (pLv('study') - 1); }
     setTimeout(() => { ov.hidden = true; stagesEl.hidden = true; start(openStages()[sel]); }, 1100);
   });
   renderPlayer();
-  document.getElementById('btn-exit').addEventListener('click', () => { battle.hidden = true; cancelAnimationFrame(raf); });
+  document.getElementById('btn-exit').addEventListener('click', () => { battle.hidden = true; cancelAnimationFrame(raf); if (S && S.pvp) { leaveRoom(); S = null; } });
 })();
 </script>
 
