@@ -254,7 +254,8 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
     linear-gradient(90deg, rgba(110,70,30,.08) 1px, transparent 1px);
   background-size:auto,auto,auto,auto,8cqw 8cqw,8cqw 8cqw}
 .route{position:absolute;inset:0;width:100%;height:100%}
-.st-cards{position:absolute;left:0;right:0;top:1.5cqw;height:15cqw}
+.st-cards{position:absolute;left:0;right:0;top:1.5cqw;height:15cqw;touch-action:none}
+.st-cards.scrolling .st-card{transition:opacity .15s}
 .st-label{display:block;padding:0 .8cqw;line-height:1.05}
 .st-card{overflow:visible}
 .st-rw{position:absolute;left:50%;top:calc(100% + .6cqw);transform:translateX(-50%);white-space:nowrap;padding:.1cqw 1cqw;border:.3cqw solid var(--ink);border-radius:2cqw;
@@ -272,7 +273,7 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
 .st-card{position:absolute;top:0;left:50%;width:22cqw;height:8cqw;padding:0;cursor:pointer;
   font-family:var(--display);font-size:3.4cqw;color:var(--ink);background:#fff;border:.5cqw solid var(--ink);border-radius:.4cqw;
   transform:translateX(-50%) translateX(calc(var(--off) * 25cqw)) scale(.8);transform-origin:50% 0;opacity:.8;transition:transform .25s,opacity .25s}
-.st-card.center{transform:translateX(-50%) scale(1);opacity:1;box-shadow:0 0 0 .5cqw var(--btn)}
+.st-card.center{transform:translateX(-50%) translateX(calc(var(--off) * 25cqw)) scale(1);opacity:1;box-shadow:0 0 0 .5cqw var(--btn)}
 .st-card .clear{position:absolute;left:.6cqw;top:-2.2cqw;font-size:1.6cqw;color:var(--red);-webkit-text-stroke:.2cqw var(--ink);paint-order:stroke fill}
 .st-card .star{position:absolute;right:-2cqw;top:-1.6cqw;width:4.4cqw;height:4.4cqw}
 .st-card:focus-visible{outline:.5cqw solid var(--cream);outline-offset:.4cqw}
@@ -4767,6 +4768,68 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
       '<use href="#soldier" transform="translate(' + (c.x - 32) + ',' + (c.y - 44) + ') scale(.27)"/>';
     routeEl.innerHTML = svg;
   }
+
+  // ---------- 스테이지 카드 넘기기: 마우스 휠(옆 스크롤) / 화면 터치로 옆으로 밀기 ----------
+  // 파워업 화면과 같은 방식: 목표 위치를 부드럽게 따라가고, 멈추거나 손을 떼면 가까운 스테이지에 붙음
+  let stView = null, stTarget = 0, stTimer = 0, stRaf = 0, stSwipe = null, stSwipeJust = false;
+  const stCount = () => cardsEl.children.length;
+  function stApply(){ [...cardsEl.children].forEach((c, i) => c.style.setProperty('--off', i - (stView !== null ? stView : sel))); }
+  function stAnim(){
+    stView += (stTarget - stView) * 0.16;
+    if (Math.abs(stTarget - stView) < 0.002) stView = stTarget;
+    const n = Math.round(stView);
+    if (n !== sel) { sel = n; renderStages(); }
+    stApply();
+    if (stView === stTarget && stTarget === Math.round(stTarget) && !stTimer && !(stSwipe && stSwipe.on)) {
+      stView = null; stRaf = 0; cardsEl.classList.remove('scrolling'); stApply(); return;
+    }
+    stRaf = requestAnimationFrame(stAnim);
+  }
+  function stBegin(){ if (stView === null) { stView = sel; stTarget = sel; cardsEl.classList.add('scrolling'); } }
+  cardsEl.addEventListener('wheel', e => {
+    e.preventDefault();
+    if (stCount() < 2) return;
+    const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    stBegin();
+    stTarget = Math.max(0, Math.min(stCount() - 1, stTarget + d * (e.deltaMode === 1 ? 3 : 1) / 150));
+    clearTimeout(stTimer);
+    stTimer = setTimeout(() => { stTimer = 0; stTarget = Math.round(stTarget); }, 140);
+    if (!stRaf) stRaf = requestAnimationFrame(stAnim);
+  }, { passive: false });
+  const stPer = () => stagesEl.clientWidth * 0.25;                  // 카드 한 칸 간격(px)
+  cardsEl.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse' || stCount() < 2) return;
+    stSwipe = { id: e.pointerId, x: e.clientX, y: e.clientY, on: false, start: 0, lastX: e.clientX, lastT: performance.now(), v: 0 };
+  });
+  window.addEventListener('pointermove', e => {
+    if (!stSwipe || e.pointerId !== stSwipe.id) return;
+    const dx = e.clientX - stSwipe.x, dy = e.clientY - stSwipe.y;
+    if (!stSwipe.on) {
+      if (Math.hypot(dx, dy) < 8) return;
+      if (Math.abs(dx) <= Math.abs(dy)) { stSwipe = null; return; }
+      stSwipe.on = true; stBegin(); stSwipe.start = stView;
+    }
+    const now = performance.now(), dt = Math.max(1, now - stSwipe.lastT);
+    stSwipe.v = stSwipe.v * 0.6 + ((e.clientX - stSwipe.lastX) / dt) * 0.4;
+    stSwipe.lastX = e.clientX; stSwipe.lastT = now;
+    stView = stTarget = Math.max(0, Math.min(stCount() - 1, stSwipe.start - dx / stPer()));
+    const n = Math.round(stView);
+    if (n !== sel) { sel = n; renderStages(); }
+    stApply();
+  });
+  function stSwipeEnd(e){
+    if (!stSwipe || e.pointerId !== stSwipe.id) return;
+    const sw = stSwipe; stSwipe = null;
+    if (!sw.on) return;
+    stSwipeJust = true; setTimeout(() => stSwipeJust = false, 0);
+    const v = performance.now() - sw.lastT > 100 ? 0 : sw.v;
+    const fling = Math.max(-2, Math.min(2, -v * 150 / stPer()));
+    stTarget = Math.max(0, Math.min(stCount() - 1, Math.round(stView + fling)));
+    if (!stRaf) stRaf = requestAnimationFrame(stAnim);
+  }
+  window.addEventListener('pointerup', stSwipeEnd);
+  window.addEventListener('pointercancel', stSwipeEnd);
+  cardsEl.addEventListener('click', e => { if (stSwipeJust) { e.stopPropagation(); e.preventDefault(); } }, true);   // 민 뒤에는 카드 눌림 무시
 
   document.getElementById('btn-battle').addEventListener('click', () => {
     curCh = chapterOpen(SELECTED_CH) ? SELECTED_CH : 1;
