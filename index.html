@@ -2708,6 +2708,23 @@ STAGES.forEach(st => {
   else rw.nyankoTicket = 1;
   st.reward = rw;
 });
+// ---------- 난이도 곡선: 뒤로 갈수록 항상 더 어렵게 ----------
+// 스테이지마다 나오는 적들의 세기를 계산해서, 정해 둔 난이도 곡선에 맞게 적 강화 배율(mult)을 자동으로 맞춤.
+// 1~15번째는 빠르게, 16~48번째는 꾸준히 어려워짐. 레어 티켓(5의 배수)·플래티넘(24)·보스·마지막 스테이지는 더 어렵게.
+(function(){
+  const power = st => st.spawns.reduce((a, sp) => {
+    const e = ENEMIES[sp.enemy];
+    return a + Math.sqrt(e.hp * e.ap / e.attackInterval) * (sp.count ? 0.6 : Math.min(1, 10 / sp.every));
+  }, 0);
+  const spike = st => st.name === '기숙사로 향하는 문' ? 2.4 : st.no === 24 ? 2.0 : st.no % 5 === 0 ? 1.6
+                    : (st.name && NAMED_BOSS[st.name]) ? 1.4 : 1;
+  const target = n => n <= 15 ? 34 * Math.pow(1.273, n - 1) : 1000 * Math.pow(1.0558, n - 15);
+  const baseHp = n => n <= 15 ? 800 * Math.pow(1.168, n - 1) : 7000 * Math.pow(1.045, n - 15);
+  STAGES.forEach(st => {
+    st.mult = +Math.max(0.6, target(st.no) * spike(st) / power(st)).toFixed(2);
+    st.enemyBaseHp = Math.round(baseHp(st.no) * (spike(st) > 1 ? 1.2 : 1) / 100) * 100;
+  });
+})();
 function ticketLabel(r){ return r.platinumTicket ? '플래티넘 티켓' : r.rareTicket ? '레어 티켓' : r.nyankoTicket ? '냥코 티켓' : ''; }
 function stageLabel(st){ return st.name || st.id + '반'; }
 
