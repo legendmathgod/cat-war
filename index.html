@@ -2760,6 +2760,8 @@ STAGES.forEach(st => {
   STAGES.forEach(st => {
     st.mult = +Math.max(0.6, target(st.no) * spike(st) / power(st)).toFixed(2);
     st.enemyBaseHp = Math.round(baseHp(st.no) * (spike(st) > 1 ? 1.2 : 1) / 100) * 100;
+    // 클리어 보상 돈: 초반에 넉넉하게, 뒤로 갈수록 천천히 늘어남 (1번째 600 → 15번째 약 3,000 → 48번째 약 4,100)
+    st.reward.money = Math.round((600 + 900 * Math.log(st.no)) / 50) * 50;
   });
 })();
 function ticketLabel(r){ return r.platinumTicket ? '플래티넘 티켓' : r.rareTicket ? '레어 티켓' : r.nyankoTicket ? '냥코 티켓' : ''; }
@@ -2773,8 +2775,8 @@ function stageLabel(st){ return st.name || st.id + '반'; }
 const WORLD_NAME = '학교';
 const CHAPTERS = [
   { no: 1, name: '교실',   enemyMult: 1, baseMult: 1, rewardMult: 1   },
-  { no: 2, name: '기숙사', enemyMult: 3, baseMult: 2, rewardMult: 1.5 },
-  { no: 3, name: '야외',   enemyMult: 6, baseMult: 4, rewardMult: 2   },
+  { no: 2, name: '기숙사', enemyMult: 3, baseMult: 2, rewardMult: 1.3 },
+  { no: 3, name: '야외',   enemyMult: 6, baseMult: 4, rewardMult: 1.6 },
 ];
 // 클리어 기록 키: 1장은 '1-1', 2장은 'c2:1-1', 3장은 'c3:1-1'
 function stageKey(ch, id){ return ch === 1 ? id : 'c' + ch + ':' + id; }
