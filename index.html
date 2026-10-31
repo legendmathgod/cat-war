@@ -1878,18 +1878,28 @@ function levelCost(u){
   });
 
   prev.addEventListener('click', () => { if (idx > 0) { idx--; render(); } });
-  // 마우스 휠 / 터치패드 옆 스크롤: 카드가 손가락을 따라 매끈하게 움직이고, 멈추면 가까운 카드에 착 붙음
-  let wheelView = null, wheelTimer = 0;
+  // 마우스 휠 / 터치패드 옆 스크롤: 목표 위치를 향해 매 프레임 부드럽게 따라가고(관성), 멈추면 가까운 카드로 스르르 붙음
+  let wheelView = null, wheelTarget = 0, wheelTimer = 0, wheelRaf = 0;
+  function wheelAnim(){
+    wheelView += (wheelTarget - wheelView) * 0.16;                  // 따라가는 정도 (작을수록 더 부드럽게)
+    if (Math.abs(wheelTarget - wheelView) < 0.002) wheelView = wheelTarget;
+    const n = Math.round(wheelView);
+    if (n !== idx) idx = n;
+    render();
+    if (wheelView === wheelTarget && wheelTarget === Math.round(wheelTarget) && !wheelTimer) {
+      wheelView = null; wheelRaf = 0; track.classList.remove('scrolling'); render(); return;
+    }
+    wheelRaf = requestAnimationFrame(wheelAnim);
+  }
   track.parentElement.addEventListener('wheel', e => {
     e.preventDefault();
     const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
     const unit = e.deltaMode === 1 ? 3 : 1;                         // 줄 단위 휠 보정
-    if (wheelView === null) { wheelView = idx; track.classList.add('scrolling'); }
-    wheelView = Math.max(0, Math.min(items.length - 1, wheelView + d * unit / 140));
-    idx = Math.round(wheelView);
-    render();
+    if (wheelView === null) { wheelView = idx; wheelTarget = idx; track.classList.add('scrolling'); }
+    wheelTarget = Math.max(0, Math.min(items.length - 1, wheelTarget + d * unit / 150));
     clearTimeout(wheelTimer);
-    wheelTimer = setTimeout(() => { wheelView = null; track.classList.remove('scrolling'); render(); }, 160);
+    wheelTimer = setTimeout(() => { wheelTimer = 0; wheelTarget = Math.round(wheelTarget); }, 140);   // 멈추면 가까운 카드로
+    if (!wheelRaf) wheelRaf = requestAnimationFrame(wheelAnim);
   }, { passive: false });
   next.addEventListener('click', () => { if (idx < items.length - 1) { idx++; render(); } });
 
@@ -2148,18 +2158,28 @@ function getDeck(){
   });
   info.addEventListener('click', () => info.hidden = true);
   prev.addEventListener('click', () => { if (idx > 0) { idx--; render(); } });
-  // 마우스 휠 / 터치패드 옆 스크롤: 카드가 손가락을 따라 매끈하게 움직이고, 멈추면 가까운 카드에 착 붙음
-  let wheelView = null, wheelTimer = 0;
+  // 마우스 휠 / 터치패드 옆 스크롤: 목표 위치를 향해 매 프레임 부드럽게 따라가고(관성), 멈추면 가까운 카드로 스르르 붙음
+  let wheelView = null, wheelTarget = 0, wheelTimer = 0, wheelRaf = 0;
+  function wheelAnim(){
+    wheelView += (wheelTarget - wheelView) * 0.16;                  // 따라가는 정도 (작을수록 더 부드럽게)
+    if (Math.abs(wheelTarget - wheelView) < 0.002) wheelView = wheelTarget;
+    const n = Math.round(wheelView);
+    if (n !== idx) idx = n;
+    render();
+    if (wheelView === wheelTarget && wheelTarget === Math.round(wheelTarget) && !wheelTimer) {
+      wheelView = null; wheelRaf = 0; track.classList.remove('scrolling'); render(); return;
+    }
+    wheelRaf = requestAnimationFrame(wheelAnim);
+  }
   track.parentElement.addEventListener('wheel', e => {
     e.preventDefault();
     const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
     const unit = e.deltaMode === 1 ? 3 : 1;                         // 줄 단위 휠 보정
-    if (wheelView === null) { wheelView = idx; track.classList.add('scrolling'); }
-    wheelView = Math.max(0, Math.min(items.length - 1, wheelView + d * unit / 140));
-    idx = Math.round(wheelView);
-    render();
+    if (wheelView === null) { wheelView = idx; wheelTarget = idx; track.classList.add('scrolling'); }
+    wheelTarget = Math.max(0, Math.min(items.length - 1, wheelTarget + d * unit / 150));
     clearTimeout(wheelTimer);
-    wheelTimer = setTimeout(() => { wheelView = null; track.classList.remove('scrolling'); render(); }, 160);
+    wheelTimer = setTimeout(() => { wheelTimer = 0; wheelTarget = Math.round(wheelTarget); }, 140);   // 멈추면 가까운 카드로
+    if (!wheelRaf) wheelRaf = requestAnimationFrame(wheelAnim);
   }, { passive: false });
   next.addEventListener('click', () => { if (idx < items.length - 1) { idx++; render(); } });
   document.getElementById('btn-team').addEventListener('click', () => {
