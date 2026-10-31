@@ -154,8 +154,30 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
 .battle-screen{position:absolute;inset:0;z-index:4;background:var(--sky)}
 .field{position:absolute;inset:0}
 .field canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-.stage-tag{position:absolute;left:2cqw;top:1.5cqw;font-family:var(--display);font-size:3cqw;padding:.3cqw 1.6cqw;
+.stage-btn{position:absolute;left:2cqw;top:1.5cqw;z-index:3;display:flex;align-items:center;gap:1cqw;padding:0;border:none;background:none;cursor:pointer}
+.pause-ic{position:relative;width:4.4cqw;height:4.4cqw;border-radius:50%;background:linear-gradient(var(--btn-hi),var(--btn) 55%,var(--btn-lo));border:.4cqw solid var(--ink)}
+.pause-ic::before,.pause-ic::after{content:"";position:absolute;top:25%;width:16%;height:50%;background:var(--ink);border-radius:.3cqw}
+.pause-ic::before{left:28%}.pause-ic::after{right:28%}
+.stage-btn:focus-visible{outline:.5cqw solid var(--cream);outline-offset:.3cqw;border-radius:3cqw}
+.stage-tag{font-family:var(--display);font-size:3cqw;padding:.3cqw 1.6cqw;color:var(--cream);
   background:var(--wood);border:.45cqw solid var(--ink);border-radius:3cqw}
+/* 전투 옵션 창 */
+.opt{position:absolute;inset:0;z-index:7;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45)}
+.opt-box{position:relative;width:44cqw;padding:2cqw 2.6cqw 2.4cqw;display:flex;flex-direction:column;gap:1.6cqw;
+  background:var(--cream);border:.6cqw solid var(--ink);border-radius:2cqw;box-shadow:0 1cqw 0 var(--ink)}
+.opt-title{margin:-2cqw -2.6cqw .4cqw;padding:1cqw 0;text-align:center;font-family:var(--display);font-size:3.6cqw;color:var(--cream);
+  background:linear-gradient(var(--wood-hi),var(--wood-dark));border-bottom:.5cqw solid var(--ink);border-radius:1.4cqw 1.4cqw 0 0;-webkit-text-stroke:.35cqw var(--ink);paint-order:stroke fill}
+.opt-x{position:absolute;right:-2.4cqw;top:-2.4cqw;width:7cqw;height:7cqw;border-radius:50%;cursor:pointer;font-family:var(--display);font-size:4cqw;line-height:1;color:var(--cream);
+  background:radial-gradient(circle at 40% 35%,var(--btn-hi),var(--btn) 55%,var(--btn-lo));border:.5cqw solid var(--ink);box-shadow:0 .5cqw 0 var(--ink);-webkit-text-stroke:.35cqw var(--ink);paint-order:stroke fill}
+.opt-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:1.2cqw 1.6cqw}
+.opt-help{grid-row:1/3;font-size:2.8cqw;padding:1cqw 0 1.2cqw}
+.opt-lbl{font-family:var(--display);font-size:2.6cqw;text-align:right}
+.opt-tog{width:6cqw;height:5cqw;padding:0;cursor:pointer;font-size:2.6cqw;background:linear-gradient(var(--btn-hi),var(--btn) 55%,var(--btn-lo));border:.4cqw solid var(--ink);border-radius:1cqw;color:var(--ink)}
+.opt-tog[aria-pressed="false"]{filter:grayscale(1) brightness(.8)}
+.opt-tog svg{width:70%;height:70%}
+.opt-exit{font-size:3.4cqw;padding:1cqw 0 1.2cqw}
+.opt-helptext{margin:0;font-size:1.9cqw;line-height:1.5;background:#fff;border:.35cqw solid var(--ink);border-radius:1cqw;padding:1cqw 1.4cqw}
+.opt-x:focus-visible,.opt-tog:focus-visible,.opt-box .btn:focus-visible{outline:.5cqw solid var(--ink);outline-offset:.3cqw}
 .speed{position:absolute;right:2.5cqw;top:7.4cqw;z-index:2;display:flex;align-items:center;gap:.6cqw;cursor:pointer;
   padding:.4cqw 1.4cqw;font-family:var(--display);font-size:2.2cqw;color:var(--cream);
   background:linear-gradient(#7fb7ff,#3a7be0);border:.4cqw solid var(--ink);border-radius:3cqw;box-shadow:0 .4cqw 0 var(--ink)}
@@ -711,7 +733,7 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
   <div class="battle-screen" id="battle" hidden>
     <div class="field" id="field">
       <canvas id="cv"></canvas>
-      <div class="stage-tag outline" id="stage-tag">1-1</div>
+      <button class="stage-btn" id="stage-btn" aria-label="옵션 열기"><span class="pause-ic" aria-hidden="true"></span><span class="stage-tag outline" id="stage-tag">1-1</span></button>
     </div>
     <div class="money"><span id="money">0</span>/<span id="wallet">0</span>원</div>
     <button class="speed" id="speed" aria-pressed="false">
@@ -729,6 +751,21 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
       <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#icon-cannon"/></svg>
       <span class="c-txt outline" id="c-txt">충전 중</span>
     </button>
+    <div class="opt" id="opt" hidden>
+      <div class="opt-box" role="dialog" aria-label="옵션">
+        <div class="opt-title">옵션</div>
+        <button class="opt-x" id="opt-close" aria-label="닫기">✕</button>
+        <div class="opt-row">
+          <button class="btn opt-help" id="opt-help">HELP</button>
+          <span class="opt-lbl">BGM</span>
+          <button class="opt-tog" id="opt-bgm" aria-pressed="true" aria-label="BGM 켜기/끄기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l10-2v12" fill="none" stroke="#2a1708" stroke-width="2.5"/><circle cx="7" cy="18" r="3" fill="#2a1708"/><circle cx="17" cy="16" r="3" fill="#2a1708"/></svg></button>
+          <span class="opt-lbl">효과음</span>
+          <button class="opt-tog" id="opt-sfx" aria-pressed="true" aria-label="효과음 켜기/끄기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="#2a1708"/><path d="M16 8a5 5 0 0 1 0 8M18.5 5.5a8.5 8.5 0 0 1 0 13" fill="none" stroke="#2a1708" stroke-width="2"/></svg></button>
+        </div>
+        <p class="opt-helptext" id="opt-helptext" hidden>아래 캐릭터 칸을 눌러 고양이를 내보내세요. 왼쪽 아래 지갑 버튼으로 머니가 차는 속도와 최대치를 올리고, 오른쪽 아래 대포는 다 차면 눌러서 쏘세요. 상대 성을 먼저 부수면 승리!</p>
+        <button class="btn opt-exit" id="opt-exit">전투 이탈</button>
+      </div>
+    </div>
     <div class="result" id="result" hidden>
       <h2 id="result-text">승리!</h2>
       <div class="rewards" id="rewards"></div>
@@ -3539,6 +3576,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
   function loop(now){
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
     if (S.guest) { guestFrame(now); draw(); hud(); if (!battle.hidden) raf = requestAnimationFrame(loop); return; }
+    if (S.paused) { draw(); hud(); if (!battle.hidden) raf = requestAnimationFrame(loop); return; }   // 옵션 창: 일시정지
     for (let i = 1; i < gameSpeed; i++) update(dt);   // 배속만큼 한 프레임에 여러 번 진행
     const eh = S.enemyBase.hp, chp = S.catBase.hp;
     update(dt);
@@ -3547,6 +3585,28 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     if (S.pvp && S.host && now - (S.lastSend || 0) > 120) { S.lastSend = now; pvpSend({ t: 's', d: snapshot() }); }
     if (!battle.hidden) raf = requestAnimationFrame(loop);
   }
+
+  // ---------- 전투 옵션 창 (스테이지 이름 누르면 열림) ----------
+  const optEl = document.getElementById('opt');
+  function closeOpt(){ optEl.hidden = true; if (S) S.paused = false; }
+  document.getElementById('stage-btn').addEventListener('click', () => {
+    if (!S || S.over) return;
+    if (!S.pvp) S.paused = true;                      // PvP 는 상대가 있어서 멈추지 않음
+    document.getElementById('opt-helptext').hidden = true;
+    optEl.hidden = false;
+  });
+  document.getElementById('opt-close').addEventListener('click', closeOpt);
+  document.getElementById('opt-help').addEventListener('click', () => { const h = document.getElementById('opt-helptext'); h.hidden = !h.hidden; });
+  ['opt-bgm', 'opt-sfx'].forEach(id => document.getElementById(id).addEventListener('click', e => {
+    const b = e.currentTarget; b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
+  }));
+  document.getElementById('opt-exit').addEventListener('click', () => {      // 전투 이탈: 보상 없이 나가기
+    optEl.hidden = true;
+    const wasPvp = S && S.pvp;
+    battle.hidden = true; cancelAnimationFrame(raf);
+    if (wasPvp) { leaveRoom(); document.getElementById('modes').hidden = false; }
+    S = null;
+  });
 
   // ===================== PvP (방장이 전투를 계산하고, 상대에게 화면 정보를 보냄) =====================
   let PV = null;                       // { ch, role, other }
