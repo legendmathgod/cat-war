@@ -421,8 +421,6 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
 .lu-q{width:100%;height:9cqw;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:5cqw;color:#c58bff;
   background:radial-gradient(circle,#3a2a5a,#1a1030);border-radius:.6cqw;-webkit-text-stroke:.3cqw var(--ink);paint-order:stroke fill}
 .lu-empty{font-size:1.8cqw;color:#7d7787}
-.lu-hero{flex:none;border:.35cqw solid var(--ink);border-radius:1cqw;overflow:hidden;line-height:0}
-.lu-hero svg{width:100%;height:auto;display:block}
 .rare-screen{position:absolute;inset:0;z-index:4;overflow:hidden;background:radial-gradient(ellipse at 50% 50%,#8a4fc4,#3f1d6b 65%,#1f0e38)}
 .rare-screen .topbar,.rare-screen .back{z-index:3}
 .r-tabs{position:absolute;left:2cqw;right:2cqw;top:8.4cqw;display:flex;gap:1cqw;z-index:3;overflow-x:auto;padding:.4cqw .4cqw 1cqw}
@@ -2788,10 +2786,6 @@ const RARE_SERIES = [
   { id:'ultra', name:'울트라 한일고양이 축제', c1:'#5a1f8a', c2:'#e8468a', sub:'모든 레어 냥코가 한 곳에!', pool:[] },
 ];
 RARE_SERIES[0].pool = UNITS.filter(u => u.gacha === 'rare').map(u => u.id);
-// 한일 콜라보 이벤트: 레어·슈퍼레어는 울트라 한일고양이 축제와 같고, 기존 울트라슈퍼레어·레전드레어는 안 나옴.
-// 콜라보 전용 울트라슈퍼레어·레전드레어는 gacha: 'collab' 으로 추가하면 여기에만 나옴.
-RARE_SERIES.push({ id:'hanil-collab', name:'한일 콜라보 이벤트', c1:'#9d8ad8', c2:'#f4eeff', sub:'콜라보 한정 캐릭터 등장!', collab: true,
-  pool: UNITS.filter(u => (u.gacha === 'rare' && (u.rarity === 'rare' || u.rarity === 'super')) || u.gacha === 'collab').map(u => u.id) });
 // 플래티넘 뽑기: 플래티넘 티켓으로만, 울트라슈퍼레어만 100%
 RARE_SERIES.push({ id:'platinum', name:'플래티넘 뽑기', c1:'#5c6b7a', c2:'#dfe7ee', sub:'울트라슈퍼레어 확정!', platinum: true,
   pool: UNITS.filter(u => u.gacha === 'rare' && u.rarity === 'uber').map(u => u.id) });
@@ -2976,27 +2970,13 @@ const GACHA = (function(){
       : RARE_RATES.map(t => '<td>' + rr[t.rarity] + '%</td>').join('');
     if (sr.platinum) document.getElementById('r-caption').textContent = '플래티넘 티켓으로만 뽑을 수 있어요. 울트라슈퍼레어 ' + sr.pool.length + '종 중 하나가 무조건 나와요!';
   }
-  // 콜라보 이벤트 목록 맨 위 그림 (오리지널 일러스트: 하얀 천사 날개 + 반짝이)
-  const COLLAB_HERO = '<div class="lu-hero"><svg viewBox="0 0 600 170" preserveAspectRatio="xMidYMid meet" aria-hidden="true">' +
-    '<defs><linearGradient id="luh-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#efe8ff"/><stop offset=".55" stop-color="#fffaf2"/><stop offset="1" stop-color="#dcd2f5"/></linearGradient></defs>' +
-    '<rect width="600" height="170" fill="url(#luh-bg)"/>' +
-    '<g fill="#fff" stroke="#b8a9dc" stroke-width="3" stroke-linejoin="round">' +
-      '<path d="M300 92 Q236 30 150 34 Q186 52 176 66 Q214 66 214 84 Q250 84 252 104 Q282 100 300 112 Z"/>' +
-      '<path d="M300 92 Q364 30 450 34 Q414 52 424 66 Q386 66 386 84 Q350 84 348 104 Q318 100 300 112 Z"/>' +
-      '<path d="M300 104 Q250 72 200 86 Q232 96 236 110 Q268 106 300 120 Z"/><path d="M300 104 Q350 72 400 86 Q368 96 364 110 Q332 106 300 120 Z"/>' +
-    '</g>' +
-    '<circle cx="300" cy="106" r="12" fill="#ffe9a8" stroke="#b8a9dc" stroke-width="3"/>' +
-    '<g fill="#c9b8ff">' + [[70,40,9],[120,120,6],[520,50,8],[480,130,6],[560,100,5],[40,110,5],[300,30,7]].map(([x, y, r]) =>
-      '<path d="M' + x + ' ' + (y - r * 2) + ' Q' + x + ' ' + y + ' ' + (x + r * 2) + ' ' + y + ' Q' + x + ' ' + y + ' ' + x + ' ' + (y + r * 2) + ' Q' + x + ' ' + y + ' ' + (x - r * 2) + ' ' + y + ' Q' + x + ' ' + y + ' ' + x + ' ' + (y - r * 2) + ' Z"/>').join('') + '</g>' +
-    '<text x="300" y="158" text-anchor="middle" font-family="Black Han Sans, sans-serif" font-size="30" fill="#6a55b8" stroke="#fff" stroke-width="6" paint-order="stroke">COLLABORATION EVENT</text>' +
-    '</svg></div>';
   // 뽑기 캐릭터 목록: 등급별 사진 + 이름 (레전드레어는 사진 대신 ???)
   function openLineup(sr){
     const list = document.getElementById('lu-list');
     const units = sr.pool.map(id => UNITS.find(u => u.id === id)).filter(Boolean);
     document.getElementById('lu-title').textContent = sr.name;
     const rr = rareRatesOf(units);
-    list.innerHTML = (sr.collab ? COLLAB_HERO : '') + RARE_RATES.map(r => {
+    list.innerHTML = RARE_RATES.map(r => {
       const us = units.filter(u => u.rarity === r.rarity);
       const color = { rare:'#ffd23f', super:'#ff9a3d', uber:'#ff5f7e', legend:'#c58bff' }[r.rarity];
       return '<section class="lu-sec"><h3 style="color:' + color + '">' + r.name + '<span class="rate">' + rr[r.rarity] + '%</span></h3>' +
