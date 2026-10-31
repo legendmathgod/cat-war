@@ -1877,6 +1877,18 @@ function levelCost(u){
   });
 
   prev.addEventListener('click', () => { if (idx > 0) { idx--; render(); } });
+  // 마우스 휠 / 터치패드 옆 스크롤로 카드 넘기기
+  let wheelAcc = 0, wheelLock = 0;
+  track.parentElement.addEventListener('wheel', e => {
+    e.preventDefault();
+    const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    wheelAcc += d;
+    const now = performance.now();
+    if (now < wheelLock || Math.abs(wheelAcc) < 40) return;
+    const step = wheelAcc > 0 ? 1 : -1; wheelAcc = 0; wheelLock = now + 140;
+    const n = Math.max(0, Math.min(items.length - 1, idx + step));
+    if (n !== idx) { idx = n; render(); }
+  }, { passive: false });
   next.addEventListener('click', () => { if (idx < items.length - 1) { idx++; render(); } });
 
   const power = document.getElementById('power');
@@ -2134,6 +2146,18 @@ function getDeck(){
   });
   info.addEventListener('click', () => info.hidden = true);
   prev.addEventListener('click', () => { if (idx > 0) { idx--; render(); } });
+  // 마우스 휠 / 터치패드 옆 스크롤로 카드 넘기기
+  let wheelAcc = 0, wheelLock = 0;
+  track.parentElement.addEventListener('wheel', e => {
+    e.preventDefault();
+    const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    wheelAcc += d;
+    const now = performance.now();
+    if (now < wheelLock || Math.abs(wheelAcc) < 40) return;
+    const step = wheelAcc > 0 ? 1 : -1; wheelAcc = 0; wheelLock = now + 140;
+    const n = Math.max(0, Math.min(items.length - 1, idx + step));
+    if (n !== idx) { idx = n; render(); }
+  }, { passive: false });
   next.addEventListener('click', () => { if (idx < items.length - 1) { idx++; render(); } });
   document.getElementById('btn-team').addEventListener('click', () => {
     mode = 'basic'; idx = CATEGORIES.length; build(); renderSlots(); scr.hidden = false;
