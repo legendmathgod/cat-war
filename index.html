@@ -1763,7 +1763,7 @@ const CATEGORIES = [
 // 패시브 만렙: 모두 20레벨 (플러스 최대 +10)
 function maxLv(u){ return u.passive ? 20 : u.maxLevel; }
 function pLv(id){ const u = UNITS.find(x => x.id === id); return u ? totalLevel(u) : 1; }   // 패시브 레벨 + 플러스
-const RARITY_COST = { basic:1, ex:1.5, rare:1, super:1.5, uber:2, legend:3 };
+const RARITY_COST = { basic:1, ex:1.5, rare:2, super:3, uber:5, legend:8 };
 function levelCost(u){
   if (u.passive) return 400 * u.level;
   return Math.round((200 + 100 * (u.level - 1)) * (RARITY_COST[u.rarity] || 1));
