@@ -210,6 +210,7 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
 .pill svg{width:2.6cqw;height:2.6cqw}
 .pill.ticket b{color:var(--green)}
 .pill.rare b{color:var(--btn)}
+.pill.plat b{color:#dfe7ee}
 .stages{position:absolute;inset:0;z-index:3;background:var(--wood-dark)}
 .ch-tabs{display:flex;align-items:center;gap:.8cqw;margin-left:2cqw}
 .ch-world{font-family:var(--display);font-size:2.2cqw;color:var(--btn);-webkit-text-stroke:.3cqw var(--ink);paint-order:stroke fill;margin-right:.4cqw}
@@ -576,6 +577,7 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
         <span class="pill" title="돈"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#icon-coin"/></svg><b id="p-money">0</b></span>
         <span class="pill ticket" title="냥코 티켓">냥코 티켓 <b id="p-ticket">0</b></span>
         <span class="pill ticket rare" title="레어 티켓">레어 티켓 <b id="p-rare">0</b></span>
+        <span class="pill ticket plat" title="플래티넘 티켓">플래티넘 <b id="p-plat">0</b></span>
       </div>
     </div>
 
@@ -789,7 +791,7 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
       <h1 class="outline">레어 뽑기</h1>
       <table class="r-rates" aria-label="등급별 확률">
         <tr><th>레어</th><th>슈퍼레어</th><th>울트라슈퍼레어</th><th>레전드레어</th></tr>
-        <tr><td>65%</td><td>25%</td><td>9%</td><td>1%</td></tr>
+        <tr id="r-rate-row"><td>65%</td><td>25%</td><td>9%</td><td>1%</td></tr>
       </table>
     </div>
     <div class="r-tabs" id="r-tabs"></div>
@@ -803,11 +805,11 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
     </div>
     <div class="r-caption" id="r-caption"></div>
     <div class="g-buttons">
-      <button class="g-roll" id="r-roll1"><span class="t"><em>1회</em> 뽑기!!</span><span class="n"><svg class="ticket-ic" viewBox="0 0 50 30" aria-hidden="true"><use href="#ticket-gold"/></svg>1</span></button>
+      <button class="g-roll" id="r-roll1"><span class="t"><em>1회</em> 뽑기!!</span><span class="n"><svg class="ticket-ic" viewBox="0 0 50 30" aria-hidden="true"><use id="r-roll1-ic" href="#ticket-gold"/></svg>1</span></button>
       <button class="g-roll dark" id="r-roll11"><span class="t"><em>10+1회</em> 뽑기!!</span><span class="n"><svg class="ticket-ic" viewBox="0 0 60 60" aria-hidden="true"><use href="#icon-can"/></svg>1500</span></button>
     </div>
     <div class="g-bottom">
-      <svg class="ticket-ic" viewBox="0 0 50 30" aria-hidden="true"><use href="#ticket-gold"/></svg><b id="r-tickets">0</b>
+      <svg class="ticket-ic" viewBox="0 0 50 30" aria-hidden="true"><use id="r-tickets-ic" href="#ticket-gold"/></svg><b id="r-tickets">0</b>
       <span class="sep"></span>
       <span class="lbl">통조림</span><svg class="ticket-ic" viewBox="0 0 60 60" aria-hidden="true"><use href="#icon-can"/></svg><b id="r-cans">0</b>
     </div>
@@ -1373,6 +1375,12 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
       <path d="M4 6 H46 V12 A4 4 0 0 0 46 18 V24 H4 V18 A4 4 0 0 0 4 12 Z" fill="#ffcc1f"/>
       <path d="M32 7 V23" stroke-dasharray="2 2" stroke-width="1.5"/>
       <circle cx="18" cy="15" r="4" fill="#fff"/>
+    </g>
+    <g id="ticket-plat" stroke="#2a1708" stroke-width="2.5" stroke-linejoin="round">
+      <path d="M4 6 H46 V12 A4 4 0 0 0 46 18 V24 H4 V18 A4 4 0 0 0 4 12 Z" fill="#e8f0f8"/>
+      <path d="M8 9 L20 9 L10 21 Z" fill="#ffffff" stroke="none" opacity=".8"/>
+      <path d="M32 7 V23" stroke-dasharray="2 2" stroke-width="1.5"/>
+      <path d="M18 9 L21 14 L27 15 L22 19 L23 25 L18 22 L13 25 L14 19 L9 15 L15 14 Z" fill="#9fb3c8" stroke-width="1.5"/>
     </g>
     <g id="ticket" stroke="#2a1708" stroke-width="2.5" stroke-linejoin="round">
       <path d="M4 6 H46 V12 A4 4 0 0 0 46 18 V24 H4 V18 A4 4 0 0 0 4 12 Z" fill="#c9d3dc"/>
@@ -2261,6 +2269,9 @@ const RARE_SERIES = [
   { id:'ultra', name:'울트라 한일고양이 축제', c1:'#5a1f8a', c2:'#e8468a', sub:'모든 레어 냥코가 한 곳에!', pool:[] },
 ];
 RARE_SERIES[0].pool = UNITS.filter(u => u.gacha === 'rare').map(u => u.id);
+// 플래티넘 뽑기: 플래티넘 티켓으로만, 울트라슈퍼레어만 100%
+RARE_SERIES.push({ id:'platinum', name:'플래티넘 뽑기', c1:'#5c6b7a', c2:'#dfe7ee', sub:'울트라슈퍼레어 확정!', platinum: true,
+  pool: UNITS.filter(u => u.gacha === 'rare' && u.rarity === 'uber').map(u => u.id) });
 
 // 등급별 확률 (%)
 const RARE_RATES = [
@@ -2422,10 +2433,16 @@ const GACHA = (function(){
       : '이 시리즈의 레어 캐릭터는 곧 추가돼요.';
     document.getElementById('r-prev').disabled = cur === 0;
     document.getElementById('r-next').disabled = cur === RARE_SERIES.length - 1;
-    document.getElementById('r-tickets').textContent = ticketText('rareTicket');
+    const kind = sr.platinum ? 'platinumTicket' : 'rareTicket', ic = sr.platinum ? '#ticket-plat' : '#ticket-gold';
+    document.getElementById('r-tickets').textContent = ticketText(kind);
+    document.getElementById('r-tickets-ic').setAttribute('href', ic);
+    document.getElementById('r-roll1-ic').setAttribute('href', ic);
     document.getElementById('r-cans').textContent = ticketText('cans');
-    document.getElementById('r-roll1').disabled = !hasTickets('rareTicket', 1);
+    document.getElementById('r-roll1').disabled = !hasTickets(kind, 1);
+    document.getElementById('r-roll11').hidden = !!sr.platinum;          // 플래티넘은 1회 뽑기만 (플래티넘 티켓 전용)
     document.getElementById('r-roll11').disabled = !hasTickets('cans', 1500);
+    document.getElementById('r-rate-row').innerHTML = sr.platinum ? '<td>0%</td><td>0%</td><td>100%</td><td>0%</td>' : '<td>65%</td><td>25%</td><td>9%</td><td>1%</td>';
+    if (sr.platinum) document.getElementById('r-caption').textContent = '플래티넘 티켓으로만 뽑을 수 있어요. 울트라슈퍼레어 ' + sr.pool.length + '종 중 하나가 무조건 나와요!';
   }
   function roll(n, kind, cost){
     const sr = RARE_SERIES[cur];
@@ -2434,15 +2451,15 @@ const GACHA = (function(){
     if (!hasTickets(kind, cost)) return;
     useTickets(kind, cost);
     const results = [];
-    for (let i = 0; i < n; i++) results.push(GACHA.grant(rareDraw(pool)));
+    for (let i = 0; i < n; i++) results.push(GACHA.grant(sr.platinum ? pool[Math.floor(Math.random() * pool.length)] : rareDraw(pool)));
     savePlayer(); renderPlayer(); render();
-    GACHA.play(results, { title: '레어 뽑기', capsule: 'gold-capsule', rare: true, onClose: render });
+    GACHA.play(results, { title: sr.platinum ? '플래티넘 뽑기' : '레어 뽑기', capsule: 'gold-capsule', rare: true, onClose: render });
   }
   document.getElementById('btn-rare').addEventListener('click', () => { render(); scr.hidden = false; });
   document.getElementById('r-back').addEventListener('click', () => { scr.hidden = true; });
   document.getElementById('r-prev').addEventListener('click', () => { if (cur > 0) { cur--; render(); } });
   document.getElementById('r-next').addEventListener('click', () => { if (cur < RARE_SERIES.length - 1) { cur++; render(); } });
-  document.getElementById('r-roll1').addEventListener('click', () => roll(1, 'rareTicket', 1));
+  document.getElementById('r-roll1').addEventListener('click', () => roll(1, RARE_SERIES[cur].platinum ? 'platinumTicket' : 'rareTicket', 1));
   document.getElementById('r-roll11').addEventListener('click', () => roll(11, 'cans', 1500));
 })();
 
@@ -2487,7 +2504,7 @@ let DEV_ON = false;
 try { DEV_ON = localStorage.getItem('catwar-dev-on') === '1'; } catch (e) {}
 const IS_DEV_LINK = DEV_ON;
 const SAVE_KEY = IS_DEV_LINK ? 'catwar-player-dev' : 'catwar-player';
-const PLAYER = { money: 0, nyankoTicket: 0, rareTicket: 0, cans: 0, cleared: [], owned: ['cat'] };   // 처음 홈에 들어가면 환영 선물로 레어 티켓 3장 / cans: 통조림 (이벤트 보상)
+const PLAYER = { money: 0, nyankoTicket: 0, rareTicket: 0, platinumTicket: 0, cans: 0, cleared: [], owned: ['cat'] };   // 처음 홈에 들어가면 환영 선물로 레어 티켓 3장 / cans: 통조림 (이벤트 보상)
 try { Object.assign(PLAYER, JSON.parse(localStorage.getItem(SAVE_KEY) || '{}')); } catch (e) {}
 // 개발자 모드: 지금 있는 모든 캐릭터 지급 (앞으로 UNITS 에 추가되는 캐릭터도 열 때마다 자동 지급)
 if (IS_DEV_LINK) UNITS.forEach(u => { if (!u.passive && u.gacha !== 'reward' && !PLAYER.owned.includes(u.id)) PLAYER.owned.push(u.id); });
@@ -2502,7 +2519,7 @@ function applyUnitsFromPlayer(){
 applyUnitsFromPlayer();
 function replacePlayer(data){
   Object.keys(PLAYER).forEach(k => delete PLAYER[k]);
-  Object.assign(PLAYER, { money: 0, nyankoTicket: 0, rareTicket: 0, cans: 0, cleared: [], owned: ['cat'] }, data || {});
+  Object.assign(PLAYER, { money: 0, nyankoTicket: 0, rareTicket: 0, platinumTicket: 0, cans: 0, cleared: [], owned: ['cat'] }, data || {});
   applyUnitsFromPlayer();
 }
 function isOwned(u){ return u.passive || !u.gacha || (PLAYER.owned || []).includes(u.id); }
@@ -2526,6 +2543,7 @@ function renderPlayer(){
   document.getElementById('p-money').textContent = moneyText();
   document.getElementById('p-ticket').textContent = ticketText('nyankoTicket');
   document.getElementById('p-rare').textContent = ticketText('rareTicket');
+  document.getElementById('p-plat').textContent = ticketText('platinumTicket');
   document.getElementById('p-cans').textContent = ticketText('cans');
   document.getElementById('dev-badge').hidden = !DEV;
 }
