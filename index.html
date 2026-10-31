@@ -1445,7 +1445,7 @@ const UNITS = [
   {
     id: 'cannon-range', name: '대포 사정거리', fullName: '냥코 대포 사정거리', rarity: 'basic', passive: true,
     maxLevel: 20, maxPlus: 10, art: 'p-range', level: 1,
-    fixedMax: 10, maxPlus: 0, noGacha: true,   // 2장을 깨도 10레벨 고정, 뽑기에 안 나옴
+    maxPlus: 0, noGacha: true,   // 뽑기에 안 나옴
     desc: '냥코 대포의 사정거리가 늘어납니다',
   },
   {
@@ -1524,12 +1524,8 @@ const CATEGORIES = [
 // ---------- 파워업 비용 (돈) ----------
 // 캐릭터: (200 + 100 × (현재레벨 - 1)) × 등급 배율  → Lv1→2: 200, Lv9→10: 1,000, Lv29→30: 3,000
 // 패시브: 400 × 현재레벨 (최대 20레벨, 플러스 최대 +10) → Lv1→2: 400, Lv9→10: 3,600, Lv19→20: 7,600
-// 패시브 레벨 제한: 기본 Lv.10(+10), 세계편 2장(기숙사)을 다 깨면 Lv.20(+10). 대포 사정거리는 10 고정
-function maxLv(u){
-  if (!u.passive) return u.maxLevel;
-  if (u.fixedMax) return u.fixedMax;
-  return (typeof chapterCleared === 'function' && chapterCleared(2)) ? 20 : 10;
-}
+// 패시브 만렙: 모두 20레벨 (플러스 최대 +10)
+function maxLv(u){ return u.passive ? 20 : u.maxLevel; }
 function pLv(id){ const u = UNITS.find(x => x.id === id); return u ? totalLevel(u) : 1; }   // 패시브 레벨 + 플러스
 const RARITY_COST = { basic:1, ex:1.5, rare:1, super:1.5, uber:2, legend:3 };
 function levelCost(u){
@@ -2513,8 +2509,8 @@ const CANNON = { sweepTime: 0.6 };
 function cannonDamage(){ return 1600 + 50 * (pLv('cannon-atk') - 1) + tfx('core'); }
 // 충전 시간 = 50초 - 충전 레벨당 1.32초 - 터보머신 100%당 3.33초 + 공격력 레벨당 1.67초, 31.67초 ~ 50초 사이
 function cannonCharge(){ return Math.min(50, Math.max(31.67, 50 - 1.32 * (pLv('cannon-charge') - 1) - tfx('turbo') + 1.67 * (pLv('cannon-atk') - 1))); }
-// 사정거리: 1레벨 600 → 10레벨 1400 (적 성까지 닿음)
-function cannonReach(){ return 600 + (800 / 9) * (Math.min(10, pLv('cannon-range')) - 1); }
+// 사정거리: 1레벨 600 → 20레벨 1400 (적 성까지 닿음)
+function cannonReach(){ return 600 + (800 / 19) * (Math.min(20, pLv('cannon-range')) - 1); }   // 1레벨 600 → 20레벨 1400
 // 성 체력: 1레벨 1000, 2~5레벨 +1000, 6~7레벨 +2000, 8레벨부터 +3000 (원작 표) + 보물 벽
 function castleHp(){
   const lv = pLv('castle'); let hp = 1000;
