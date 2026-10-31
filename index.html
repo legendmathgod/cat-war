@@ -112,6 +112,7 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
   background:var(--cream);border:.4cqw solid var(--ink);border-left:none;border-radius:0 3cqw 3cqw 0}
 .carousel{position:absolute;left:0;right:0;top:13cqw;height:22cqw;display:flex;align-items:center;justify-content:center}
 .c-track{position:relative;width:100%;height:100%}
+.carousel{touch-action:none}
 .card{position:absolute;top:50%;left:50%;width:18cqw;height:17cqw;cursor:pointer;padding:0;
   border:.5cqw solid var(--ink);border-radius:1cqw;background:var(--cream);box-shadow:0 .5cqw 0 var(--ink);
   transform:translate(-50%,-50%) translateX(calc(var(--off) * 22cqw)) scale(.82);transition:transform .25s,opacity .25s;opacity:.85;overflow:hidden}
@@ -1886,7 +1887,7 @@ function levelCost(u){
     const n = Math.round(wheelView);
     if (n !== idx) idx = n;
     render();
-    if (wheelView === wheelTarget && wheelTarget === Math.round(wheelTarget) && !wheelTimer) {
+    if (wheelView === wheelTarget && wheelTarget === Math.round(wheelTarget) && !wheelTimer && !(swipe && swipe.on)) {
       wheelView = null; wheelRaf = 0; track.classList.remove('scrolling'); render(); return;
     }
     wheelRaf = requestAnimationFrame(wheelAnim);
@@ -1901,6 +1902,43 @@ function levelCost(u){
     wheelTimer = setTimeout(() => { wheelTimer = 0; wheelTarget = Math.round(wheelTarget); }, 140);   // 멈추면 가까운 카드로
     if (!wheelRaf) wheelRaf = requestAnimationFrame(wheelAnim);
   }, { passive: false });
+  // 화면 터치로 옆으로 밀기: 손가락을 따라 카드가 움직이고, 놓으면 가까운 카드로 스르르 붙음 (빠르게 튕기면 조금 더 감)
+  let swipe = null, swipeJust = false;
+  const swipeArea = track.parentElement;
+  const swipePer = () => track.closest('.stage').clientWidth * 0.22;      // 카드 한 칸 간격(px)
+  swipeArea.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse') return;
+    swipe = { id: e.pointerId, x: e.clientX, y: e.clientY, on: false, start: 0, lastX: e.clientX, lastT: performance.now(), v: 0 };
+  });
+  window.addEventListener('pointermove', e => {
+    if (!swipe || e.pointerId !== swipe.id) return;
+    const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y;
+    if (!swipe.on) {
+      if (Math.hypot(dx, dy) < 8) return;
+      if (Math.abs(dx) <= Math.abs(dy)) { swipe = null; return; }   // 세로로 움직이면 밀기 아님
+      swipe.on = true;
+      if (wheelView === null) { wheelView = idx; track.classList.add('scrolling'); }
+      swipe.start = wheelView;
+    }
+    const now = performance.now(), dt = Math.max(1, now - swipe.lastT);
+    swipe.v = swipe.v * 0.6 + ((e.clientX - swipe.lastX) / dt) * 0.4;   // 손가락 속도(px/ms)
+    swipe.lastX = e.clientX; swipe.lastT = now;
+    wheelView = wheelTarget = Math.max(0, Math.min(items.length - 1, swipe.start - dx / swipePer()));
+    idx = Math.round(wheelView); render();
+  });
+  function swipeEnd(e){
+    if (!swipe || e.pointerId !== swipe.id) return;
+    const s = swipe; swipe = null;
+    if (!s.on) return;
+    swipeJust = true; setTimeout(() => swipeJust = false, 0);
+    const v = performance.now() - s.lastT > 100 ? 0 : s.v;              // 멈췄다 떼면 튕김 없음
+    const fling = Math.max(-2, Math.min(2, -v * 150 / swipePer()));
+    wheelTarget = Math.max(0, Math.min(items.length - 1, Math.round(wheelView + fling)));
+    if (!wheelRaf) wheelRaf = requestAnimationFrame(wheelAnim);
+  }
+  window.addEventListener('pointerup', swipeEnd);
+  window.addEventListener('pointercancel', swipeEnd);
+  swipeArea.addEventListener('click', e => { if (swipeJust) { e.stopPropagation(); e.preventDefault(); } }, true);   // 민 뒤에는 카드 눌림 무시
   next.addEventListener('click', () => { if (idx < items.length - 1) { idx++; render(); } });
 
   const power = document.getElementById('power');
@@ -2098,6 +2136,9 @@ function getDeck(){
     if (!press0) return;
     if (!press0.dragging) {
       if (Math.hypot(e.clientX - press0.x, e.clientY - press0.y) < 8) return;
+      if (e.pointerType !== 'mouse' && press0.from === 'card' && Math.abs(e.clientX - press0.x) > Math.abs(e.clientY - press0.y)) {
+        window.removeEventListener('pointermove', onMove); press0 = null; return;   // 터치로 옆으로 밀면 카드 넘기기 (위로 끌면 편성)
+      }
       press0.dragging = true;
       ghost = document.createElement('div');
       ghost.className = 't-ghost';
@@ -2166,7 +2207,7 @@ function getDeck(){
     const n = Math.round(wheelView);
     if (n !== idx) idx = n;
     render();
-    if (wheelView === wheelTarget && wheelTarget === Math.round(wheelTarget) && !wheelTimer) {
+    if (wheelView === wheelTarget && wheelTarget === Math.round(wheelTarget) && !wheelTimer && !(swipe && swipe.on)) {
       wheelView = null; wheelRaf = 0; track.classList.remove('scrolling'); render(); return;
     }
     wheelRaf = requestAnimationFrame(wheelAnim);
@@ -2181,6 +2222,43 @@ function getDeck(){
     wheelTimer = setTimeout(() => { wheelTimer = 0; wheelTarget = Math.round(wheelTarget); }, 140);   // 멈추면 가까운 카드로
     if (!wheelRaf) wheelRaf = requestAnimationFrame(wheelAnim);
   }, { passive: false });
+  // 화면 터치로 옆으로 밀기: 손가락을 따라 카드가 움직이고, 놓으면 가까운 카드로 스르르 붙음 (빠르게 튕기면 조금 더 감)
+  let swipe = null, swipeJust = false;
+  const swipeArea = track.parentElement;
+  const swipePer = () => track.closest('.stage').clientWidth * 0.17;      // 카드 한 칸 간격(px)
+  swipeArea.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse') return;
+    swipe = { id: e.pointerId, x: e.clientX, y: e.clientY, on: false, start: 0, lastX: e.clientX, lastT: performance.now(), v: 0 };
+  });
+  window.addEventListener('pointermove', e => {
+    if (!swipe || e.pointerId !== swipe.id) return;
+    const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y;
+    if (!swipe.on) {
+      if (Math.hypot(dx, dy) < 8) return;
+      if (Math.abs(dx) <= Math.abs(dy)) { swipe = null; return; }   // 세로로 움직이면 밀기 아님
+      swipe.on = true;
+      if (wheelView === null) { wheelView = idx; track.classList.add('scrolling'); }
+      swipe.start = wheelView;
+    }
+    const now = performance.now(), dt = Math.max(1, now - swipe.lastT);
+    swipe.v = swipe.v * 0.6 + ((e.clientX - swipe.lastX) / dt) * 0.4;   // 손가락 속도(px/ms)
+    swipe.lastX = e.clientX; swipe.lastT = now;
+    wheelView = wheelTarget = Math.max(0, Math.min(items.length - 1, swipe.start - dx / swipePer()));
+    idx = Math.round(wheelView); render();
+  });
+  function swipeEnd(e){
+    if (!swipe || e.pointerId !== swipe.id) return;
+    const s = swipe; swipe = null;
+    if (!s.on) return;
+    swipeJust = true; setTimeout(() => swipeJust = false, 0);
+    const v = performance.now() - s.lastT > 100 ? 0 : s.v;              // 멈췄다 떼면 튕김 없음
+    const fling = Math.max(-2, Math.min(2, -v * 150 / swipePer()));
+    wheelTarget = Math.max(0, Math.min(items.length - 1, Math.round(wheelView + fling)));
+    if (!wheelRaf) wheelRaf = requestAnimationFrame(wheelAnim);
+  }
+  window.addEventListener('pointerup', swipeEnd);
+  window.addEventListener('pointercancel', swipeEnd);
+  swipeArea.addEventListener('click', e => { if (swipeJust) { e.stopPropagation(); e.preventDefault(); } }, true);   // 민 뒤에는 카드 눌림 무시
   next.addEventListener('click', () => { if (idx < items.length - 1) { idx++; render(); } });
   document.getElementById('btn-team').addEventListener('click', () => {
     mode = 'basic'; idx = CATEGORIES.length; build(); renderSlots(); scr.hidden = false;
