@@ -523,6 +523,8 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
 .pv-join{display:flex;gap:1cqw;width:100%}
 .pv-join input{flex:1;min-width:0;font-family:var(--display);font-size:3cqw;text-align:center;letter-spacing:.6cqw;border:.4cqw solid var(--ink);border-radius:1.2cqw}
 .pv-join .pv-btn{width:auto;flex:1.2}
+.pv-team{background:linear-gradient(var(--green-hi),var(--green) 50%,var(--green-lo))!important}
+.team.over-lobby{z-index:8}
 .pv-note,.pv-status{margin:0;font-size:1.9cqw;text-align:center;line-height:1.4}
 .pv-code-label{font-family:var(--display);font-size:2.2cqw}
 .pv-code{font-family:var(--display);font-size:9cqw;letter-spacing:1.6cqw;color:var(--btn);line-height:1}
@@ -702,6 +704,7 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
     <div class="result" id="result" hidden>
       <h2 id="result-text">승리!</h2>
       <div class="rewards" id="rewards"></div>
+      <button class="btn" id="btn-again" hidden>다시하기</button>
       <button class="btn" id="btn-exit">기지로 돌아가기</button>
     </div>
   </div>
@@ -868,7 +871,8 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
         <input id="pv-code" inputmode="numeric" maxlength="4" placeholder="방 번호 4자리" aria-label="방 번호">
         <button class="btn pv-btn" id="pv-join">방 들어가기</button>
       </div>
-      <p class="pv-note">돈 오르는 속도·지갑·캐릭터 레벨은 각자 자기 기록대로 적용돼요. 대결은 2배속으로 진행돼요.</p>
+      <button class="btn pv-btn pv-team" id="pv-team">캐릭터 편성하기</button>
+      <p class="pv-note">돈 오르는 속도·지갑·캐릭터 레벨은 각자 자기 기록대로 적용돼요. 대결은 3배속으로 진행돼요.</p>
     </div>
     <div class="pv-box" id="pv-wait" hidden>
       <div class="pv-code-label">방 번호</div>
@@ -1960,7 +1964,7 @@ function getDeck(){
   document.getElementById('btn-team').addEventListener('click', () => {
     mode = 'basic'; idx = CATEGORIES.length; build(); renderSlots(); scr.hidden = false;
   });
-  document.getElementById('t-back').addEventListener('click', () => { scr.hidden = true; });
+  document.getElementById('t-back').addEventListener('click', () => { scr.hidden = true; scr.classList.remove('over-lobby'); });
 })();
 
 // ---------- 개발자 코드: 홈 화면 '고양이 기지' 글자를 빠르게 5번 누르면 입력창이 열림 ----------
@@ -3094,6 +3098,8 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     }
     resultText.textContent = win ? '승리!' : '패배...';
     result.classList.toggle('lose', !win);
+    document.getElementById('btn-again').hidden = true;
+    document.getElementById('btn-exit').textContent = '기지로 돌아가기';
     setTimeout(() => { result.hidden = false; }, 700);
   }
 
@@ -3109,7 +3115,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
 
   function drawBase(x, base, isCat, k, gy){
     const w = 120 * k, h = 230 * k, left = x * k - w / 2, top = gy - h;
-    ctx.lineWidth = 5 * k; ctx.strokeStyle = '#2a1708'; ctx.lineJoin = 'round';
+    ctx.lineWidth = 5 * k; ctx.strokeStyle = S.pvp ? (x > WORLD / 2 ? '#1f9a35' : '#d01f1f') : '#2a1708'; ctx.lineJoin = 'round';   // PvP: 내 성 초록, 상대 성 빨강
     const shake = base.hit ? (Math.random() - .5) * 6 * k : 0;
     ctx.save(); ctx.translate(shake, 0);
     if (isCat) {
@@ -3154,6 +3160,12 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     ctx.translate(u.x * k + pose.dx * k * u.dir, gy - bob - lift - flyY + pose.dy * k);
     ctx.rotate(pose.rot * u.dir);
     ctx.scale(pose.sx, pose.sy);
+    if (S.pvp && !u.dead) {                          // PvP: 내 캐릭터 초록, 상대 캐릭터 빨강 테두리
+      ctx.shadowColor = u.dir < 0 ? '#2fd34a' : '#ff2e2e'; ctx.shadowBlur = 10 * k + 4;
+      ctx.drawImage(img, -w / 2, -h, w, h);
+      ctx.shadowBlur = 5 * k + 2; ctx.drawImage(img, -w / 2, -h, w, h);
+      ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
+    }
     ctx.drawImage(img, -w / 2, -h, w, h);
     if (u.motion === 'snap' && u.state === 'attack' && !u.hitDone && u.hand) {      // 손끝에 보랏빛 기운이 점점 커짐
       const q = Math.min(1, u.st / u.fore), hx = -w / 2 + u.hand[0] * w, hy = -h + u.hand[1] * h;
@@ -3400,7 +3412,8 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     document.getElementById('stage-tag').textContent = 'PvP · ' + (PV.other || '상대');
     buildSlots();
     result.hidden = true; battle.hidden = false;
-    PV.prevSpeed = gameSpeed; gameSpeed = 2;                         // PvP 는 기본 2배속
+    if (PV.prevSpeed === undefined) PV.prevSpeed = gameSpeed;
+    gameSpeed = 3;                         // PvP 는 3배속
     speedBtn.hidden = true;
     resize(); last = performance.now();
     cancelAnimationFrame(raf); raf = requestAnimationFrame(loop);
@@ -3479,6 +3492,10 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
   }
   function showPvpResult(won, note){
     S.over = true;
+    if (note && PV) PV.gone = true;
+    const ag = document.getElementById('btn-again');
+    ag.hidden = false; ag.disabled = !!(PV && PV.gone); ag.textContent = '다시하기';
+    document.getElementById('btn-exit').textContent = '나가기';
     document.getElementById('rewards').innerHTML = note ? '<div>' + note + '</div>' : '';
     resultText.textContent = won ? '승리!' : '패배...';
     result.classList.toggle('lose', !won);
@@ -3528,7 +3545,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
   // 방 연결
   function leaveRoom(){
     if (PV && PV.ch) { try { AUTH.client().removeChannel(PV.ch); } catch (e) {} }
-    if (PV && PV.prevSpeed) { gameSpeed = PV.prevSpeed; }
+    if (PV && PV.prevSpeed !== undefined) { gameSpeed = PV.prevSpeed; }
     speedBtn.hidden = false;
     PV = null;
   }
@@ -3549,8 +3566,11 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
   function onMessage(m){
     if (!PV) return;
     if (PV.role === 'host') {
+      if (m.t === 'again') {                                         // 상대가 다시하기를 누름
+        PV.lo2 = m.lo || PV.lo2; PV.againOther = true; tryRestart(); return;
+      }
       if (m.t === 'join' && !PV.started) {                          // 상대가 들어옴 → 대결 시작
-        PV.started = true; PV.other = m.lo.nick;
+        PV.started = true; PV.other = m.lo.nick; PV.lo2 = m.lo;
         pvpSend({ t: 'start', nick: AUTH.nick() });
         lobbyEl.hidden = true;
         startPvpHost(m.lo);
@@ -3561,11 +3581,31 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
         PV.started = true; PV.other = m.nick; clearTimeout(PV.joinTimer);
         lobbyEl.hidden = true;
         startPvpGuest();
+      } else if (m.t === 'restart') {
+        result.hidden = true; startPvpGuest();
+      } else if (m.t === 'again') {
+        document.getElementById('rewards').innerHTML = '<div>상대가 다시하기를 원해요!</div>';
       } else if (m.t === 'full' && !PV.started) { lobbyMsg('이미 대결 중인 방이에요.'); leaveRoom(); showMenu(); }
       else if (m.t === 's') guestSnapshot(m.d);
       else if (m.t === 'end' && S && S.guest) showPvpResult(m.w === 'guest');
     }
   }
+
+  // 다시하기: 두 사람 모두 누르면 같은 방에서 다시 대결
+  function tryRestart(){
+    if (!PV || PV.role !== 'host' || !PV.againMe || !PV.againOther) return;
+    PV.againMe = PV.againOther = false;
+    pvpSend({ t: 'restart' });
+    result.hidden = true;
+    startPvpHost(PV.lo2);
+  }
+  document.getElementById('btn-again').addEventListener('click', () => {
+    if (!PV || PV.gone) return;
+    const ag = document.getElementById('btn-again');
+    ag.disabled = true; ag.textContent = '상대를 기다리는 중…';
+    if (PV.role === 'host') { PV.againMe = true; pvpSend({ t: 'again' }); tryRestart(); }
+    else pvpSend({ t: 'again', lo: myPvpLoadout() });
+  });
 
   // 로비 화면
   const lobbyEl = document.getElementById('pvp-lobby');
@@ -3574,6 +3614,11 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
   document.getElementById('mode-pvp').addEventListener('click', () => {
     document.getElementById('modes').hidden = true; lobbyEl.hidden = false; showMenu();
     lobbyMsg(AUTH.online() ? '' : 'PvP는 계정에 로그인한 상태로 GitHub 링크(legendmathgod.github.io/cat-war)에서 할 수 있어요.');
+  });
+  document.getElementById('pv-team').addEventListener('click', () => {
+    const t = document.getElementById('team');
+    t.classList.add('over-lobby');
+    document.getElementById('btn-team').click();                   // 캐릭터 편성 화면을 로비 위에 띄움
   });
   document.getElementById('pv-back').addEventListener('click', () => { leaveRoom(); lobbyEl.hidden = true; document.getElementById('modes').hidden = false; });
   document.getElementById('pv-create').addEventListener('click', () => {
@@ -3680,7 +3725,10 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     setTimeout(() => { ov.hidden = true; stagesEl.hidden = true; start(openStages()[sel]); }, 1100);
   });
   renderPlayer();
-  document.getElementById('btn-exit').addEventListener('click', () => { battle.hidden = true; cancelAnimationFrame(raf); if (S && S.pvp) { leaveRoom(); S = null; } });
+  document.getElementById('btn-exit').addEventListener('click', () => {
+    battle.hidden = true; cancelAnimationFrame(raf);
+    if (S && S.pvp) { leaveRoom(); S = null; document.getElementById('modes').hidden = false; }   // PvP 나가기 → 모드 선택 화면
+  });
 })();
 </script>
 
