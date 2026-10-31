@@ -2659,7 +2659,16 @@ const AUTH = (function(){
   function goModes(){ $('auth').hidden = true; $('modes').hidden = false; }
 
   async function afterLoading(){
-    if (!ONLINE || DEV) { goModes(); return; }                      // claude.ai 페이지·개발자 모드는 기기 저장 그대로
+    if (!ONLINE) { goModes(); return; }                             // claude.ai 페이지는 기기 저장 그대로
+    if (DEV) {                                                      // 개발자 모드: 로그인·클라우드 저장 없이 기기 저장 그대로, PvP 연결만 열어 둠
+      if (window.supabase) {
+        supa = window.supabase.createClient(SUPA_URL, SUPA_KEY, { auth: { persistSession: false, autoRefreshToken: false }, realtime: { params: { eventsPerSecond: 20 } } });
+        user = { id: 'dev-' + Math.random().toString(36).slice(2, 10) };   // PvP 방에서만 쓰는 임시 이름표 (계정·저장 기록 아님)
+        myNick = '개발자';
+        $('nick-name').textContent = myNick; $('nick-pill').hidden = false;
+      }
+      goModes(); return;
+    }
     if (!window.supabase) { $('auth').hidden = false; msg('서버에 연결하지 못했어요. 인터넷을 확인하고 새로 고침해 주세요.'); $('auth-go').disabled = true; return; }
     supa = window.supabase.createClient(SUPA_URL, SUPA_KEY, { auth: { persistSession: true, autoRefreshToken: true }, realtime: { params: { eventsPerSecond: 20 } } });
     let auto = false;
