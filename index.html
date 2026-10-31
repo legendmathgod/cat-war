@@ -2207,7 +2207,7 @@ let DEV_ON = false;
 try { DEV_ON = localStorage.getItem('catwar-dev-on') === '1'; } catch (e) {}
 const IS_DEV_LINK = DEV_ON;
 const SAVE_KEY = IS_DEV_LINK ? 'catwar-player-dev' : 'catwar-player';
-const PLAYER = { money: 0, nyankoTicket: 0, rareTicket: 0, cans: 0, cleared: [], owned: ['cat'] };   // cans: 통조림 (이벤트 보상)
+const PLAYER = { money: 0, nyankoTicket: 0, rareTicket: 3, cans: 0, cleared: [], owned: ['cat'] };   // 처음 시작하면 레어 티켓 3장 / cans: 통조림 (이벤트 보상)
 try { Object.assign(PLAYER, JSON.parse(localStorage.getItem(SAVE_KEY) || '{}')); } catch (e) {}
 // 개발자 모드: 지금 있는 모든 캐릭터 지급 (앞으로 UNITS 에 추가되는 캐릭터도 열 때마다 자동 지급)
 if (IS_DEV_LINK) UNITS.forEach(u => { if (!u.passive && u.gacha !== 'reward' && !PLAYER.owned.includes(u.id)) PLAYER.owned.push(u.id); });
