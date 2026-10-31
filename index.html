@@ -2791,7 +2791,8 @@ STAGES.forEach(st => {
   }, 0);
   const spike = st => st.name === '기숙사로 향하는 문' ? 2.4 : st.no === 24 ? 2.0 : st.no % 5 === 0 ? 1.6
                     : (st.name && NAMED_BOSS[st.name]) ? 1.4 : 1;
-  const target = n => n <= 15 ? 34 * Math.pow(1.273, n - 1) : 1000 * Math.pow(1.0558, n - 15);
+  const HARD = 1.2;                                   // 전체 난이도 배율 (살짝 올림: 1.0 → 1.2)
+  const target = n => HARD * (n <= 15 ? 34 * Math.pow(1.273, n - 1) : 1000 * Math.pow(1.0558, n - 15));
   const baseHp = n => n <= 15 ? 800 * Math.pow(1.168, n - 1) : 7000 * Math.pow(1.045, n - 15);
   STAGES.forEach(st => {
     st.mult = +Math.max(0.6, target(st.no) * spike(st) / power(st)).toFixed(2);
