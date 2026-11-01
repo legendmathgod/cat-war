@@ -1038,7 +1038,7 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
         <svg viewBox="0 0 100 80" aria-hidden="true"><use href="#icon-school"/></svg>
         <span class="m-name outline">학교</span><span class="m-sub">세계편</span>
       </button>
-      <button class="m-card" disabled><svg class="lock" viewBox="0 0 40 40" aria-hidden="true"><use href="#icon-lock"/></svg><span class="m-name outline">한국</span><span class="m-sub">준비 중</span></button>
+      <button class="m-card" id="mode-korea" disabled><svg class="lock" viewBox="0 0 40 40" aria-hidden="true"><use href="#icon-lock"/></svg><span class="m-name outline">한국</span><span class="m-sub">학교를 모두 깨면 열려요</span></button>
       <button class="m-card" disabled><svg class="lock" viewBox="0 0 40 40" aria-hidden="true"><use href="#icon-lock"/></svg><span class="m-name outline">세계</span><span class="m-sub">준비 중</span></button>
       <button class="m-card" disabled><svg class="lock" viewBox="0 0 40 40" aria-hidden="true"><use href="#icon-lock"/></svg><span class="m-name outline">우주</span><span class="m-sub">준비 중</span></button>
       <button class="m-card" id="mode-legend"><svg viewBox="0 0 100 80" aria-hidden="true"><use href="#icon-legend"/></svg><span class="m-name outline">레전드 스토리</span><span class="m-sub">전설의 도전</span></button>
@@ -1344,6 +1344,16 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
       <rect x="10" y="30" width="22" height="14" rx="6" fill="#fff7e6"/>
       <path d="M32 40 Q60 28 90 40" fill="#4a7be0"/>
       <path d="M14 62 v10 M86 62 v10" stroke-width="4"/>
+    </g>
+    <!-- 한국 아이콘 (태극 무늬) -->
+    <g id="icon-korea" stroke="#2a1708" stroke-width="3.5" stroke-linejoin="round">
+      <rect x="10" y="8" width="80" height="64" rx="8" fill="#ffffff"/>
+      <g transform="rotate(33.7 50 40)">
+        <path d="M32 40 A18 18 0 0 1 68 40 A9 9 0 0 1 50 40 A9 9 0 0 0 32 40 Z" fill="#e8312a" stroke="none"/>
+        <path d="M32 40 A18 18 0 0 0 68 40 A9 9 0 0 1 50 40 A9 9 0 0 0 32 40 Z" fill="#2f5fc8" stroke="none"/>
+      </g>
+      <circle cx="50" cy="40" r="18" fill="none"/>
+      <path d="M20 18 l8 8 M17 22 l8 8 M75 52 l8 8 M72 56 l8 8 M80 18 l-8 8 M83 22 l-8 8 M25 52 l-8 8 M28 56 l-8 8" stroke-width="3"/>
     </g>
     <g id="icon-outdoor" stroke="#2a1708" stroke-width="3.5" stroke-linejoin="round">
       <circle cx="76" cy="20" r="10" fill="#ffcc1f"/>
@@ -3984,11 +3994,22 @@ document.getElementById('gift-ok').addEventListener('click', () => {
   // 홈 → 장 선택
   document.getElementById('home-back').addEventListener('click', () => {
     if (window.legendListOpen && window.legendListOpen()) { window.closeLegendList(); return; }   // 레전드 목록 닫기
-    if (SELECTED_CH === 'L') { SELECTED_CH = 1; modes.hidden = false; return; }   // 레전드 스토리 → 모드 선택으로
+    if (SELECTED_CH === 'L' || SELECTED_CH === 'K') { SELECTED_CH = 1; modes.hidden = false; return; }   // 레전드 스토리·한국 → 모드 선택으로
     renderChapters(); chs.hidden = false;
   });
   document.getElementById('mode-legend').addEventListener('click', () => { SELECTED_CH = 'L'; document.getElementById('school-talk').hidden = true; if (window.closeLegendList) window.closeLegendList(); modes.hidden = true; showWelcome(); });
   document.getElementById('mode-school').addEventListener('click', () => { renderChapters(); modes.hidden = true; chs.hidden = false; });
+  // 한국: 학교 3장까지 다 깨면 열림
+  const kCard = document.getElementById('mode-korea');
+  function renderKorea(){
+    const open = chapterUnlocked('K');
+    kCard.disabled = !open;
+    kCard.innerHTML = (open ? '<svg viewBox="0 0 100 80" aria-hidden="true"><use href="#icon-korea"/></svg>' : '<svg class="lock" viewBox="0 0 40 40" aria-hidden="true"><use href="#icon-lock"/></svg>') +
+      '<span class="m-name outline">한국</span><span class="m-sub">' + (open ? '세계편 · 10개 지역' : '학교를 모두 깨면 열려요') + '</span>';
+  }
+  setTimeout(renderKorea, 0);                                    // 스테이지 목록이 다 만들어진 뒤에
+  new MutationObserver(() => { if (!modes.hidden) renderKorea(); }).observe(modes, { attributes: true, attributeFilter: ['hidden'] });
+  kCard.addEventListener('click', () => { if (!chapterUnlocked('K')) return; SELECTED_CH = 'K'; document.getElementById('school-talk').hidden = true; if (window.closeLegendList) window.closeLegendList(); modes.hidden = true; showWelcome(); });
   document.getElementById('c-back').addEventListener('click', () => { chs.hidden = true; modes.hidden = false; });
 })();
 
@@ -5100,6 +5121,49 @@ const OUT_STAGES = [];
   });
 })();
 
+// ---------- 한국 (학교 3장까지 다 깨면 열림): 10개 스테이지, 갈수록 점점 어려워짐 ----------
+const KOREA_NAMES = ['경기도', '충청북도', '충청남도', '전라남도', '경상북도', '경상남도', '강원특별자치도', '전북특별자치도', '광역시', '서울특별시'];
+const KOREA_STAGES = [];
+(function(){
+  const POOLS = [
+    ['scooter', 'cart', 'phone', 'pigeon', 'chicken'],                   // 경기도
+    ['boar', 'eagle', 'ginkgo', 'snake', 'pigeon'],                      // 충청북도
+    ['jjajang', 'chicken', 'boar', 'crow', 'tray'],                      // 충청남도
+    ['jjajang', 'ginkgo', 'eagle', 'hedgehog', 'laundry'],               // 전라남도
+    ['boar', 'chicken', 'cart', 'blanket', 'eagle'],                     // 경상북도
+    ['scooter', 'jjajang', 'phone', 'cupramen', 'pigeon'],               // 경상남도
+    ['eagle', 'boar', 'ginkgo', 'snake', 'blanket'],                     // 강원특별자치도
+    ['chicken', 'jjajang', 'tray', 'cart', 'crow'],                      // 전북특별자치도
+    ['scooter', 'cart', 'chicken', 'phone', 'jjajang', 'pigeon'],        // 광역시
+    ['scooter', 'cart', 'phone', 'chicken', 'jjajang', 'boar', 'eagle'], // 서울특별시
+  ];
+  const BIGS = ['dumptruck', 'schoolbus', 'ginkgotree', 'statue', 'trophyknight', 'locker', 'piano', 'washer', 'bunkbed', 'potgolem', 'shadow', 'eraser'];
+  KOREA_NAMES.forEach((name, i) => {
+    const pool = POOLS[i];
+    const spawns = pool.map((e, j) => ({ enemy: e, first: 2 + j * 4, every: 5 + j * 3, maxAlive: j < 2 ? 6 : 3 }));
+    const nBig = 1 + Math.floor(i / 3);                                          // 큰 유닛: 1마리 → 4마리 (서울)
+    for (let j = 0; j < nBig; j++) spawns.push({ enemy: BIGS[(i * 3 + j * 5) % BIGS.length], first: 16 + j * 12, every: 36 + j * 6, maxAlive: 1 });
+    const rw = {};
+    if (i === KOREA_NAMES.length - 1) rw.rareTicket = 3;                         // 최초 클리어 티켓: 마지막 레어 3장, 5번째 레어 1장, 나머지 냥코
+    else if ((i + 1) % 5 === 0) rw.rareTicket = 1;
+    else rw.nyankoTicket = 1;
+    KOREA_STAGES.push({ id: 'k' + (i + 1), no: i + 1, name, catBaseHp: 1500, spawns, reward: rw });
+  });
+  // 난이도: 학교 3장 마지막보다 조금 더 센 곳에서 시작해서, 서울특별시는 그 4배까지 한 단계씩 꾸준히 올라감
+  const power = st => st.spawns.reduce((a, sp) => {
+    const e = ENEMIES[sp.enemy];
+    return a + Math.sqrt(e.hp * e.ap / e.attackInterval) * (sp.count ? 0.6 : Math.min(1, 10 / sp.every));
+  }, 0);
+  const CH3_END = 1.2 * SCHOOL_HARD * 1000 * Math.pow(1.0558, 33) * 4 * 3;     // 학교 3장 48번째 스테이지 기본 난이도
+  const target = n => CH3_END * Math.pow(4, (n - 1) / 9);
+  KOREA_STAGES.forEach(st => {
+    st.mult = +Math.max(0.6, target(st.no) / power(st)).toFixed(2);
+    st.enemyBaseHp = Math.round(300000 * Math.pow(3, (st.no - 1) / 9) / 1000) * 1000;
+    st.reward.money = Math.round((600 + 900 * Math.log(150 + st.no)) * 2 / 50) * 50;
+  });
+})();
+const KOREA_CH = { no: 'K', name: '한국', enemyMult: 1, baseMult: 1, rewardMult: 1, stages: KOREA_STAGES };
+
 // ---------- 레전드 스토리 (모드 선택에서 들어감, 학교와 따로) ----------
 // 레전드 스테이지 목록 (원작의 '싱귤래리티 마을' 같은 칸). 칸을 누르면 그 안의 스테이지가 학교처럼 하나씩 열림
 const LEGEND_GROUPS = [
@@ -5186,7 +5250,7 @@ function stageKey(ch, id){ return ch === 1 ? id : 'c' + ch + ':' + id; }
 const _stageCache = {};
 function chapterStageList(ch){
   if (_stageCache[ch]) return _stageCache[ch];
-  const c = CHAPTERS.find(x => x.no === ch) || (ch === 'L' ? LEGEND_CH : null);
+  const c = CHAPTERS.find(x => x.no === ch) || (ch === 'L' ? LEGEND_CH : ch === 'K' ? KOREA_CH : null);
   return _stageCache[ch] = (c.stages || STAGES).map(st => Object.assign({}, st, {
     ch, key: stageKey(ch, st.id), chName: c.name,
     mult: (st.mult || 1) * c.enemyMult,
@@ -5196,7 +5260,7 @@ function chapterStageList(ch){
 }
 let SELECTED_CH = 1;   // 시작할 때 고른 장
 function chapterCleared(ch){ return chapterStageList(ch).every(st => PLAYER.cleared.includes(st.key)); }
-function chapterUnlocked(ch){ return ch === 1 || ch === 'L' || chapterCleared(ch - 1); }
+function chapterUnlocked(ch){ return ch === 1 || ch === 'L' || (ch === 'K' ? chapterCleared(3) : chapterCleared(ch - 1)); }   // 한국: 학교 3장까지 다 깨면
 
 // 개발자 모드도 스테이지는 하나씩 직접 깨야 함.
 // (예전에 자동으로 클리어 처리했던 개발자 기록은 한 번만 비움)
@@ -5256,7 +5320,7 @@ const TREASURE_COUNT = { drink:7, safe:4, clock:5, stone:7, wall:3, register:3, 
   i = 3;
   TREASURES.forEach(t => { t.dorm = DORM_STAGES.slice(i, i + TREASURE_COUNT[t.id]).map(st => st.id); i += TREASURE_COUNT[t.id]; });
 })();
-function treasureStages(t, ch){ return ch === 'L' ? [] : ch === 2 ? t.dorm : ch === 3 ? t.out : t.stages; }   // 레전드 스토리는 보물 없음
+function treasureStages(t, ch){ return ch === 'L' || ch === 'K' ? [] : ch === 2 ? t.dorm : ch === 3 ? t.out : t.stages; }   // 레전드 스토리는 보물 없음
 function treasurePctCh(id, ch){
   const g = TREASURES.find(t => t.id === id);
   const list = treasureStages(g, ch);
