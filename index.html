@@ -500,7 +500,7 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
 .lg-items{display:flex;flex-direction:column;gap:2.2cqw;max-height:30cqw;overflow-y:auto;padding:.4cqw 1cqw 1.2cqw .4cqw}
 .lg-item{position:relative;display:flex;align-items:center;justify-content:center;min-height:7.4cqw;cursor:pointer;font-family:var(--display);font-size:3.4cqw;color:var(--ink);
   background:linear-gradient(var(--btn-hi),var(--btn) 48%,var(--btn-lo));border:.5cqw solid var(--ink);border-radius:2cqw;box-shadow:inset 0 -.7cqw 0 rgba(0,0,0,.15),0 .7cqw 0 var(--ink)}
-.lg-item.crazy{background:linear-gradient(#b06bff,#6a1fd0 50%,#2a0a5a);color:#fff;-webkit-text-stroke:.2cqw #2a0a3a;paint-order:stroke fill;font-size:4.2cqw;letter-spacing:.4cqw;
+.lg-item.crazy{background:linear-gradient(#b06bff,#6a1fd0 50%,#2a0a5a);color:#fff;-webkit-text-stroke:.2cqw #2a0a3a;paint-order:stroke fill;font-size:3.1cqw;letter-spacing:.1cqw;
   box-shadow:inset 0 -.7cqw 0 rgba(0,0,0,.25),0 .7cqw 0 var(--ink),0 0 2cqw .3cqw rgba(170,90,255,.8);animation:crazyPulse 1.4s ease-in-out infinite alternate}
 @keyframes crazyPulse{to{box-shadow:inset 0 -.7cqw 0 rgba(0,0,0,.25),0 .7cqw 0 var(--ink),0 0 3.4cqw .8cqw rgba(200,120,255,.95)}}
 .lg-item:active{transform:translateY(.5cqw);box-shadow:inset 0 -.7cqw 0 rgba(0,0,0,.15),0 .2cqw 0 var(--ink)}
@@ -4018,8 +4018,8 @@ const DORM_STAGES = [];
 // 레전드 스테이지 목록 (원작의 '싱귤래리티 마을' 같은 칸). 칸을 누르면 그 안의 스테이지가 학교처럼 하나씩 열림
 const LEGEND_GROUPS = [
   { id: 'jisol', name: '김지솔을 이겨라!' },
-  { id: 'crazy', name: '광란', crazy: true },
 ];
+// 광란 스테이지 9개는 목록에 각각 따로 (아래 CRAZY_LIST 로 추가)
 // '김지솔을 이겨라!' 스테이지 6개. 최초 클리어 때만 통조림 100개. 보스는 사진 받으면 넣을 자리(bossSlot)
 const LEGEND_STAGES = [
   { id: 'J1', name: '전설의 똥팬 사건',  enemies: ['sock', 'mosquito', 'laundry', 'pig', 'snake', 'potgolem'] },
@@ -4043,9 +4043,10 @@ const CRAZY_ESCORT = [
   ['potgolem', 'laundry', 'shower'], ['phone', 'trophyknight', 'cupramen'], ['statue', 'shadow', 'trophyknight'],
 ];
 CRAZY_LIST.forEach((c, i) => {
+  LEGEND_GROUPS.push({ id: 'cz-' + c.id, name: c.stage, crazy: true });   // 목록에 한 칸씩
   const esc = CRAZY_ESCORT[i];
   LEGEND_STAGES.push({
-    id: 'K' + (i + 1), no: i + 1, name: c.stage, group: 'crazy', catBaseHp: 1500, crazy: true,
+    id: 'K' + (i + 1), no: 1, name: c.stage, group: 'cz-' + c.id, catBaseHp: 1500, crazy: true,
     spawns: [
       { enemy: 'cz-' + c.id, first: 3, every: 999, maxAlive: 1, count: 1 },
       { enemy: esc[0], first: 8,  every: 12, maxAlive: 3 },
@@ -4069,10 +4070,10 @@ const LEGEND_CH = { no: 'L', name: '레전드 스토리', enemyMult: 1, baseMult
     st.mult = +(DORM_END * RAMP[i] / power(st)).toFixed(2);
     st.enemyBaseHp = 60000 + i * 16000;
   });
-  // 광란: 극난도 — 김지솔 마지막(간사의 왕)보다 1.5배에서 시작해 거신은 3.5배까지
-  LEGEND_STAGES.filter(st => st.group === 'crazy').forEach((st, i) => {
-    st.mult = +(DORM_END * 4.0 * (1.5 + i * .25) / power(st)).toFixed(2);
-    st.enemyBaseHp = 180000 + i * 30000;
+  // 광란: 극난도 — 9개 모두 똑같이 아주 어렵게 (간사의 왕의 약 5배, 적 성 체력 50만)
+  LEGEND_STAGES.filter(st => st.crazy).forEach(st => {
+    st.mult = +(DORM_END * 4.0 * 5 / power(st)).toFixed(2);
+    st.enemyBaseHp = 500000;
   });
 })();
 
