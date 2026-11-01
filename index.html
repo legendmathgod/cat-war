@@ -3087,9 +3087,9 @@ RARE_SERIES.push({ id:'lisenne', name:'리센느 콜라보 이벤트', c1:'#ff4f
   rates: { rare: 69, super: 25, uber: 5, legend: 1 },
   pool: UNITS.filter(u => u.gacha === 'rare' && !COLLAB_LISENNE.includes(u.id) && (u.rarity === 'rare' || u.rarity === 'super')).map(u => u.id)
           .concat(COLLAB_LISENNE.filter(id => UNITS.some(u => u.id === id))) });
-// 플래티넘 뽑기: 플래티넘 티켓으로만, 울트라슈퍼레어만 100% (콜라보 한정은 제외)
+// 플래티넘 뽑기: 플래티넘 티켓으로만, 울트라슈퍼레어만 100% (리센느 콜라보 울트라슈퍼레어도 포함)
 RARE_SERIES.push({ id:'platinum', name:'플래티넘 뽑기', c1:'#5c6b7a', c2:'#dfe7ee', sub:'울트라슈퍼레어 확정!', platinum: true,
-  pool: UNITS.filter(u => u.gacha === 'rare' && u.rarity === 'uber' && !COLLAB_LISENNE.includes(u.id)).map(u => u.id) });
+  pool: UNITS.filter(u => u.gacha === 'rare' && u.rarity === 'uber').map(u => u.id) });
 
 // 등급별 확률 (%)
 const RARE_RATES = [
@@ -3278,8 +3278,8 @@ const GACHA = (function(){
     const list = document.getElementById('lu-list');
     const units = sr.pool.map(id => UNITS.find(u => u.id === id)).filter(Boolean);
     document.getElementById('lu-title').textContent = sr.name;
-    const rr = rareRatesOf(units, sr.rates);
-    list.innerHTML = RARE_RATES.map(r => {
+    const rr = sr.platinum ? { rare: 0, super: 0, uber: 100, legend: 0 } : rareRatesOf(units, sr.rates);
+    list.innerHTML = RARE_RATES.filter(r => !sr.platinum || r.rarity === 'uber').map(r => {
       const us = units.filter(u => u.rarity === r.rarity);
       const color = { rare:'#ffd23f', super:'#ff9a3d', uber:'#ff5f7e', legend:'#c58bff' }[r.rarity];
       return '<section class="lu-sec"><h3 style="color:' + color + '">' + r.name + '<span class="rate">' + rr[r.rarity] + '%</span></h3>' +
@@ -3295,7 +3295,7 @@ const GACHA = (function(){
   const bannerEl = document.getElementById('r-banner');
   bannerEl.setAttribute('role', 'button'); bannerEl.setAttribute('tabindex', '0'); bannerEl.setAttribute('aria-label', '뽑기 캐릭터 목록 보기');
   bannerEl.style.cursor = 'pointer';
-  const openCur = () => { const sr = RARE_SERIES[cur]; if (!sr.platinum) openLineup(sr); };
+  const openCur = () => openLineup(RARE_SERIES[cur]);   // 플래티넘 뽑기도 캐릭터 목록 보기
   bannerEl.addEventListener('click', openCur);
   bannerEl.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCur(); } });
   document.getElementById('lu-close').addEventListener('click', () => { document.getElementById('lineup').hidden = true; });
