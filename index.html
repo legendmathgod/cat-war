@@ -3705,6 +3705,69 @@ const CRAZY_LIST = [
   { id: 'lizard',     art: 'u-lizard', name: '광란의 고양이 도마뱀', stage: '광란의 고양이 도마뱀' },
   { id: 'titan',      art: 'u-titan',  name: '광란의 거신 고양이',  stage: '광란의 거신 고양이' },
 ];
+// 광란 그림: 원래 캐릭터를 흑백 고대비 + 털이 곤두선 거친 선 + 보랏빛 번개 오라로 변형한 SVG 조각
+function crazyMarkup(baseId, seed, uid, flip){
+  const g = document.getElementById(baseId).outerHTML.replace(/ id="[^"]*"/, '');
+  const spikes = []; for (let i = 0; i < 30; i++) { const a = i / 30 * Math.PI * 2, r = i % 2 ? 96 : 138 + (i * 37 % 5) * 7; spikes.push((120 + Math.cos(a) * r).toFixed(1) + ',' + (150 + Math.sin(a) * r * .95).toFixed(1)); }
+  const A = 'cza' + uid, F = 'czf' + uid, G = 'czg' + uid;
+  return '<defs>' +
+      '<radialGradient id="' + A + '"><stop offset="0" stop-color="#1a0630" stop-opacity=".95"/><stop offset=".55" stop-color="#7a22e0" stop-opacity=".85"/><stop offset=".8" stop-color="#c58bff" stop-opacity=".6"/><stop offset="1" stop-color="#c58bff" stop-opacity="0"/></radialGradient>' +
+      '<filter id="' + F + '" x="-25%" y="-25%" width="150%" height="150%">' +
+        '<feTurbulence type="fractalNoise" baseFrequency="0.11" numOctaves="2" seed="' + seed + '" result="n"/>' +
+        '<feDisplacementMap in="SourceGraphic" in2="n" scale="11" xChannelSelector="R" yChannelSelector="G" result="d"/>' +
+        '<feColorMatrix in="d" type="matrix" values="0.33 0.5 0.17 0 0  0.33 0.5 0.17 0 0  0.33 0.5 0.17 0 0  0 0 0 1 0" result="g"/>' +
+        '<feComponentTransfer in="g" result="c"><feFuncR type="linear" slope="1.9" intercept="-0.45"/><feFuncG type="linear" slope="1.9" intercept="-0.45"/><feFuncB type="linear" slope="1.9" intercept="-0.4"/></feComponentTransfer>' +
+        '<feMorphology in="d" operator="dilate" radius="4" result="fat"/>' +
+        '<feTurbulence type="turbulence" baseFrequency="0.35" numOctaves="1" seed="' + (seed + 5) + '" result="n2"/>' +
+        '<feDisplacementMap in="fat" in2="n2" scale="14" xChannelSelector="R" yChannelSelector="B" result="spk"/>' +
+        '<feFlood flood-color="#0c0414"/><feComposite in2="spk" operator="in" result="outl"/>' +
+        '<feTurbulence type="turbulence" baseFrequency="0.02 0.4" numOctaves="2" seed="' + (seed + 9) + '" result="hatch"/>' +
+        '<feColorMatrix in="hatch" type="matrix" values="0 0 0 0 0.05  0 0 0 0 0.02  0 0 0 0 0.1  0 0 -3.2 0 0.95" result="hk"/>' +
+        '<feComposite in="hk" in2="d" operator="in" result="ink"/>' +
+        '<feMerge><feMergeNode in="outl"/><feMergeNode in="c"/><feMergeNode in="ink"/></feMerge>' +
+      '</filter>' +
+      '<filter id="' + G + '" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter>' +
+    '</defs>' +
+    '<polygon points="' + spikes.join(' ') + '" fill="url(#' + A + ')"/>' +
+    '<path d="M0 30 L34 92 L20 94 L58 160 M240 22 L204 84 L220 86 L182 146 M120 -24 L110 20 L126 22 L114 60" fill="none" stroke="#e6b3ff" stroke-width="7" stroke-linejoin="round" filter="url(#' + G + ')"/>' +
+    '<path d="M0 30 L34 92 L20 94 L58 160 M240 22 L204 84 L220 86 L182 146 M120 -24 L110 20 L126 22 L114 60" fill="none" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>' +
+    (flip ? '<g transform="translate(240 0) scale(-1 1)">' : '<g>') + '<g filter="url(#' + F + ')" transform="translate(-18 -30) scale(1.15)">' + g + '</g></g>' +
+    '<ellipse cx="120" cy="270" rx="100" ry="10" fill="#14041e" opacity=".6"/>';
+}
+(function(){   // 광란 그림을 SVG 묶음에 넣어 둠: czE- = 적(오른쪽을 봄), ucz- = 아군 캐릭터(카드·전투)
+  const sprite = document.getElementById('soldier').parentNode;
+  let html = '';
+  CRAZY_LIST.forEach((c, i) => {
+    html += '<g id="czE-' + c.id + '">' + crazyMarkup(c.art, 3 + i * 7, 'e' + i, true) + '</g>';
+    html += '<g id="ucz-' + c.id + '"><g transform="translate(20 26) scale(.857 .867)">' + crazyMarkup(c.art, 3 + i * 7, 'u' + i, false) + '</g></g>';
+  });
+  const tmp = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  tmp.innerHTML = html;
+  while (tmp.firstChild) sprite.appendChild(tmp.firstChild);
+})();
+// 광란 캐릭터 (슈퍼레어, 광란 스테이지를 깨면 획득) — 능력치는 원작 표 그대로
+const CRAZY_STATS = {
+  'cat':        { cost:75,   hp:900,  ap:70,   range:140, kb:3, speed:20, type:'single', iv:1.23, fore:.27, cd:2.00  },
+  'tank':       { cost:150,  hp:2700, ap:18,   range:110, kb:1, speed:16, type:'area',   iv:2.23, fore:.27, cd:2.00  },
+  'battle-cat': { cost:300,  hp:1800, ap:325,  range:150, kb:3, speed:12, type:'single', iv:0.90, fore:.27, cd:2.00  },
+  'jingle':     { cost:600,  hp:3600, ap:900,  range:350, kb:3, speed:10, type:'single', iv:4.17, fore:.20, cd:28.80 },
+  'bull':       { cost:750,  hp:4500, ap:118,  range:140, kb:5, speed:50, type:'area',   iv:0.33, fore:.20, cd:4.20  },
+  'bird':       { cost:975,  hp:2700, ap:1200, range:205, kb:4, speed:10, type:'area',   iv:1.63, fore:.33, cd:3.53  },
+  'fish':       { cost:735,  hp:6300, ap:1620, range:150, kb:3, speed:13, type:'single', iv:1.77, fore:.33, cd:8.20  },
+  'lizard':     { cost:1500, hp:4050, ap:1800, range:400, kb:3, speed:10, type:'single', iv:4.23, fore:.27, cd:16.87 },
+  'titan':      { cost:1950, hp:9000, ap:2960, range:150, kb:1, speed:11, type:'area',   iv:2.70, fore:1.57, cd:22.20 },
+};
+CRAZY_LIST.forEach(c => {
+  const b = UNITS.find(x => x.id === c.id), t = CRAZY_STATS[c.id];
+  UNITS.push({
+    id: 'cz-' + c.id, name: c.name, rarity: 'super', gacha: 'reward', art: 'ucz-' + c.id, iconBox: '25 55 190 180', size: Math.round((b.size || 70) * 1.15),
+    desc: "레전드 스토리 '" + c.stage + "'를 깨면 얻는 광란 캐릭터. 광란의 힘으로 원래보다 훨씬 강해졌다",
+    maxLevel: 30, level: 1, plusLevel: 0,
+    baseHp: t.hp, baseAp: t.ap, range: t.range, kb: t.kb, speed: t.speed,
+    attackType: t.type, attackInterval: t.iv, foreswing: t.fore, backswing: b.backswing || 0.2,
+    cooldown: t.cd, cost: t.cost, motion: b.motion, fly: !!b.fly,
+  });
+});
 CRAZY_LIST.forEach((c, i) => {
   const u = UNITS.find(x => x.id === c.id);
   ENEMIES['cz-' + c.id] = {
@@ -4245,43 +4308,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     return img;
   }
   imgs.soldier = svgImage('soldier', '0 0 240 260');
-  // 광란 보스 그림: 원래 캐릭터를 흑백 고대비 + 털이 곤두선 거친 선(노이즈 왜곡) + 보랏빛 번개 오라로 변형
-  function crazyImage(baseId, seed){
-    const g = document.getElementById(baseId).outerHTML.replace(/ id="[^"]*"/, '');
-    const spikes = []; for (let i = 0; i < 30; i++) { const a = i / 30 * Math.PI * 2, r = i % 2 ? 96 : 138 + (i * 37 % 5) * 7; spikes.push((120 + Math.cos(a) * r).toFixed(1) + ',' + (150 + Math.sin(a) * r * .95).toFixed(1)); }
-    const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -30 280 300">' +
-      '<defs>' +
-        '<radialGradient id="a"><stop offset="0" stop-color="#1a0630" stop-opacity=".95"/><stop offset=".55" stop-color="#7a22e0" stop-opacity=".85"/><stop offset=".8" stop-color="#c58bff" stop-opacity=".6"/><stop offset="1" stop-color="#c58bff" stop-opacity="0"/></radialGradient>' +
-        '<filter id="f" x="-25%" y="-25%" width="150%" height="150%">' +
-          '<feTurbulence type="fractalNoise" baseFrequency="0.11" numOctaves="2" seed="' + seed + '" result="n"/>' +
-          '<feDisplacementMap in="SourceGraphic" in2="n" scale="11" xChannelSelector="R" yChannelSelector="G" result="d"/>' +
-          // 흑백 + 강한 대비 (검은 선은 더 검게, 흰 털은 하얗게)
-          '<feColorMatrix in="d" type="matrix" values="0.33 0.5 0.17 0 0  0.33 0.5 0.17 0 0  0.33 0.5 0.17 0 0  0 0 0 1 0" result="g"/>' +
-          '<feComponentTransfer in="g" result="c"><feFuncR type="linear" slope="1.9" intercept="-0.45"/><feFuncG type="linear" slope="1.9" intercept="-0.45"/><feFuncB type="linear" slope="1.9" intercept="-0.4"/></feComponentTransfer>' +
-          // 털이 곤두선 듯한 거친 가장자리: 두껍고 삐죽한 검은 외곽선
-          '<feMorphology in="d" operator="dilate" radius="4" result="fat"/>' +
-          '<feTurbulence type="turbulence" baseFrequency="0.35" numOctaves="1" seed="' + (seed + 5) + '" result="n2"/>' +
-          '<feDisplacementMap in="fat" in2="n2" scale="14" xChannelSelector="R" yChannelSelector="B" result="spk"/>' +
-          '<feFlood flood-color="#0c0414"/><feComposite in2="spk" operator="in" result="outl"/>' +
-          // 할퀸 듯한 잉크 결
-          '<feTurbulence type="turbulence" baseFrequency="0.02 0.4" numOctaves="2" seed="' + (seed + 9) + '" result="hatch"/>' +
-          '<feColorMatrix in="hatch" type="matrix" values="0 0 0 0 0.05  0 0 0 0 0.02  0 0 0 0 0.1  0 0 -3.2 0 0.95" result="hk"/>' +
-          '<feComposite in="hk" in2="d" operator="in" result="ink"/>' +
-          '<feMerge><feMergeNode in="outl"/><feMergeNode in="c"/><feMergeNode in="ink"/></feMerge>' +
-        '</filter>' +
-        '<filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter>' +
-      '</defs>' +
-      '<polygon points="' + spikes.join(' ') + '" fill="url(#a)"/>' +
-      '<path d="M0 30 L34 92 L20 94 L58 160 M240 22 L204 84 L220 86 L182 146 M120 -24 L110 20 L126 22 L114 60" fill="none" stroke="#e6b3ff" stroke-width="7" stroke-linejoin="round" filter="url(#glow)"/>' +
-      '<path d="M0 30 L34 92 L20 94 L58 160 M240 22 L204 84 L220 86 L182 146 M120 -24 L110 20 L126 22 L114 60" fill="none" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>' +
-      '<g transform="translate(240 0) scale(-1 1)"><g filter="url(#f)" transform="translate(-18 -30) scale(1.15)">' + g + '</g></g>' +
-      '<ellipse cx="120" cy="270" rx="100" ry="10" fill="#14041e" opacity=".6"/>' +
-      '</svg>';
-    const img = new Image();
-    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-    return img;
-  }
-  CRAZY_LIST.forEach((c, i) => imgs['cz-' + c.id] = crazyImage(c.art, 3 + i * 7));
+  CRAZY_LIST.forEach(c => { imgs['cz-' + c.id] = svgImage('czE-' + c.id, '-20 -30 280 300'); imgs['ucz-' + c.id] = svgImage('ucz-' + c.id, '0 0 240 260'); });
   ['mouse','crow','pig','snake','bear','hedgehog','raccoon','bigcoon','boar','eagle','hippo','gatekeeper','milkthief','u-masa','u-jingle','u-battle','u-tank','u-bull','u-bird','u-fish','u-lizard','u-titan','u-eolppak','u-fk','u-jingyeok','u-ssang','u-thanos','u-horror','u-dance','u-kkamnol-box','u-aegi','mosquito','pillow','slipper','alarm','sock','cupramen','blanket','phone','flexduo','u-evil','u-grandpa','u-penguin-body','u-fire','u-gyaru','u-silla','u-grip','u-ttabong','u-oishi','chalk','paper','eraser','statue','potgolem','laundry','scooter','shadow','trophyknight','shower','jboss1','jboss2','jboss3','jboss4','jboss5','u-jisol'].forEach(id => imgs[id] = svgImage(id, '0 0 240 260'));
   imgs['u-kkamnol-head'] = svgImage('u-kkamnol-head', '0 0 180 162');   // 깜놀: 머리는 따로 그려서 용수철로 튀어나오게
   imgs['u-kkamnol'] = imgs['u-kkamnol-box'];
@@ -4854,6 +4881,13 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
       if (S.stage.ch === 'L' && S.stage.id === 'J6' && !PLAYER.owned.includes('jisol')) {   // 레전드 '김지솔을 이겨라!' 마지막 스테이지 클리어 보상 (아직 없으면 지급)
         PLAYER.owned.push('jisol');
         rw.innerHTML += '<div class="ch-reward">EX 캐릭터 \'간사의 왕 지솔\'을 획득하셨습니다!</div>';
+      }
+      if (S.stage.crazy) {                                // 광란 스테이지: 광란 캐릭터 획득 (아직 없으면)
+        const cz = CRAZY_LIST.find(c => S.stage.group === 'cz-' + c.id);
+        if (cz && !PLAYER.owned.includes('cz-' + cz.id)) {
+          PLAYER.owned.push('cz-' + cz.id);
+          rw.innerHTML += '<div class="ch-reward">축하합니다! \'' + cz.name + '\'를 획득하셨습니다!</div>';
+        }
       }
       if (r.cans && first) { PLAYER.cans = (PLAYER.cans || 0) + r.cans; rw.innerHTML += '<div class="first">통조림 +' + r.cans + ' (최초 클리어)</div>'; }   // 레전드: 최초 클리어 때만
       if (first) {
