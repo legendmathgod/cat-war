@@ -3079,10 +3079,17 @@ document.getElementById('welcome-ok').addEventListener('click', () => {
 const RARE_SERIES = [
   { id:'ultra', name:'울트라 한일고양이 축제', c1:'#5a1f8a', c2:'#e8468a', sub:'모든 레어 냥코가 한 곳에!', pool:[] },
 ];
-RARE_SERIES[0].pool = UNITS.filter(u => u.gacha === 'rare').map(u => u.id);
-// 플래티넘 뽑기: 플래티넘 티켓으로만, 울트라슈퍼레어만 100%
+// 리센느 콜라보 한정 캐릭터 (이 6종은 '리센느 콜라보 이벤트'에서만 나옴)
+const COLLAB_LISENNE = ['fire', 'gyaru', 'silla', 'grip', 'ttabong', 'oishi'];
+RARE_SERIES[0].pool = UNITS.filter(u => u.gacha === 'rare' && !COLLAB_LISENNE.includes(u.id)).map(u => u.id);
+// 리센느 콜라보 이벤트: 기존 레어·슈퍼레어 + 콜라보 한정 6종 / 확률 레어 69 · 슈퍼레어 25 · 울트라슈퍼레어 5 · 레전드레어 1
+RARE_SERIES.push({ id:'lisenne', name:'리센느 콜라보 이벤트', c1:'#ff4fa3', c2:'#ffd1ea', sub:'콜라보 한정 캐릭터 6종!',
+  rates: { rare: 69, super: 25, uber: 5, legend: 1 },
+  pool: UNITS.filter(u => u.gacha === 'rare' && !COLLAB_LISENNE.includes(u.id) && (u.rarity === 'rare' || u.rarity === 'super')).map(u => u.id)
+          .concat(COLLAB_LISENNE.filter(id => UNITS.some(u => u.id === id))) });
+// 플래티넘 뽑기: 플래티넘 티켓으로만, 울트라슈퍼레어만 100% (콜라보 한정은 제외)
 RARE_SERIES.push({ id:'platinum', name:'플래티넘 뽑기', c1:'#5c6b7a', c2:'#dfe7ee', sub:'울트라슈퍼레어 확정!', platinum: true,
-  pool: UNITS.filter(u => u.gacha === 'rare' && u.rarity === 'uber').map(u => u.id) });
+  pool: UNITS.filter(u => u.gacha === 'rare' && u.rarity === 'uber' && !COLLAB_LISENNE.includes(u.id)).map(u => u.id) });
 
 // 등급별 확률 (%)
 const RARE_RATES = [
@@ -3092,19 +3099,21 @@ const RARE_RATES = [
   { rarity:'legend', name:'레전드레어',     rate:1  },
 ];
 // 시리즈에 있는 등급끼리 비율대로 다시 계산한 실제 확률 (%), 표시용
-function rareRatesOf(pool){
+// rates: 시리즈마다 따로 정한 확률 (없으면 기본 확률)
+const rateOf = (t, rates) => rates && rates[t.rarity] !== undefined ? rates[t.rarity] : t.rate;
+function rareRatesOf(pool, rates){
   const has = RARE_RATES.filter(t => pool.some(u => u.rarity === t.rarity));
-  const total = has.reduce((a, t) => a + t.rate, 0);
-  const out = {}; RARE_RATES.forEach(t => out[t.rarity] = has.includes(t) ? Math.round(t.rate / total * 1000) / 10 : 0);
+  const total = has.reduce((a, t) => a + rateOf(t, rates), 0);
+  const out = {}; RARE_RATES.forEach(t => out[t.rarity] = has.includes(t) ? Math.round(rateOf(t, rates) / total * 1000) / 10 : 0);
   return out;
 }
 // 먼저 등급을 확률대로 고르고, 그 등급 캐릭터 중 하나를 같은 확률로 고름.
 // 시리즈에 아직 없는 등급은 빼고 남은 등급끼리 비율대로 다시 계산함.
-function rareDraw(pool){
+function rareDraw(pool, rates){
   const tiers = RARE_RATES.map(t => ({ t, units: pool.filter(u => u.rarity === t.rarity) })).filter(x => x.units.length);
-  const total = tiers.reduce((a, x) => a + x.t.rate, 0);
+  const total = tiers.reduce((a, x) => a + rateOf(x.t, rates), 0);
   let r = Math.random() * total;
-  for (const x of tiers) { if ((r -= x.t.rate) < 0) return x.units[Math.floor(Math.random() * x.units.length)]; }
+  for (const x of tiers) { if ((r -= rateOf(x.t, rates)) < 0) return x.units[Math.floor(Math.random() * x.units.length)]; }
   const last = tiers[tiers.length - 1].units; return last[last.length - 1];
 }
 
@@ -3259,7 +3268,7 @@ const GACHA = (function(){
     document.getElementById('r-roll1').disabled = !hasTickets(kind, 1);
     document.getElementById('r-roll11').hidden = !!sr.platinum;          // 플래티넘은 1회 뽑기만 (플래티넘 티켓 전용)
     document.getElementById('r-roll11').disabled = !hasTickets('cans', 1500);
-    const rr = rareRatesOf(sr.pool.map(id => UNITS.find(u => u.id === id)).filter(Boolean));
+    const rr = rareRatesOf(sr.pool.map(id => UNITS.find(u => u.id === id)).filter(Boolean), sr.rates);
     document.getElementById('r-rate-row').innerHTML = sr.platinum ? '<td>0%</td><td>0%</td><td>100%</td><td>0%</td>'
       : RARE_RATES.map(t => '<td>' + rr[t.rarity] + '%</td>').join('');
     if (sr.platinum) document.getElementById('r-caption').textContent = '플래티넘 티켓으로만 뽑을 수 있어요. 울트라슈퍼레어 ' + sr.pool.length + '종 중 하나가 무조건 나와요!';
@@ -3269,7 +3278,7 @@ const GACHA = (function(){
     const list = document.getElementById('lu-list');
     const units = sr.pool.map(id => UNITS.find(u => u.id === id)).filter(Boolean);
     document.getElementById('lu-title').textContent = sr.name;
-    const rr = rareRatesOf(units);
+    const rr = rareRatesOf(units, sr.rates);
     list.innerHTML = RARE_RATES.map(r => {
       const us = units.filter(u => u.rarity === r.rarity);
       const color = { rare:'#ffd23f', super:'#ff9a3d', uber:'#ff5f7e', legend:'#c58bff' }[r.rarity];
@@ -3298,7 +3307,7 @@ const GACHA = (function(){
     if (!hasTickets(kind, cost)) return;
     useTickets(kind, cost);
     const results = [];
-    for (let i = 0; i < n; i++) results.push(GACHA.grant(sr.platinum ? pool[Math.floor(Math.random() * pool.length)] : rareDraw(pool)));
+    for (let i = 0; i < n; i++) results.push(GACHA.grant(sr.platinum ? pool[Math.floor(Math.random() * pool.length)] : rareDraw(pool, sr.rates)));
     savePlayer(); renderPlayer(); render();
     GACHA.play(results, { title: sr.platinum ? '플래티넘 뽑기' : '레어 뽑기', capsule: 'gold-capsule', rare: true, onClose: render });
   }
