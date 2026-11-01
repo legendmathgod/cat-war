@@ -5185,7 +5185,11 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
       }
       if (S.t >= st.next) {
         const alive = S.enemies.filter(e => !e.dead && e.key === sp.enemy).length;
-        if (alive < sp.maxAlive && (!sp.count || st.made < sp.count)) { spawnEnemy(sp.enemy, sp.mul); st.made++; }
+        if (alive < sp.maxAlive && (!sp.count || st.made < sp.count)) {
+          if (sp.count && ENEMIES[sp.enemy].boss) bossEntrance(sp.enemy, sp.mul);   // 보스 등장: 광란처럼 아군 모두 넉백 + 등장 효과
+          else spawnEnemy(sp.enemy, sp.mul);
+          st.made++;
+        }
         st.next += sp.every;
       }
     });
