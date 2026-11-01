@@ -229,6 +229,12 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
 .result .btn{width:34cqw}
 /* ---------- 보유 재화 / 스테이지 선택 / 보상 ---------- */
 .wallet-bar{margin-left:auto;margin-right:1.5cqw;display:flex;gap:1cqw}
+/* 통조림 런: 티켓 칸 바로 아래 */
+.can-run{position:absolute;right:1.5cqw;top:7.6cqw;z-index:2;display:flex;align-items:center;gap:.8cqw;padding:.5cqw 1.6cqw .5cqw .8cqw;cursor:pointer;
+  font-family:var(--display);font-size:2.2cqw;color:#fff;-webkit-text-stroke:.15cqw var(--ink);paint-order:stroke fill;
+  background:linear-gradient(#5aa8ff,#2f6fd8 55%,#1d4fa8);border:.35cqw solid var(--ink);border-radius:3cqw;box-shadow:0 .4cqw 0 var(--ink)}
+.can-run:active{transform:translateY(.3cqw);box-shadow:0 .1cqw 0 var(--ink)}
+.can-run svg{width:3.2cqw;height:3.2cqw}
 .pill{display:flex;align-items:center;gap:.6cqw;padding:.4cqw 1.2cqw;background:var(--ink);border-radius:3cqw;font-size:1.9cqw;color:var(--cream)}
 .pill b{font-family:var(--display);font-weight:400;font-size:2.4cqw;color:var(--btn);font-variant-numeric:tabular-nums}
 .pill svg{width:2.6cqw;height:2.6cqw}
@@ -507,7 +513,7 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
 .lg-item .lg-clear{position:absolute;left:1cqw;bottom:-1.9cqw;font-size:1.7cqw;color:var(--red);-webkit-text-stroke:.18cqw var(--ink);paint-order:stroke fill}
 .lg-item .lg-prog{position:absolute;right:1.4cqw;bottom:-1.9cqw;font-size:1.6cqw;color:var(--cream);-webkit-text-stroke:.18cqw var(--ink);paint-order:stroke fill}
 .lg-item .lg-talkicon{position:absolute;right:-1.6cqw;top:-1.4cqw;width:4.2cqw;height:3.6cqw}
-.lg-talk{position:absolute;right:3cqw;top:12cqw;width:33cqw;padding:2.4cqw 2cqw;background:rgba(38,58,48,.92);border:.4cqw solid #f4f1e6;border-radius:3cqw;
+.lg-talk{position:absolute;right:3cqw;top:13.6cqw;width:33cqw;padding:2.4cqw 2cqw;background:rgba(38,58,48,.92);border:.4cqw solid #f4f1e6;border-radius:3cqw;
   color:#fff;font-size:2cqw;line-height:1.6;text-align:center;z-index:1}
 .lg-talk::after{content:"";position:absolute;right:9cqw;bottom:-2.6cqw;border:1.3cqw solid transparent;border-top-color:#f4f1e6}
 .st-rw.cans{background:#ffb3a1}
@@ -650,6 +656,10 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
         <span class="pill ticket plat" title="플래티넘 티켓">플래티넘 <b id="p-plat">0</b></span>
       </div>
     </div>
+
+    <button class="can-run" id="btn-canrun" aria-label="통조림 런">
+      <svg viewBox="0 0 60 60" aria-hidden="true"><use href="#icon-can"/></svg>통조림 런
+    </button>
 
     <div class="menu">
       <button class="btn battle" id="btn-battle">
@@ -3548,6 +3558,7 @@ const GACHA = (function(){
     GACHA.play(results, { title: '냥코 뽑기', capsule: 'silver-capsule', onClose: refresh });
   }
   document.getElementById('btn-gacha').addEventListener('click', () => { refresh(); scr.hidden = false; });
+  document.getElementById('btn-canrun').addEventListener('click', () => GACHA.showToast('통조림 런은 곧 열려요!'));   // 통조림 런 (준비 중)
   document.getElementById('g-back').addEventListener('click', () => { scr.hidden = true; });
   document.getElementById('g-roll1').addEventListener('click', () => roll(1));
   document.getElementById('g-roll10').addEventListener('click', () => roll(10));
