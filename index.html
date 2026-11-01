@@ -4048,7 +4048,7 @@ CRAZY_LIST.forEach((c, i) => {
   LEGEND_STAGES.push({
     id: 'K' + (i + 1), no: 1, name: c.stage, group: 'cz-' + c.id, catBaseHp: 1500, crazy: true,
     spawns: [
-      { enemy: 'cz-' + c.id, first: 3, every: 999, maxAlive: 1, count: 1 },
+      { enemy: 'cz-' + c.id, first: 0, every: 999, maxAlive: 1, count: 1, onBaseHit: true },   // 적 성을 처음 때리면 등장
       { enemy: esc[0], first: 8,  every: 12, maxAlive: 3 },
       { enemy: esc[1], first: 14, every: 16, maxAlive: 2 },
       { enemy: esc[2], first: 20, every: 20, maxAlive: 2 },
@@ -4660,6 +4660,20 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     blurshake:  (u, f, b, bx) => { S.fx.push({ x: u.x, dir: u.dir, range: u.range, h: u.size, img: u.img, t: 0, dur: 0.8, blurFx: true }); S.shake = Math.max(S.shake, .5); },
     jet:        (u, f, b, bx) => S.fx.push({ x: u.x, tx: fxTarget(u, f, b, bx), dir: u.dir, h: u.size, t: 0, dur: 0.6, jetFx: true, seed: Math.random() * 50 }),
   };
+  // 광란 보스 등장: 적 성에서 보랏빛 폭발 → 아군 전원을 맵 중간 근처까지 날려 보냄 (피해 없음)
+  function bossEntrance(key){
+    const before = S.enemies.length;
+    spawnEnemy(key);
+    const boss = S.enemies[before];
+    const mid = (ENEMY_BASE_X + CAT_BASE_X) / 2;
+    S.cats.forEach(c => {
+      if (c.dead || c.dying) return;
+      const far = Math.max(KB_DIST, mid + 40 + Math.random() * 80 - c.x);
+      c.state = 'kb'; c.kbTime = 0.9; c.st = 0.9; c.kbFar = far; c.hitDone = true;
+    });
+    S.fx.push({ x: ENEMY_BASE_X + BASE_HALF, t: 0, dur: 1.6, entranceFx: true, name: boss ? ENEMIES[key].name : '', seed: Math.random() * 50 });
+    S.shake = 0.9; S.flash = Math.max(S.flash || 0, 0.4);
+  }
   function stepSide(list, foes, foeBase, foeBaseX, dt){
     for (const u of list) {
       if (u.dead) { u.dead += dt; continue; }
@@ -4667,9 +4681,9 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
 
       if (u.state === 'kb') {                        // 넉백: 뒤로 밀려나며 무적
         u.st -= dt;
-        u.x -= u.dir * (KB_DIST / KB_TIME) * dt;
+        u.x -= u.dir * ((u.kbFar || KB_DIST) / (u.kbTime || KB_TIME)) * dt;
         u.x = Math.max(ENEMY_BASE_X + BASE_HALF, Math.min(CAT_BASE_X - BASE_HALF, u.x));
-        if (u.st <= 0) { if (u.dying) u.dead = 0.0001; else u.state = 'move'; }
+        if (u.st <= 0) { u.kbFar = 0; u.kbTime = 0; if (u.dying) u.dead = 0.0001; else u.state = 'move'; }
         continue;
       }
 
@@ -4683,7 +4697,6 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
           if (u.motion === 'dance') { const tg = findTarget(u, foes, foeBase, foeBaseX); S.fx.push({ x: u.x, tx: !tg ? u.x + u.dir * u.range * .6 : tg === foeBase ? foeBaseX - BASE_HALF * u.dir : tg.x, t: 0, dur: 0.7, disco: true, h: u.size }); }
           if (u.motion === 'oishi') oishiFx(u, 0, foes, foeBase, foeBaseX);
           if (ENEMY_FX[u.motion]) ENEMY_FX[u.motion](u, foes, foeBase, foeBaseX);
-          if (u.key && ENEMIES[u.key] && ENEMIES[u.key].crazy) { S.fx.push({ x: u.x, dir: u.dir, range: u.range, h: u.size, t: 0, dur: 0.7, crazyFx: true, seed: Math.random() * 50 }); S.shake = Math.max(S.shake, .4); }
           if (u.motion === 'ttabong') {                     // 쌍따봉: 두 발에서 거대한 따봉 발이 날아가 쿵! 쿵!
             const fx0 = u.x + (-0.5 + .2) * u.size * 1.4 * 240 / 260, fy0 = (1 - .17) * u.size * 1.4;
             S.fx.push({ x: fx0, my: fy0, dir: u.dir, range: u.range, t: 0, dur: 1.4, ssangFx: true, seed: Math.random() * 100 });
@@ -4785,6 +4798,10 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     if (S.pvp) updatePvpP2(dt);
     S.stage.spawns.forEach((sp, i) => {
       const st = S.spawnState[i];
+      if (sp.onBaseHit) {                              // 성을 처음 때리는 순간 보스 등장 + 아군 모두 맵 중간까지 넉백
+        if (!st.made && S.enemyBase.hp < S.enemyBase.max) { st.made = 1; bossEntrance(sp.enemy); }
+        return;
+      }
       if (S.t >= st.next) {
         const alive = S.enemies.filter(e => !e.dead && e.key === sp.enemy).length;
         if (alive < sp.maxAlive && (!sp.count || st.made < sp.count)) { spawnEnemy(sp.enemy); st.made++; }
@@ -5030,9 +5047,9 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
       pose.dy -= Math.abs(Math.sin(t * 1.3)) * 5;
       pose.sy *= 1 - Math.abs(Math.cos(t * 1.3)) * .04;
     }
-    if (u.state === 'kb' && !u.dead) {               // 넉백: 뒤로 튕기며 포물선
-      const q = 1 - u.st / KB_TIME;
-      pose.dy = -Math.sin(Math.PI * q) * 28; pose.rot = -.25 * Math.sin(Math.PI * q);
+    if (u.state === 'kb' && !u.dead) {               // 넉백: 뒤로 튕기며 포물선 (보스 등장 넉백은 높이 날아감)
+      const kt = u.kbTime || KB_TIME, q = 1 - u.st / kt, hi = u.kbTime ? 110 : 28;
+      pose.dy = -Math.sin(Math.PI * q) * hi; pose.rot = -.25 * Math.sin(Math.PI * q) * (u.kbTime ? 3 : 1);
     }
     const lift = u.dead && !u.dust ? u.dead * 120 * k : 0;
     const flyY = u.fly ? 45 * k : 0;
@@ -5331,6 +5348,42 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
         }
         ctx.restore();
         return;
+      }
+      if (f.entranceFx) {                                 // 광란 보스 등장: 성에서 보랏빛 폭발 + 화면 가득 충격파 + 이름
+        ctx.save();
+        const ox = f.x * k, oy = gy - 60 * k;
+        const dark = p < .1 ? p / .1 : Math.max(0, 1 - (p - .1) / .9);
+        ctx.globalAlpha = .45 * dark; ctx.fillStyle = '#14041e'; ctx.fillRect(-10, -10, cw + 20, ch + 20);
+        ctx.globalCompositeOperation = 'lighter';
+        for (let i = 0; i < 4; i++) {                     // 보랏빛 충격파 고리 (오른쪽으로 퍼짐)
+          const q = Math.min(1, Math.max(0, (p - i * .08) / .7)); if (q <= 0 || q >= 1) continue;
+          ctx.globalAlpha = (1 - q) * .9; ctx.strokeStyle = i % 2 ? '#f0d0ff' : '#a04dff'; ctx.lineWidth = (18 - 12 * q) * k + 3;
+          ctx.beginPath(); ctx.ellipse(ox, gy, 40 * k + q * 800 * k, (30 + 120 * q) * k, 0, 0, Math.PI * 2); ctx.stroke();
+        }
+        const g = ctx.createRadialGradient(ox, oy, 0, ox, oy, (80 + 200 * Math.min(1, p * 3)) * k);   // 성에서 터지는 빛
+        g.addColorStop(0, 'rgba(255,240,255,' + dark + ')'); g.addColorStop(.4, 'rgba(170,80,255,' + dark * .8 + ')'); g.addColorStop(1, 'rgba(60,0,120,0)');
+        ctx.globalAlpha = 1; ctx.fillStyle = g; ctx.beginPath(); ctx.arc(ox, oy, (80 + 200 * Math.min(1, p * 3)) * k, 0, Math.PI * 2); ctx.fill();
+        for (let i = 0; i < 6; i++) {                     // 번개
+          const a = -Math.PI * .1 + i * .25 - .6, len = (120 + (i * 37) % 80) * k * Math.min(1, p * 5);
+          ctx.globalAlpha = dark; ctx.strokeStyle = '#f3e0ff'; ctx.lineWidth = 3 * k + 1;
+          ctx.beginPath(); ctx.moveTo(ox, oy);
+          for (let j = 1; j <= 4; j++) ctx.lineTo(ox + Math.cos(a) * len * j / 4 + Math.sin(f.seed + i * 3 + j * 7 + f.t * 30) * 12 * k, oy + Math.sin(a) * len * j / 4);
+          ctx.stroke();
+        }
+        ctx.globalCompositeOperation = 'source-over';
+        if (p > .12) {                                    // 이름 + "등장!!"
+          const q = Math.min(1, (p - .12) / .1), fade = p > .8 ? 1 - (p - .8) / .2 : 1;
+          ctx.globalAlpha = fade; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.save(); ctx.translate(cw / 2 + (q < 1 ? Math.sin(f.t * 90) * 8 : 0), ch * .26); const sc = 1.8 - .8 * q; ctx.scale(sc, sc);
+          ctx.font = Math.max(20, 64 * k) + 'px "Black Han Sans", sans-serif';
+          ctx.lineWidth = 12; ctx.strokeStyle = '#14041e'; ctx.strokeText(f.name, 0, 0);
+          const tg = ctx.createLinearGradient(0, -30 * k, 0, 30 * k); tg.addColorStop(0, '#ffffff'); tg.addColorStop(.5, '#d7a6ff'); tg.addColorStop(1, '#7a22e0');
+          ctx.fillStyle = tg; ctx.fillText(f.name, 0, 0);
+          ctx.font = Math.max(16, 44 * k) + 'px "Black Han Sans", sans-serif';
+          ctx.lineWidth = 9; ctx.strokeText('등장!!', 0, 62 * k); ctx.fillStyle = '#ff5ad0'; ctx.fillText('등장!!', 0, 62 * k);
+          ctx.restore();
+        }
+        ctx.restore(); return;
       }
       if (f.crazyFx) {                                    // 광란: 보랏빛 할퀸 자국 3줄 + 번개 충격파
         ctx.save();
