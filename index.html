@@ -239,9 +239,6 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
 .canrun{position:absolute;inset:0;z-index:20;background:#7cc8f0;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}
 .canrun canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .cr-hud{position:absolute;left:2cqw;right:2cqw;top:1.6cqw;display:flex;align-items:center;gap:2cqw;pointer-events:none}
-.cr-energy{flex:0 0 38cqw;height:3.2cqw;background:#2a1708;border:.4cqw solid var(--ink);border-radius:2cqw;overflow:hidden;position:relative}
-.cr-energy i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(#ff9a7a,#e8463a);border-radius:1.6cqw;transition:width .1s}
-.cr-energy b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:1.8cqw;color:#fff;-webkit-text-stroke:.12cqw var(--ink);paint-order:stroke fill}
 .cr-cans{display:flex;align-items:center;gap:.8cqw;padding:.3cqw 1.6cqw .3cqw .6cqw;background:rgba(42,23,8,.85);border-radius:3cqw;font-family:var(--display);font-size:2.8cqw;color:#ffe14d}
 .cr-cans svg{width:3.4cqw;height:3.4cqw}
 .cr-dist{margin-left:auto;font-family:var(--display);font-size:2.2cqw;color:#fff;-webkit-text-stroke:.15cqw var(--ink);paint-order:stroke fill}
@@ -249,7 +246,6 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
   box-shadow:inset 0 -.8cqw 0 rgba(0,0,0,.2),0 .6cqw 0 var(--ink);cursor:pointer;touch-action:none;opacity:.92;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 .canrun{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .cr-btn:active,.cr-btn.on{transform:translateY(.4cqw);box-shadow:inset 0 -.8cqw 0 rgba(0,0,0,.2),0 .2cqw 0 var(--ink)}
-.cr-slide{left:2.4cqw;background:linear-gradient(#ffd27a,#f0a020)}
 .cr-jump{right:2.4cqw;background:linear-gradient(#7ad0ff,#2f8ae0)}
 .cr-panel{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(20,10,30,.55);z-index:3}
 .cr-card{width:52cqw;padding:3cqw;background:#fff7e6;border:.6cqw solid var(--ink);border-radius:3cqw;text-align:center;box-shadow:0 1cqw 0 var(--ink)}
@@ -1002,16 +998,14 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
   <div class="canrun" id="canrun" hidden>
     <canvas id="cr-cv"></canvas>
     <div class="cr-hud">
-      <div class="cr-energy"><i id="cr-en"></i><b>체력</b></div>
       <div class="cr-cans"><svg viewBox="0 0 60 60" aria-hidden="true"><use href="#icon-can"/></svg><span id="cr-score">0</span></div>
       <div class="cr-dist" id="cr-dist">0m</div>
     </div>
-    <button class="cr-btn cr-slide" id="cr-slide">슬라이드</button>
     <button class="cr-btn cr-jump" id="cr-jump">점프</button>
     <div class="cr-panel" id="cr-start">
       <div class="cr-card">
         <h2>통조림 런</h2>
-        <p>달리면서 통조림을 모으자! 장애물은 <b>점프</b>(두 번 누르면 2단 점프)와 <b>슬라이드</b>로 피하고,<br>체력이 떨어지면 끝! 우유를 먹으면 체력이 회복돼요.</p>
+        <p>달리면서 통조림을 모으자! 화면을 누르거나 <b>점프</b>(스페이스바)로 장애물을 넘어요.<br>장애물에 한 번이라도 부딪히면 끝!</p>
         <p class="big">오늘 남은 기회 <span id="cr-left">3</span></p>
         <p>최고 기록: 통조림 <b id="cr-best">0</b>개</p>
         <div class="row"><button class="cr-out" id="cr-exit1">나가기</button><button class="cr-go" id="cr-go">달리기!</button></div>
@@ -3434,7 +3428,6 @@ document.getElementById('welcome-ok').addEventListener('click', () => {
   // 달리는 고양이 그림 (기본 고양이)
   const catImg = new Image();
   catImg.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="240" height="260" viewBox="0 0 240 260">' + document.getElementById('soldier').outerHTML.replace(/ id="[^"]*"/, '') + '</svg>');
-  const milkImg = new Image();
 
   let G = null, raf = 0, last = 0, dpr = 1;
   function resize(){
@@ -3442,57 +3435,42 @@ document.getElementById('welcome-ok').addEventListener('click', () => {
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
   }
   function newGame(){
-    G = { t: 0, dist: 0, speed: 380, score: 0, energy: 100, over: false,
-      p: { y: GY, vy: 0, jumps: 0, slide: false, inv: 0, run: 0 },
+    G = { t: 0, dist: 0, speed: 420, score: 0, over: false,
+      p: { y: GY, vy: 0, jumps: 0, inv: 0, run: 0 },
       obs: [], items: [], nextX: 700, fx: [], hills: Math.random() * 1000 };
     for (let i = 0; i < 6; i++) G.items.push({ x: 320 + i * 60, y: GY - 40, k: 'can' });
   }
   // 앞으로 나올 구간 만들기 (장애물 + 통조림 배치)
   function genChunk(){
     let x = G.nextX;
-    const r = Math.random(), lvl = Math.min(1, G.t / 90);
-    const line = (x0, n, y, gap = 55) => { for (let i = 0; i < n; i++) G.items.push({ x: x0 + i * gap, y, k: 'can' }); };
-    const arc = (x0, n, top, gap = 50) => { for (let i = 0; i < n; i++) { const a = i / (n - 1); G.items.push({ x: x0 + i * gap, y: GY - 40 - Math.sin(Math.PI * a) * top, k: 'can' }); } };
-    if (r < .28) {                                   // 낮은 장애물: 점프
-      G.obs.push({ x: x + 160, w: 46, h: 54, k: 'pencil' });
-      arc(x + 40, 7, 150); line(x + 420, 4, GY - 40);
-      x += 640;
-    } else if (r < .5) {                             // 매달린 장애물: 슬라이드
-      G.obs.push({ x: x + 120, w: 210, h: GY - 64, k: 'bar' });
-      line(x + 120, 5, GY - 22, 48);
-      x += 560;
-    } else if (r < .68) {                            // 높은 장애물: 2단 점프
-      G.obs.push({ x: x + 200, w: 56, h: 128, k: 'books' });
-      arc(x + 50, 9, 270, 46); 
-      x += 700;
-    } else if (r < .84) {                            // 연속 낮은 장애물
-      G.obs.push({ x: x + 140, w: 46, h: 54, k: 'pencil' });
-      G.obs.push({ x: x + 420, w: 46, h: 54, k: 'pencil' });
-      arc(x + 20, 6, 140); arc(x + 300, 6, 140);
-      x += 720;
-    } else {                                         // 보너스: 공중 통조림 + 큰 통조림
-      line(x + 40, 8, GY - 40, 50);
-      arc(x + 460, 7, 200, 50);
-      G.items.push({ x: x + 610, y: GY - 260, k: 'big' });
-      x += 860;
-    }
-    if (Math.random() < .22 + lvl * .1) G.items.push({ x: x - 120, y: GY - 150, k: 'milk' });   // 체력 회복 우유
-    G.nextX = x;
+    const r = Math.random(), lvl = Math.min(1, G.t / 60);
+    const arc = (x0, n, top, gap = 46) => { for (let i = 0; i < n; i++) { const a = i / (n - 1); G.items.push({ x: x0 + i * gap, y: GY - 40 - Math.sin(Math.PI * a) * top, k: 'can' }); } };
+    const line = (x0, n, y, gap = 50) => { for (let i = 0; i < n; i++) G.items.push({ x: x0 + i * gap, y, k: 'can' }); };
+    let w;
+    if (r < .35) { w = 46; G.obs.push({ x, w, h: 54, k: 'pencil', n: 2 }); }                       // 연필 2자루
+    else if (r < .55) { w = 68; G.obs.push({ x, w, h: 60, k: 'pencil', n: 3 }); }                  // 연필 3자루
+    else if (r < .72) { w = 56; G.obs.push({ x, w, h: 78, k: 'books' }); }                         // 쌓인 책
+    else if (r < .86 || G.t < 15) { w = 70; G.obs.push({ x, w, h: 30, y: GY - 84, k: 'plane' }); } // 낮게 나는 종이비행기: 점프
+    else { w = 70; G.obs.push({ x, w, h: 30, y: GY - 178, k: 'plane' }); }                          // 높게 나는 종이비행기: 그냥 달리기
+    // 통조림: 장애물 위 아치 또는 땅 위 줄
+    if (Math.random() < .55) arc(x - 120 + w / 2, 6, 150);
+    const gap = G.speed * (0.9 + Math.random() * (1.3 - lvl * .4));
+    if (gap > 520 && Math.random() < .6) line(x + w + 120, Math.min(5, Math.floor((gap - 260) / 60)), GY - 40);
+    if (Math.random() < .06) G.items.push({ x: x + w / 2, y: GY - 230, k: 'big' });
+    G.nextX = x + w + Math.max(330, gap);
   }
   function hit(a, b){ return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y; }
-  function playerBox(){ const p = G.p; return p.slide ? { x: 150, y: p.y - 44, w: 76, h: 44 } : { x: 160, y: p.y - 92, w: 58, h: 88 }; }
+  function playerBox(){ const p = G.p; return { x: 162, y: p.y - 88, w: 54, h: 82 }; }
 
   function step(dt){
     const g = G, p = g.p;
     g.t += dt;
-    g.speed = Math.min(820, 380 + g.t * 5);
+    g.speed = Math.min(900, 420 + g.t * 6);
     const mv = g.speed * dt;
     g.dist += mv / 40;
-    g.energy -= dt * (3.2 + g.t * .02);               // 시간이 지날수록 체력이 빨리 줄어듦
     // 물리
     p.vy += 2700 * dt; p.y += p.vy * dt;
     if (p.y >= GY) { p.y = GY; p.vy = 0; p.jumps = 0; }
-    p.slide = slideHeld && p.y >= GY;
     p.inv = Math.max(0, p.inv - dt); p.run += dt * g.speed / 60;
     // 이동
     g.obs.forEach(o => o.x -= mv); g.items.forEach(it => it.x -= mv); g.nextX -= mv;
@@ -3501,8 +3479,8 @@ document.getElementById('welcome-ok').addEventListener('click', () => {
     // 충돌
     const pb = playerBox();
     if (!p.inv) for (const o of g.obs) {
-      const ob = o.k === 'bar' ? { x: o.x, y: 0, w: o.w, h: o.h } : { x: o.x + 6, y: GY - o.h, w: o.w - 12, h: o.h };
-      if (hit(pb, ob)) { g.energy -= 22; p.inv = 1.2; g.fx.push({ k: 'ouch', t: 0, x: 200, y: p.y - 120 }); break; }
+      const ob = o.k === 'plane' ? { x: o.x + 6, y: o.y + 4, w: o.w - 12, h: o.h - 8 } : { x: o.x + 6, y: GY - o.h, w: o.w - 12, h: o.h };
+      if (hit(pb, ob)) { g.fx.push({ k: 'ouch', t: 0, x: 200, y: p.y - 120 }); g.dead = true; break; }
     }
     for (const it of g.items) {
       if (it.got) continue;
@@ -3511,12 +3489,11 @@ document.getElementById('welcome-ok').addEventListener('click', () => {
         it.got = true;
         if (it.k === 'can') { g.score += 1; }
         else if (it.k === 'big') { g.score += 20; g.fx.push({ k: 'plus', t: 0, x: it.x, y: it.y, txt: '+20' }); }
-        else if (it.k === 'milk') { g.energy = Math.min(100, g.energy + 30); g.fx.push({ k: 'plus', t: 0, x: it.x, y: it.y, txt: '체력 +30' }); }
-        if (it.k !== 'milk') g.fx.push({ k: 'spark', t: 0, x: it.x, y: it.y });
+        g.fx.push({ k: 'spark', t: 0, x: it.x, y: it.y });
       }
     }
     g.fx.forEach(f => f.t += dt); g.fx = g.fx.filter(f => f.t < .7);
-    if (g.energy <= 0) { g.energy = 0; endGame(); }
+    if (g.dead) { draw(); endGame(); }
   }
 
   // ---- 그리기 ----
@@ -3541,12 +3518,12 @@ document.getElementById('welcome-ok').addEventListener('click', () => {
   }
   function drawObstacle(o){
     ctx.save(); ctx.lineWidth = 3; ctx.strokeStyle = '#2a1708';
-    if (o.k === 'pencil') {                           // 뾰족 연필 두 자루
-      for (let i = 0; i < 2; i++) {
-        const x = o.x + i * 22;
-        ctx.fillStyle = '#ffcc33'; ctx.fillRect(x, GY - o.h + 16, 20, o.h - 16); ctx.strokeRect(x, GY - o.h + 16, 20, o.h - 16);
-        ctx.fillStyle = '#f2d2a8'; ctx.beginPath(); ctx.moveTo(x, GY - o.h + 16); ctx.lineTo(x + 10, GY - o.h); ctx.lineTo(x + 20, GY - o.h + 16); ctx.closePath(); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#2a1708'; ctx.beginPath(); ctx.moveTo(x + 7, GY - o.h + 5); ctx.lineTo(x + 10, GY - o.h); ctx.lineTo(x + 13, GY - o.h + 5); ctx.fill();
+    if (o.k === 'pencil') {                           // 뾰족 연필
+      for (let i = 0; i < (o.n || 2); i++) {
+        const x = o.x + i * 22, h = o.h - (o.n === 3 && i !== 1 ? 10 : 0);
+        ctx.fillStyle = '#ffcc33'; ctx.fillRect(x, GY - h + 16, 20, h - 16); ctx.strokeRect(x, GY - h + 16, 20, h - 16);
+        ctx.fillStyle = '#f2d2a8'; ctx.beginPath(); ctx.moveTo(x, GY - h + 16); ctx.lineTo(x + 10, GY - h); ctx.lineTo(x + 20, GY - h + 16); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#2a1708'; ctx.beginPath(); ctx.moveTo(x + 7, GY - h + 5); ctx.lineTo(x + 10, GY - h); ctx.lineTo(x + 13, GY - h + 5); ctx.fill();
       }
     } else if (o.k === 'books') {                     // 높이 쌓인 책
       const cols = ['#e8463a', '#3a7be0', '#3fb26b', '#ffcc33', '#a35cff'];
@@ -3554,14 +3531,12 @@ document.getElementById('welcome-ok').addEventListener('click', () => {
       for (let i = 0; i < n; i++) { const y = GY - (i + 1) * (o.h / n), off = (i % 2 ? 5 : -4);
         ctx.fillStyle = cols[i % cols.length]; ctx.fillRect(o.x + off, y, o.w, o.h / n); ctx.strokeRect(o.x + off, y, o.w, o.h / n);
         ctx.fillStyle = '#fff7e6'; ctx.fillRect(o.x + off + o.w - 8, y + 4, 6, o.h / n - 8); }
-    } else {                                           // 매달린 칠판 (슬라이드로 통과)
-      ctx.strokeStyle = '#5a3a1a'; ctx.lineWidth = 4;
-      ctx.beginPath(); ctx.moveTo(o.x + 30, 0); ctx.lineTo(o.x + 30, o.h - 70); ctx.moveTo(o.x + o.w - 30, 0); ctx.lineTo(o.x + o.w - 30, o.h - 70); ctx.stroke();
-      ctx.strokeStyle = '#2a1708'; ctx.lineWidth = 3;
-      ctx.fillStyle = '#8b5a2b'; ctx.fillRect(o.x - 6, o.h - 76, o.w + 12, 76); ctx.strokeRect(o.x - 6, o.h - 76, o.w + 12, 76);
-      ctx.fillStyle = '#2f5a3a'; ctx.fillRect(o.x + 4, o.h - 68, o.w - 8, 60);
-      ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.font = '700 22px "Black Han Sans", sans-serif'; ctx.textAlign = 'center';
-      ctx.fillText('숙제 검사!', o.x + o.w / 2, o.h - 30);
+    } else {                                           // 종이비행기
+      const x = o.x, y = o.y + o.h / 2, fl = Math.sin(G.t * 10) * 3;
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.moveTo(x, y + fl); ctx.lineTo(x + o.w, y - 14); ctx.lineTo(x + o.w * .72, y + 14); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#dfe7ee'; ctx.beginPath(); ctx.moveTo(x, y + fl); ctx.lineTo(x + o.w * .72, y + 14); ctx.lineTo(x + o.w * .55, y + 2); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = 'rgba(42,23,8,.35)'; ctx.lineWidth = 2; ctx.beginPath();
+      for (let i = 0; i < 3; i++) { ctx.moveTo(x + o.w + 8 + i * 4, y - 8 + i * 8); ctx.lineTo(x + o.w + 26 + i * 6, y - 8 + i * 8); } ctx.stroke();
     }
     ctx.restore();
   }
@@ -3610,13 +3585,12 @@ document.getElementById('welcome-ok').addEventListener('click', () => {
       ctx.save();
       const air = p.y < GY;
       ctx.translate(190, p.y);
-      if (p.slide) { ctx.scale(1.25, .55); }
-      else if (air) ctx.rotate(p.jumps > 1 ? (g.t * 14) : -.12);
+      if (air) ctx.rotate(-.12);
       else ctx.translate(0, -Math.abs(Math.sin(p.run)) * 6);
       ctx.scale(-1, 1);                                // 오른쪽을 보고 달림
       if (catImg.complete) ctx.drawImage(catImg, -50, -104, 96, 104);
       ctx.restore();
-      if (!air && !p.slide) { ctx.fillStyle = 'rgba(255,255,255,.7)'; for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.arc(150 - i * 18 - (g.t * 300 % 18), GY - 6 - i * 3, 5 - i, 0, 7); ctx.fill(); } }
+      if (!air) { ctx.fillStyle = 'rgba(255,255,255,.7)'; for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.arc(150 - i * 18 - (g.t * 300 % 18), GY - 6 - i * 3, 5 - i, 0, 7); ctx.fill(); } }
     }
     // 효과
     g.fx.forEach(f => {
@@ -3630,7 +3604,6 @@ document.getElementById('welcome-ok').addEventListener('click', () => {
     });
   }
   function hud(){
-    $('cr-en').style.width = Math.max(0, G.energy) + '%';
     $('cr-score').textContent = G.score;
     $('cr-dist').textContent = Math.floor(G.dist) + 'm';
   }
@@ -3641,26 +3614,22 @@ document.getElementById('welcome-ok').addEventListener('click', () => {
     if (!scr.hidden && G && !G.over) raf = requestAnimationFrame(loop);
   }
   // ---- 조작 ----
-  let slideHeld = false;
   function jump(){
     if (!G || G.over) return;
     const p = G.p;
-    if (p.jumps < 2) { p.vy = p.jumps ? -880 : -980; p.jumps++; }
+    if (p.y >= GY) { p.vy = -1000; p.jumps = 1; }
   }
-  const jb = $('cr-jump'), sb = $('cr-slide');
-  jb.addEventListener('pointerdown', e => { e.preventDefault(); jump(); });
-  sb.addEventListener('pointerdown', e => { e.preventDefault(); try { sb.setPointerCapture(e.pointerId); } catch (_) {} slideHeld = true; sb.classList.add('on'); });
-  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(t => sb.addEventListener(t, () => { slideHeld = false; sb.classList.remove('on'); }));
+  const jb = $('cr-jump');
+  jb.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); jump(); });
+  cv.addEventListener('pointerdown', e => { e.preventDefault(); jump(); });   // 화면 아무 데나 눌러도 점프
   // 꾹 누를 때 뜨는 메뉴/선택 화면 막기
   scr.addEventListener('contextmenu', e => e.preventDefault());
   scr.addEventListener('selectstart', e => e.preventDefault());
-  [jb, sb].forEach(b => b.addEventListener('touchstart', e => e.preventDefault(), { passive: false }));
+  [jb, cv].forEach(b => b.addEventListener('touchstart', e => e.preventDefault(), { passive: false }));
   window.addEventListener('keydown', e => {
     if (scr.hidden || !G || G.over) return;
     if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); if (!e.repeat) jump(); }
-    if (e.code === 'ArrowDown') { e.preventDefault(); slideHeld = true; sb.classList.add('on'); }
   });
-  window.addEventListener('keyup', e => { if (e.code === 'ArrowDown') { slideHeld = false; sb.classList.remove('on'); } });
 
   // ---- 화면 ----
   function showStart(){
