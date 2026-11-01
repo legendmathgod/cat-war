@@ -733,6 +733,15 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
         <button class="btn w-ok" id="welcome-ok">받기</button>
       </div>
     </div>
+    <!-- 운영 선물 (모든 유저에게 한 번씩) -->
+    <div class="welcome" id="gift" hidden>
+      <div class="w-box">
+        <div class="w-title outline">선물이 도착했어요!</div>
+        <div class="w-tickets"><svg viewBox="0 0 60 60" aria-hidden="true"><use href="#icon-can"/></svg></div>
+        <div class="w-sub" id="gift-msg"></div>
+        <button class="btn w-ok" id="gift-ok">받기</button>
+      </div>
+    </div>
     <form class="dev-code" id="dev-code" hidden>
       <label for="dev-code-input">개발자 코드</label>
       <input id="dev-code-input" type="password" autocomplete="off">
@@ -3889,12 +3898,29 @@ const AUTH = (function(){
 
 // ---------- 처음 홈에 들어오면 환영 메시지 + 레어 티켓 10장 ----------
 function showWelcome(){
-  if (PLAYER.welcomed) return;
+  if (PLAYER.welcomed) { showGift(); return; }
   document.getElementById('welcome').hidden = false;
 }
 document.getElementById('welcome-ok').addEventListener('click', () => {
   if (!PLAYER.welcomed) { PLAYER.welcomed = true; PLAYER.rareTicket += 10; savePlayer(); renderPlayer(); }
   document.getElementById('welcome').hidden = true;
+  showGift();
+});
+// ---------- 운영 선물: 모든 유저에게 계정마다 한 번씩 (받기를 눌러야 들어감) ----------
+const GIFTS = [
+  { id: 'cans1500-20261101', cans: 1500, msg: '모든 유저에게 통조림 1500개를 드려요!' },
+];
+function pendingGift(){ const got = PLAYER.gifts || []; return GIFTS.find(g => !got.includes(g.id)); }
+function showGift(){
+  const g = pendingGift(); if (!g) return;
+  document.getElementById('gift-msg').textContent = g.msg;
+  document.getElementById('gift').hidden = false;
+}
+document.getElementById('gift-ok').addEventListener('click', () => {
+  const g = pendingGift();
+  if (g) { PLAYER.gifts = (PLAYER.gifts || []).concat(g.id); PLAYER.cans = (PLAYER.cans || 0) + g.cans; savePlayer(); renderPlayer(); }
+  document.getElementById('gift').hidden = true;
+  showGift();                                                     // 선물이 더 있으면 이어서
 });
 
 // ---------- 모드 선택 → 장 선택 → 홈 ----------
