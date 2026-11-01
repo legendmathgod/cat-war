@@ -1752,6 +1752,271 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
       <path d="M52 238 q10 -6 20 0 q10 6 20 0" fill="none" stroke="#c8a24a" stroke-width="3"/>
     </g>
 
+    <!-- ===== 추가 적: 교실 / 기숙사 / 레전드 (그라데이션·명암 있는 디테일 버전) ===== -->
+    <!-- 분필 요정 -->
+    <g id="chalk" stroke="#2a1708" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <defs>
+        <linearGradient id="g-chalk" x1="0" x2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#eef1f4"/><stop offset="1" stop-color="#c9d0d8"/></linearGradient>
+        <radialGradient id="g-dust"><stop offset="0" stop-color="#ffffff" stop-opacity=".9"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
+      </defs>
+      <g transform="translate(240 0) scale(-1 1)">
+      <circle cx="60" cy="70" r="40" fill="url(#g-dust)" stroke="none"/><circle cx="190" cy="96" r="34" fill="url(#g-dust)" stroke="none"/>
+      <path d="M100 236 L94 254 M140 236 L146 254" stroke-width="8"/>
+      <rect x="76" y="48" width="88" height="192" rx="30" fill="url(#g-chalk)"/>
+      <path d="M76 82 Q120 92 164 82" fill="none" stroke="#c9d0d8" stroke-width="4"/>
+      <path d="M90 52 Q120 36 150 52" fill="none" stroke="#fff" stroke-width="6"/>
+      <path d="M78 150 Q50 140 40 116" fill="none" stroke-width="10"/>
+      <rect x="22" y="88" width="20" height="40" rx="8" fill="#ffe14d" transform="rotate(-25 32 108)"/>
+      <path d="M162 150 Q186 160 192 186" fill="none" stroke-width="10"/>
+      <path d="M94 116 L114 124 M146 116 L126 124" stroke-width="6"/>
+      <ellipse cx="104" cy="136" rx="8" ry="10" fill="#2a1708" stroke="none"/><ellipse cx="136" cy="136" rx="8" ry="10" fill="#2a1708" stroke="none"/>
+      <circle cx="106" cy="132" r="3" fill="#fff" stroke="none"/><circle cx="138" cy="132" r="3" fill="#fff" stroke="none"/>
+      <path d="M106 168 Q120 160 134 168" fill="none" stroke-width="5"/>
+      <ellipse cx="92" cy="154" rx="7" ry="4" fill="#ffc2cf" stroke="none"/><ellipse cx="148" cy="154" rx="7" ry="4" fill="#ffc2cf" stroke="none"/>
+      <path d="M86 200 l10 6 M150 210 l-12 4 M110 224 l8 -6" stroke="#c9d0d8" stroke-width="3"/>
+      </g>
+    </g>
+
+    <!-- 칠판지우개 전차 (큰 유닛) -->
+    <g id="eraser" stroke="#2a1708" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <defs>
+        <linearGradient id="g-er-top" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5d8fe0"/><stop offset="1" stop-color="#2f5aa8"/></linearGradient>
+        <linearGradient id="g-er-felt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a7f88"/><stop offset="1" stop-color="#4a4e56"/></linearGradient>
+        <linearGradient id="g-er-tread" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3d44"/><stop offset="1" stop-color="#1c1d22"/></linearGradient>
+      </defs>
+      <g transform="translate(240 0) scale(-1 1)">
+      <!-- 분필 연기 굴뚝 -->
+      <rect x="168" y="40" width="22" height="50" rx="6" fill="#fffdf4"/><rect x="196" y="56" width="18" height="36" rx="5" fill="#ffe14d"/>
+      <circle cx="180" cy="30" r="13" fill="#fff" stroke-width="3"/><circle cx="196" cy="16" r="9" fill="#fff" stroke-width="3"/><circle cx="206" cy="44" r="8" fill="#fff" stroke-width="3"/>
+      <!-- 지시봉 포신 -->
+      <path d="M70 104 L6 86" stroke="#8b5a2b" stroke-width="14"/><path d="M70 104 L6 86" stroke="#c98a45" stroke-width="6"/><circle cx="6" cy="86" r="8" fill="#e8463a"/>
+      <!-- 몸통 (손잡이 + 펠트) -->
+      <path d="M44 92 Q44 76 60 76 H200 Q216 76 216 92 V140 H44 Z" fill="url(#g-er-top)"/>
+      <path d="M60 86 H200" stroke="#9fc0ff" stroke-width="5"/>
+      <rect x="34" y="138" width="192" height="40" rx="8" fill="url(#g-er-felt)"/>
+      <path d="M44 150 H216 M44 162 H216" stroke="#5e636c" stroke-width="3"/>
+      <path d="M50 172 l20 -4 M96 174 l26 -6 M150 172 l30 -5" stroke="#f4f4f4" stroke-width="3"/>
+      <!-- 화난 눈 -->
+      <path d="M92 98 L124 110 M184 98 L152 110" stroke-width="7"/>
+      <ellipse cx="110" cy="120" rx="12" ry="9" fill="#fff"/><ellipse cx="166" cy="120" rx="12" ry="9" fill="#fff"/>
+      <circle cx="106" cy="122" r="5" fill="#2a1708" stroke="none"/><circle cx="162" cy="122" r="5" fill="#2a1708" stroke="none"/>
+      <!-- 무한궤도 -->
+      <rect x="24" y="182" width="212" height="62" rx="31" fill="url(#g-er-tread)"/>
+      <g fill="#8a8f99"><circle cx="58" cy="213" r="18"/><circle cx="106" cy="213" r="18"/><circle cx="154" cy="213" r="18"/><circle cx="202" cy="213" r="18"/></g>
+      <g fill="#c9ced6" stroke-width="3"><circle cx="58" cy="213" r="7"/><circle cx="106" cy="213" r="7"/><circle cx="154" cy="213" r="7"/><circle cx="202" cy="213" r="7"/></g>
+      <path d="M40 186 v8 M64 184 v8 M88 184 v8 M112 184 v8 M136 184 v8 M160 184 v8 M184 184 v8 M208 186 v8 M40 236 v8 M70 238 v8 M100 238 v8 M130 238 v8 M160 238 v8 M190 238 v8 M218 236 v8" stroke="#5e636c" stroke-width="4"/>
+      </g>
+    </g>
+
+    <!-- 빵점 시험지 떼 (날아다님) -->
+    <g id="paper" stroke="#2a1708" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M40 120 L20 92 L60 106 Z M200 120 L222 90 L180 106 Z" fill="#f4f1e6"/>
+      <rect x="64" y="62" width="104" height="134" rx="4" fill="#ece6d4" transform="rotate(-10 116 129)"/>
+      <rect x="72" y="58" width="104" height="134" rx="4" fill="#f6f2e4" transform="rotate(6 124 125)"/>
+      <rect x="68" y="56" width="104" height="138" rx="4" fill="#fffdf6"/>
+      <path d="M82 80 H150 M82 96 H156 M82 112 H140 M82 168 H150 M82 182 H130" stroke="#9aa6b8" stroke-width="3"/>
+      <circle cx="146" cy="138" r="20" fill="none" stroke="#e8321e" stroke-width="5"/>
+      <path d="M140 132 Q146 126 152 132 Q156 138 152 144 Q146 150 140 144 Q136 138 140 132 Z" fill="none" stroke="#e8321e" stroke-width="3"/>
+      <path d="M86 126 L100 132 M124 126 L110 132" stroke-width="5"/>
+      <circle cx="96" cy="140" r="5" fill="#2a1708" stroke="none"/><circle cx="114" cy="140" r="5" fill="#2a1708" stroke="none"/>
+      <path d="M96 156 q9 -6 18 0" fill="none" stroke-width="4"/>
+      <path d="M168 72 L176 66 M60 180 L50 188 M172 186 l10 6" stroke="#9aa6b8" stroke-width="3"/>
+    </g>
+
+    <!-- 운동장 돌거인 (큰 유닛) -->
+    <g id="statue" stroke="#2a1708" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <defs>
+        <linearGradient id="g-stone" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8b4a8"/><stop offset=".55" stop-color="#8e8a7e"/><stop offset="1" stop-color="#5e5a50"/></linearGradient>
+        <radialGradient id="g-eye"><stop offset="0" stop-color="#fffbd0"/><stop offset=".5" stop-color="#ffcc33"/><stop offset="1" stop-color="#ff7a00" stop-opacity="0"/></radialGradient>
+      </defs>
+      <!-- 받침대 -->
+      <path d="M40 232 H200 L210 256 H30 Z" fill="#7a766a"/>
+      <path d="M50 244 H190" stroke="#5e5a50" stroke-width="3"/>
+      <!-- 다리 -->
+      <rect x="78" y="186" width="34" height="50" rx="8" fill="url(#g-stone)"/><rect x="128" y="186" width="34" height="50" rx="8" fill="url(#g-stone)"/>
+      <!-- 몸통 -->
+      <path d="M62 96 Q120 78 178 96 L188 196 Q120 210 52 196 Z" fill="url(#g-stone)"/>
+      <path d="M120 100 L114 130 L124 150 L116 180" fill="none" stroke="#4a463e" stroke-width="3"/>
+      <path d="M70 160 q14 6 26 0 M150 120 q10 8 22 2" fill="none" stroke="#6a8f3a" stroke-width="6"/>
+      <!-- 팔 + 펼친 책 -->
+      <path d="M62 110 Q34 140 52 168" fill="none" stroke-width="22"/><path d="M62 110 Q34 140 52 168" fill="none" stroke="#9a968a" stroke-width="12"/>
+      <path d="M178 110 Q206 140 188 168" fill="none" stroke-width="22"/><path d="M178 110 Q206 140 188 168" fill="none" stroke="#7e7a6e" stroke-width="12"/>
+      <path d="M60 158 L120 170 L180 158 L180 196 L120 206 L60 196 Z" fill="#a8a498"/>
+      <path d="M120 170 V206 M74 170 l34 6 M74 182 l34 6 M132 176 l34 -6 M132 188 l34 -6" stroke="#5e5a50" stroke-width="3"/>
+      <!-- 머리 -->
+      <path d="M78 52 Q78 14 120 14 Q162 14 162 52 Q162 92 120 96 Q78 92 78 52 Z" fill="url(#g-stone)"/>
+      <path d="M92 30 q8 -6 16 0 M140 24 l6 10" fill="none" stroke="#4a463e" stroke-width="3"/>
+      <circle cx="104" cy="56" r="14" fill="url(#g-eye)" stroke="none"/><circle cx="138" cy="56" r="14" fill="url(#g-eye)" stroke="none"/>
+      <path d="M94 50 H114 M128 50 H148" stroke-width="5"/>
+      <path d="M104 78 H136" stroke-width="5"/>
+      <path d="M84 20 q12 -10 26 -4 q10 -12 24 -4" fill="#6a8f3a" stroke-width="3"/>
+    </g>
+
+    <!-- 라면 냄비 골렘 (큰 유닛) -->
+    <g id="potgolem" stroke="#2a1708" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <defs>
+        <linearGradient id="g-pot" x1="0" x2="1"><stop offset="0" stop-color="#f6d36a"/><stop offset=".45" stop-color="#ffe9a3"/><stop offset=".55" stop-color="#e8b93c"/><stop offset="1" stop-color="#b8861c"/></linearGradient>
+        <linearGradient id="g-soup" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff7a3d"/><stop offset="1" stop-color="#c8361e"/></linearGradient>
+      </defs>
+      <!-- 김 -->
+      <path d="M90 20 q-12 -14 0 -26 M120 16 q-12 -14 0 -26 M150 20 q-12 -14 0 -26" fill="none" stroke="#fff" stroke-width="6"/>
+      <!-- 면발 팔 (꼬불꼬불) -->
+      <path d="M44 120 q-20 10 -12 28 q8 18 -12 30 q-18 12 -8 32" fill="none" stroke="#f2c84b" stroke-width="12"/>
+      <path d="M196 120 q20 10 12 28 q-8 18 12 30 q18 12 8 32" fill="none" stroke="#f2c84b" stroke-width="12"/>
+      <path d="M44 120 q-20 10 -12 28 q8 18 -12 30 q-18 12 -8 32 M196 120 q20 10 12 28 q-8 18 12 30 q18 12 8 32" fill="none" stroke="#2a1708" stroke-width="2"/>
+      <!-- 다리 -->
+      <path d="M90 228 L84 254 M150 228 L156 254" stroke-width="14"/><path d="M90 228 L84 254 M150 228 L156 254" stroke="#b8861c" stroke-width="7"/>
+      <!-- 냄비 몸통 + 손잡이 -->
+      <path d="M28 98 H52 M188 98 H212" stroke-width="14"/>
+      <path d="M46 84 H194 L184 220 Q120 238 56 220 Z" fill="url(#g-pot)"/>
+      <path d="M56 120 Q120 132 184 120 M58 160 Q120 172 182 160 M60 196 Q120 208 180 196" fill="none" stroke="#c9952c" stroke-width="3"/>
+      <ellipse cx="120" cy="84" rx="76" ry="16" fill="url(#g-soup)"/>
+      <path d="M62 82 q10 -14 20 0 q10 14 20 0 q10 -14 20 0 q10 14 20 0 q10 -14 20 0 q10 14 20 0" fill="none" stroke="#ffd76a" stroke-width="5"/>
+      <!-- 반쯤 걸친 뚜껑 모자 -->
+      <path d="M70 70 Q120 34 176 58 L172 70 Q122 50 74 80 Z" fill="#d9a838"/>
+      <circle cx="128" cy="46" r="8" fill="#8a6418"/>
+      <!-- 계란 눈 + 화난 눈 -->
+      <ellipse cx="98" cy="140" rx="22" ry="16" fill="#fff"/><circle cx="98" cy="140" r="9" fill="#ffb21f"/>
+      <ellipse cx="146" cy="140" rx="14" ry="12" fill="#fff"/><circle cx="148" cy="142" r="5" fill="#2a1708" stroke="none"/>
+      <path d="M130 120 L160 128" stroke-width="7"/>
+      <path d="M96 182 Q120 166 146 182" fill="none" stroke-width="6"/>
+      <path d="M110 178 l4 8 l4 -8 M126 178 l4 8 l4 -8" fill="#fff" stroke-width="3"/>
+    </g>
+
+    <!-- 빨래통 미믹 -->
+    <g id="laundry" stroke="#2a1708" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <defs><linearGradient id="g-basket" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7ec8e8"/><stop offset="1" stop-color="#3a88b8"/></linearGradient></defs>
+      <path d="M92 236 L88 254 M148 236 L152 254" stroke-width="10"/>
+      <!-- 윗입술(바구니 뚜껑처럼 들림) -->
+      <path d="M40 104 Q120 50 200 104 L196 122 Q120 92 44 122 Z" fill="url(#g-basket)"/>
+      <!-- 이빨 -->
+      <path d="M58 118 l8 16 l8 -16 l8 16 l8 -16 l8 16 l8 -16 l8 16 l8 -16 l8 16 l8 -16 l8 16 l8 -16 l8 16 l8 -16" fill="#fffdf4" stroke-width="3"/>
+      <!-- 입속 + 양말 혀 -->
+      <path d="M50 132 Q120 112 190 132 L186 158 Q120 140 54 158 Z" fill="#5a1a2a"/>
+      <path d="M110 140 Q100 176 128 188 Q150 196 150 178 Q136 176 132 150 Z" fill="#ff8fb8"/>
+      <path d="M128 188 Q150 196 150 178" fill="none" stroke="#e8463a" stroke-width="5"/>
+      <!-- 아랫 바구니 (구멍 무늬) -->
+      <path d="M52 156 Q120 140 188 156 L176 236 Q120 248 64 236 Z" fill="url(#g-basket)"/>
+      <g fill="#2a5a80" stroke="none"><rect x="76" y="176" width="12" height="20" rx="4"/><rect x="100" y="172" width="12" height="20" rx="4"/><rect x="128" y="172" width="12" height="20" rx="4"/><rect x="152" y="176" width="12" height="20" rx="4"/>
+        <rect x="84" y="206" width="12" height="18" rx="4"/><rect x="112" y="204" width="12" height="18" rx="4"/><rect x="140" y="206" width="12" height="18" rx="4"/></g>
+      <!-- 삐져나온 옷 -->
+      <path d="M44 120 Q20 132 26 156 L44 150 Z" fill="#ffcc33"/><path d="M196 120 Q222 140 210 160 L196 148 Z" fill="#8fd61f"/>
+      <!-- 눈 (뚜껑 위) -->
+      <circle cx="92" cy="84" r="12" fill="#fff"/><circle cx="148" cy="84" r="12" fill="#fff"/>
+      <circle cx="95" cy="86" r="5" fill="#2a1708" stroke="none"/><circle cx="145" cy="86" r="5" fill="#2a1708" stroke="none"/>
+      <path d="M78 70 L104 76 M162 70 L136 76" stroke-width="5"/>
+    </g>
+
+    <!-- 야식 배달 스쿠터 -->
+    <g id="scooter" stroke="#2a1708" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <defs><linearGradient id="g-scoot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6a5a"/><stop offset="1" stop-color="#c8261e"/></linearGradient></defs>
+      <g transform="translate(240 0) scale(-1 1)">
+      <!-- 배달통 -->
+      <rect x="132" y="70" width="80" height="70" rx="8" fill="#fffdf4"/>
+      <path d="M140 92 H204 M140 104 H190" stroke="#e8463a" stroke-width="5"/>
+      <path d="M160 120 q12 -12 24 0" fill="none" stroke="#ffb21f" stroke-width="5"/>
+      <!-- 바퀴 -->
+      <circle cx="62" cy="222" r="30" fill="#2b2d33"/><circle cx="62" cy="222" r="12" fill="#c9ced6"/>
+      <circle cx="184" cy="222" r="30" fill="#2b2d33"/><circle cx="184" cy="222" r="12" fill="#c9ced6"/>
+      <!-- 몸체 -->
+      <path d="M40 200 Q50 150 90 150 L150 150 Q200 150 214 196 L206 210 L48 210 Z" fill="url(#g-scoot)"/>
+      <path d="M60 170 Q100 160 150 166" fill="none" stroke="#ffb3a8" stroke-width="5"/>
+      <rect x="96" y="140" width="66" height="16" rx="6" fill="#2b2d33"/>
+      <!-- 핸들 기둥 + 헤드라이트 눈 -->
+      <path d="M58 156 L40 76" stroke-width="12"/><path d="M58 156 L40 76" stroke="#c8261e" stroke-width="5"/>
+      <path d="M22 70 H62" stroke-width="10"/>
+      <circle cx="34" cy="104" r="20" fill="#fff6c0"/><circle cx="30" cy="106" r="8" fill="#2a1708" stroke="none"/><circle cx="27" cy="102" r="3" fill="#fff" stroke="none"/>
+      <path d="M16 86 L46 92" stroke-width="6"/>
+      <path d="M2 104 L-10 98 M2 112 L-12 114" stroke="#ffe14d" stroke-width="5"/>
+      <!-- 배기 연기 -->
+      <circle cx="226" cy="206" r="9" fill="#d8dde3" stroke-width="3"/><circle cx="236" cy="190" r="6" fill="#d8dde3" stroke-width="3"/>
+      </g>
+    </g>
+
+    <!-- 소등 그림자 (큰 유닛) -->
+    <g id="shadow" stroke="#120a1e" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <defs>
+        <radialGradient id="g-shade" cx=".5" cy=".35" r=".7"><stop offset="0" stop-color="#5a3f8a"/><stop offset=".6" stop-color="#2a1a44"/><stop offset="1" stop-color="#120a1e"/></radialGradient>
+        <radialGradient id="g-glow"><stop offset="0" stop-color="#fff6ff"/><stop offset=".45" stop-color="#d27aff"/><stop offset="1" stop-color="#8a2be2" stop-opacity="0"/></radialGradient>
+      </defs>
+      <ellipse cx="120" cy="248" rx="90" ry="10" fill="#120a1e" opacity=".5" stroke="none"/>
+      <!-- 너덜너덜한 몸 -->
+      <path d="M50 120 Q60 20 120 18 Q180 20 190 120 L204 210 L188 196 L178 236 L162 214 L148 244 L132 216 L118 248 L104 216 L88 242 L76 212 L60 232 L54 200 L36 214 Z" fill="url(#g-shade)"/>
+      <!-- 긴 팔과 손톱 -->
+      <path d="M58 120 Q20 150 10 196" fill="none" stroke-width="16"/><path d="M58 120 Q20 150 10 196" fill="none" stroke="#2a1a44" stroke-width="8"/>
+      <path d="M10 196 l-8 12 M10 196 l2 14 M10 196 l10 10" stroke="#d9c8ff" stroke-width="4"/>
+      <path d="M182 120 Q220 150 230 196" fill="none" stroke-width="16"/><path d="M182 120 Q220 150 230 196" fill="none" stroke="#2a1a44" stroke-width="8"/>
+      <path d="M230 196 l8 12 M230 196 l-2 14 M230 196 l-10 10" stroke="#d9c8ff" stroke-width="4"/>
+      <!-- 초승달 눈 + 빛 -->
+      <circle cx="96" cy="86" r="24" fill="url(#g-glow)" stroke="none"/><circle cx="146" cy="86" r="24" fill="url(#g-glow)" stroke="none"/>
+      <path d="M82 86 Q96 70 110 86 Q96 80 82 86 Z" fill="#fff" stroke="none"/><path d="M132 86 Q146 70 160 86 Q146 80 132 86 Z" fill="#fff" stroke="none"/>
+      <!-- 입 -->
+      <path d="M92 124 Q120 146 150 124 Q120 136 92 124 Z" fill="#d27aff" stroke-width="3"/>
+      <path d="M100 128 l4 8 l4 -7 M118 132 l4 8 l4 -8 M136 129 l4 7 l3 -8" fill="#fff" stroke-width="2"/>
+      <!-- 꺼진 전구 -->
+      <path d="M120 18 V2" stroke="#5a5f6a" stroke-width="3"/>
+      <circle cx="120" cy="-8" r="0" fill="none"/>
+    </g>
+
+    <!-- 황금 트로피 기사 (큰 유닛) -->
+    <g id="trophyknight" stroke="#2a1708" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <defs>
+        <linearGradient id="g-gold" x1="0" x2="1"><stop offset="0" stop-color="#b8860b"/><stop offset=".35" stop-color="#ffe9a3"/><stop offset=".55" stop-color="#ffcc33"/><stop offset="1" stop-color="#a87400"/></linearGradient>
+        <linearGradient id="g-cape" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8321e"/><stop offset="1" stop-color="#8a0f12"/></linearGradient>
+      </defs>
+      <g transform="translate(240 0) scale(-1 1)">
+      <!-- 망토 -->
+      <path d="M70 90 Q120 70 170 90 L204 238 Q150 222 120 244 Q90 222 36 238 Z" fill="url(#g-cape)"/>
+      <!-- 다리 (받침대 모양) -->
+      <path d="M86 196 H112 L118 236 H80 Z M128 196 H154 L160 236 H122 Z" fill="url(#g-gold)"/>
+      <path d="M72 236 H124 V252 H72 Z M116 236 H168 V252 H116 Z" fill="#7a5a1a"/>
+      <!-- 몸통 = 큰 트로피 컵 -->
+      <path d="M66 92 H174 Q174 170 120 186 Q66 170 66 92 Z" fill="url(#g-gold)"/>
+      <path d="M66 104 Q36 104 40 132 Q44 152 72 150 M174 104 Q204 104 200 132 Q196 152 168 150" fill="none" stroke-width="10"/>
+      <path d="M66 104 Q36 104 40 132 Q44 152 72 150 M174 104 Q204 104 200 132 Q196 152 168 150" fill="none" stroke="#ffcc33" stroke-width="4"/>
+      <path d="M96 120 l24 -12 l24 12 l-6 24 h-36 Z" fill="#fff3b0" stroke-width="4"/>
+      <text x="120" y="140" text-anchor="middle" font-size="20" font-family="Black Han Sans, sans-serif" fill="#a87400" stroke="none">1</text>
+      <path d="M82 100 Q90 150 120 164" fill="none" stroke="#fff6d0" stroke-width="5" opacity=".7"/>
+      <!-- 투구 -->
+      <path d="M82 60 Q82 18 120 18 Q158 18 158 60 L158 84 H82 Z" fill="url(#g-gold)"/>
+      <rect x="92" y="50" width="56" height="12" rx="4" fill="#2a1708"/>
+      <circle cx="108" cy="56" r="4" fill="#ff5a3a" stroke="none"/><circle cx="132" cy="56" r="4" fill="#ff5a3a" stroke="none"/>
+      <path d="M120 18 Q130 0 150 2 Q136 10 132 22" fill="#e8321e" stroke-width="4"/>
+      <!-- 자 모양 검 -->
+      <path d="M40 150 L6 40" stroke-width="16"/><path d="M40 150 L6 40" stroke="#dfe7ee" stroke-width="9"/>
+      <path d="M14 66 l6 -2 M18 80 l9 -3 M23 94 l6 -2 M27 108 l9 -3 M32 122 l6 -2" stroke="#2a1708" stroke-width="2"/>
+      <path d="M28 150 H54" stroke-width="10"/><path d="M28 150 H54" stroke="#ffcc33" stroke-width="5"/>
+      <circle cx="42" cy="152" r="9" fill="#f6d2b8" stroke-width="4"/>
+      </g>
+    </g>
+
+    <!-- 샤워기 히드라 -->
+    <g id="shower" stroke="#2a1708" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <defs>
+        <linearGradient id="g-chrome" x1="0" x2="1"><stop offset="0" stop-color="#9aa6b2"/><stop offset=".4" stop-color="#ffffff"/><stop offset=".6" stop-color="#c9d2da"/><stop offset="1" stop-color="#6e7a86"/></linearGradient>
+        <linearGradient id="g-tub" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#cfe2ee"/></linearGradient>
+      </defs>
+      <!-- 욕조 받침 -->
+      <path d="M30 176 H210 Q206 236 160 240 H80 Q34 236 30 176 Z" fill="url(#g-tub)"/>
+      <path d="M24 170 H216 V184 H24 Z" fill="#ffffff"/>
+      <path d="M70 240 L64 254 M170 240 L176 254" stroke-width="10"/>
+      <g fill="#bfe6ff" stroke="#6ab8d8" stroke-width="3"><circle cx="70" cy="166" r="12"/><circle cx="92" cy="160" r="9"/><circle cx="170" cy="164" r="11"/><circle cx="150" cy="158" r="8"/></g>
+      <!-- 호스 목 3개 -->
+      <path d="M90 172 Q70 120 44 96" fill="none" stroke-width="14"/><path d="M90 172 Q70 120 44 96" fill="none" stroke="url(#g-chrome)" stroke-width="7"/>
+      <path d="M120 172 Q122 110 120 60" fill="none" stroke-width="14"/><path d="M120 172 Q122 110 120 60" fill="none" stroke="url(#g-chrome)" stroke-width="7"/>
+      <path d="M150 172 Q172 120 196 96" fill="none" stroke-width="14"/><path d="M150 172 Q172 120 196 96" fill="none" stroke="url(#g-chrome)" stroke-width="7"/>
+      <!-- 샤워 머리 (눈 달림) -->
+      <g>
+        <ellipse cx="34" cy="86" rx="26" ry="20" fill="url(#g-chrome)" transform="rotate(-30 34 86)"/>
+        <ellipse cx="120" cy="44" rx="28" ry="22" fill="url(#g-chrome)"/>
+        <ellipse cx="206" cy="86" rx="26" ry="20" fill="url(#g-chrome)" transform="rotate(30 206 86)"/>
+      </g>
+      <g fill="#2a1708" stroke="none"><circle cx="110" cy="40" r="5"/><circle cx="130" cy="40" r="5"/><circle cx="26" cy="84" r="4"/><circle cx="40" cy="78" r="4"/><circle cx="200" cy="78" r="4"/><circle cx="214" cy="84" r="4"/></g>
+      <path d="M104 30 L116 34 M136 30 L124 34" stroke-width="4"/>
+      <g fill="#7cc4ff" stroke="none"><circle cx="112" cy="56" r="2.5"/><circle cx="120" cy="58" r="2.5"/><circle cx="128" cy="56" r="2.5"/></g>
+      <path d="M112 66 v10 M120 68 v12 M128 66 v10" stroke="#7cc4ff" stroke-width="3"/>
+    </g>
+
     <!-- 패시브 아이콘 -->
     <g id="icon-coin" stroke="#2a1708" stroke-width="5" stroke-linejoin="round">
       <ellipse cx="50" cy="74" rx="32" ry="12" fill="#e08e00"/>
@@ -3357,6 +3622,17 @@ const ENEMIES = {
   blanket:  { name:'이불 김밥',   money:180, hp:1600, ap:70, range:120, kb:1, speed:4,  attackType:'area',   attackInterval:2.6, foreswing:.70, backswing:.50, art:'blanket',  size:90, motion:'roll' },     // 데굴데굴 굴러 깔아뭉개기
   phone:    { name:'폰중독 좀비', money:120, hp:700,  ap:90, range:300, kb:2, speed:5,  attackType:'area',   attackInterval:3.4, foreswing:.80, backswing:.40, art:'phone',    size:80, motion:'flash' },    // 휴대폰 화면 빛으로 번쩍
   flexduo:  { name:'플렉스 듀오', money:600, hp:4000, ap:100, range:250, kb:3, speed:6, attackType:'area', attackInterval:3.6, foreswing:.90, backswing:.50, art:'flexduo', size:240, motion:'flex', boss:true },   // C동 사감실 중간 보스: 알통 자랑 → 쿵! 근육 충격파
+  // ----- 추가 적 (교실 / 기숙사 / 레전드) — 큰 유닛 포함 -----
+  chalk:    { name:'분필 요정',       money:30,  hp:140,  ap:22,  range:180, kb:3, speed:9,  attackType:'single', attackInterval:1.8, foreswing:.35, backswing:.30, art:'chalk',    size:56,  motion:'chalkthrow' },   // 분필 던지기 + 분필가루
+  paper:    { name:'빵점 시험지 떼',  money:25,  hp:90,   ap:18,  range:110, kb:3, speed:18, attackType:'single', attackInterval:1.0, foreswing:.20, backswing:.30, art:'paper',    size:58,  motion:'papercut', fly:true },   // 종이에 베이기
+  eraser:   { name:'칠판지우개 전차', money:400, hp:3200, ap:120, range:150, kb:2, speed:3,  attackType:'area',   attackInterval:3.2, foreswing:.90, backswing:.60, art:'eraser',   size:135, motion:'erase' },        // 큰 유닛: 돌진해서 분필 먼지 폭발
+  statue:   { name:'운동장 돌거인',   money:600, hp:5000, ap:220, range:160, kb:1, speed:2,  attackType:'area',   attackInterval:4.0, foreswing:1.2, backswing:.70, art:'statue',   size:155, motion:'stomp' },        // 큰 유닛: 쿵 내려밟아 땅 갈라짐
+  potgolem: { name:'라면 냄비 골렘',  money:500, hp:4200, ap:160, range:200, kb:2, speed:3,  attackType:'area',   attackInterval:3.4, foreswing:1.0, backswing:.60, art:'potgolem', size:140, motion:'whip' },         // 큰 유닛: 면발 채찍
+  laundry:  { name:'빨래통 미믹',     money:80,  hp:600,  ap:50,  range:120, kb:2, speed:7,  attackType:'single', attackInterval:1.6, foreswing:.40, backswing:.30, art:'laundry',  size:74,  motion:'chomp' },        // 덥석 물고 양말 튐
+  scooter:  { name:'야식 배달 스쿠터', money:90, hp:450,  ap:70,  range:110, kb:3, speed:24, attackType:'single', attackInterval:2.2, foreswing:.40, backswing:.40, art:'scooter',  size:82,  motion:'vroom' },        // 부릉! 들이받기
+  shadow:   { name:'소등 그림자',     money:600, hp:4800, ap:200, range:260, kb:2, speed:3,  attackType:'area',   attackInterval:3.8, foreswing:1.1, backswing:.60, art:'shadow',   size:150, motion:'darkwave', fly:true },   // 큰 유닛: 어둠의 파동
+  trophyknight: { name:'황금 트로피 기사', money:700, hp:6000, ap:260, range:170, kb:2, speed:4, attackType:'area', attackInterval:3.0, foreswing:.80, backswing:.60, art:'trophyknight', size:140, motion:'goldslash' },  // 큰 유닛: 금빛 자 베기
+  shower:   { name:'샤워기 히드라',   money:150, hp:900,  ap:80,  range:280, kb:2, speed:4,  attackType:'area',   attackInterval:2.6, foreswing:.60, backswing:.40, art:'shower',   size:100, motion:'jet' },          // 세 갈래 물줄기
   hippo:    { name:'하마 장군', money:800,  hp:15000, ap:300, range:160, kb:2, speed:4, attackType:'area',   attackInterval:3.4, foreswing:1.0, backswing:.60, art:'hippo',    size:135, motion:'slam', boss:true },
 };
 
@@ -3442,6 +3718,7 @@ const STAGES = [
       { enemy:'mouse', first:2,  every:6,  maxAlive:6 },
       { enemy:'crow',  first:10, every:14, maxAlive:3 },
       { enemy:'pig',   first:14, every:18, maxAlive:2 },
+      { enemy:'chalk', first:8,  every:12, maxAlive:2 },
     ],
     reward: { money: 500, nyankoTicket: 1 },
   },
@@ -3453,6 +3730,7 @@ const STAGES = [
       { enemy:'mouse', first:2,  every:5,  maxAlive:6 },
       { enemy:'snake', first:10, every:15, maxAlive:2 },
       { enemy:'pig',   first:20, every:20, maxAlive:2 },
+      { enemy:'paper', first:6,  every:10, maxAlive:3 },
     ],
     reward: { money: 650, nyankoTicket: 1 },
   },
@@ -3475,13 +3753,13 @@ const STAGES = [
     spawns:[ { enemy:'mouse', first:2, every:5, maxAlive:6 }, { enemy:'hedgehog', first:10, every:14, maxAlive:2 } ],
     reward:{ money:1000, nyankoTicket:1 } },
   { id:'2-2', mult:2, enemyBaseHp:3600, catBaseHp:1500,
-    spawns:[ { enemy:'crow', first:3, every:8, maxAlive:3 }, { enemy:'raccoon', first:8, every:10, maxAlive:3 }, { enemy:'hedgehog', first:18, every:16, maxAlive:2 } ],
+    spawns:[ { enemy:'crow', first:3, every:8, maxAlive:3 }, { enemy:'raccoon', first:8, every:10, maxAlive:3 }, { enemy:'hedgehog', first:18, every:16, maxAlive:2 }, { enemy:'chalk', first:5, every:11, maxAlive:2 } ],
     reward:{ money:1200, nyankoTicket:1 } },
   { id:'2-3', mult:2, enemyBaseHp:4200, catBaseHp:1500,
     spawns:[ { enemy:'mouse', first:2, every:5, maxAlive:6 }, { enemy:'pig', first:10, every:16, maxAlive:2 }, { enemy:'raccoon', first:14, every:10, maxAlive:3 } ],
     reward:{ money:1400, nyankoTicket:1 } },
   { id:'2-4', mult:2, enemyBaseHp:4800, catBaseHp:1500,
-    spawns:[ { enemy:'snake', first:6, every:14, maxAlive:2 }, { enemy:'hedgehog', first:10, every:12, maxAlive:3 }, { enemy:'raccoon', first:4, every:9, maxAlive:3 } ],
+    spawns:[ { enemy:'snake', first:6, every:14, maxAlive:2 }, { enemy:'hedgehog', first:10, every:12, maxAlive:3 }, { enemy:'raccoon', first:4, every:9, maxAlive:3 }, { enemy:'paper', first:12, every:12, maxAlive:3 } ],
     reward:{ money:1600, nyankoTicket:1 } },
   { id:'2-5', mult:2, enemyBaseHp:6000, catBaseHp:1500,
     spawns:[ { enemy:'mouse', first:2, every:5, maxAlive:6 }, { enemy:'raccoon', first:6, every:10, maxAlive:3 }, { enemy:'hedgehog', first:14, every:14, maxAlive:2 },
@@ -3496,7 +3774,7 @@ const STAGES = [
     spawns:[ { enemy:'boar', first:6, every:14, maxAlive:2 }, { enemy:'crow', first:3, every:8, maxAlive:3 }, { enemy:'raccoon', first:10, every:10, maxAlive:3 } ],
     reward:{ money:2800, nyankoTicket:1 } },
   { id:'3-3', mult:3.5, enemyBaseHp:7000, catBaseHp:1500,
-    spawns:[ { enemy:'eagle', first:4, every:10, maxAlive:3 }, { enemy:'hedgehog', first:8, every:12, maxAlive:3 }, { enemy:'boar', first:14, every:16, maxAlive:2 } ],
+    spawns:[ { enemy:'eagle', first:4, every:10, maxAlive:3 }, { enemy:'hedgehog', first:8, every:12, maxAlive:3 }, { enemy:'boar', first:14, every:16, maxAlive:2 }, { enemy:'eraser', first:25, every:45, maxAlive:1 } ],
     reward:{ money:3200, nyankoTicket:1 } },
   { id:'3-4', mult:3.5, enemyBaseHp:8000, catBaseHp:1500,
     spawns:[ { enemy:'snake', first:5, every:12, maxAlive:3 }, { enemy:'boar', first:10, every:14, maxAlive:2 }, { enemy:'eagle', first:3, every:9, maxAlive:3 } ],
@@ -3520,10 +3798,10 @@ const NAMED_BOSS = { '우유 도둑의 감옥':'milkthief', '변기6':'bigcoon',
 const NAMED_RARE = ['우유 도둑의 감옥', '변기6', '4층 계단', '본교무실', '기숙사로 향하는 문'];
 (function(){
   const pools = [
-    ['mouse', 'crow', 'raccoon', 'hedgehog'],
-    ['mouse', 'raccoon', 'hedgehog', 'pig', 'snake'],
-    ['crow', 'pig', 'snake', 'boar', 'eagle'],
-    ['raccoon', 'snake', 'boar', 'eagle', 'hedgehog'],
+    ['mouse', 'crow', 'raccoon', 'hedgehog', 'chalk', 'paper'],
+    ['mouse', 'raccoon', 'hedgehog', 'pig', 'snake', 'chalk', 'paper'],
+    ['crow', 'pig', 'snake', 'boar', 'eagle', 'paper', 'chalk'],
+    ['raccoon', 'snake', 'boar', 'eagle', 'hedgehog', 'chalk', 'paper'],
   ];
   NAMED_STAGES.forEach((name, i) => {
     const t = i / (NAMED_STAGES.length - 1);                 // 0 → 1
@@ -3533,6 +3811,8 @@ const NAMED_RARE = ['우유 도둑의 감옥', '변기6', '4층 계단', '본교
       { enemy: pool[(i + 1) % pool.length], first: 6, every: 10, maxAlive: 3 },
       { enemy: pool[(i + 3) % pool.length], first: 14, every: 14, maxAlive: 2 },
     ];
+    if (t > .15 && i % 4 === 1) spawns.push({ enemy: 'eraser', first: 22, every: 40, maxAlive: 1 });     // 큰 유닛
+    if (t > .55 && i % 5 === 2) spawns.push({ enemy: 'statue', first: 30, every: 50, maxAlive: 1 });     // 큰 유닛
     if (NAMED_BOSS[name]) spawns.push({ enemy: NAMED_BOSS[name], first: 30, every: 999, maxAlive: 1, count: 1 });
     if (name === '기숙사로 향하는 문') spawns.push({ enemy: 'hippo', first: 15, every: 45, maxAlive: 1 }, { enemy: 'bear', first: 25, every: 30, maxAlive: 1 });
     STAGES.push({
@@ -3595,25 +3875,26 @@ const DORM_STAGES = [];
 (function(){
   // 층마다 새로 나오는 적이 늘어남
   const pools = [
-    ['mosquito', 'pillow', 'slipper', 'mouse'],                      // C1xx
-    ['mosquito', 'slipper', 'alarm', 'sock', 'pillow'],              // C2xx
-    ['sock', 'alarm', 'cupramen', 'blanket', 'pillow', 'mosquito'],  // C3xx
-    ['phone', 'slipper', 'sock', 'alarm', 'cupramen'],               // B2xx
-    ['phone', 'blanket', 'cupramen', 'mosquito', 'alarm', 'pillow'], // B3xx
-    ['phone', 'blanket', 'cupramen', 'sock', 'slipper', 'alarm'],    // B4xx
+    ['mosquito', 'pillow', 'slipper', 'mouse', 'laundry'],                      // C1xx
+    ['mosquito', 'slipper', 'alarm', 'sock', 'pillow', 'laundry', 'scooter'],   // C2xx
+    ['sock', 'alarm', 'cupramen', 'blanket', 'pillow', 'mosquito', 'scooter'],  // C3xx
+    ['phone', 'slipper', 'sock', 'alarm', 'cupramen', 'laundry', 'scooter'],    // B2xx
+    ['phone', 'blanket', 'cupramen', 'mosquito', 'alarm', 'pillow', 'scooter'], // B3xx
+    ['phone', 'blanket', 'cupramen', 'sock', 'slipper', 'alarm', 'laundry'],    // B4xx
   ];
   const section = n => /^C1/.test(n) ? 0 : /^C2/.test(n) ? 1 : /^C3/.test(n) ? 2 : /^B2/.test(n) ? 3 : /^B3/.test(n) ? 4 : 5;
   const BOSS_WAVES = {
     'C동 사감실': ['pillow', 'alarm', 'blanket', 'cupramen', 'slipper'],
-    'B동 사감실': ['phone', 'blanket', 'cupramen', 'sock', 'alarm'],
-    '새벽 탈출':  ['phone', 'blanket', 'alarm', 'cupramen', 'mosquito', 'pillow'],
+    'B동 사감실': ['phone', 'blanket', 'cupramen', 'sock', 'alarm', 'shadow'],
+    '새벽 탈출':  ['phone', 'blanket', 'alarm', 'cupramen', 'mosquito', 'pillow', 'potgolem', 'shadow'],
   };
   const BOSS_OF = { 'C동 사감실': 'flexduo' };          // 사진 보스 (나머지는 사진 받으면 추가)
   DORM_NAMES.forEach((name, i) => {
     let spawns;
     if (BOSS_WAVES[name]) {
-      const w = BOSS_WAVES[name];
-      spawns = w.map((e, j) => ({ enemy: e, first: 2 + j * 5, every: 6 + j * 3, maxAlive: j < 2 ? 5 : 3 }));
+      const w = BOSS_WAVES[name], BIG = ['potgolem', 'shadow', 'eraser', 'statue', 'trophyknight'];
+      spawns = w.map((e, j) => BIG.includes(e) ? { enemy: e, first: 18 + j * 4, every: 40, maxAlive: 1 }
+                                               : { enemy: e, first: 2 + j * 5, every: 6 + j * 3, maxAlive: j < 2 ? 5 : 3 });
       if (BOSS_OF[name]) spawns.push({ enemy: BOSS_OF[name], first: 20, every: 999, maxAlive: 1, count: 1 });
     } else {
       const pool = pools[section(name)];
@@ -3623,6 +3904,8 @@ const DORM_STAGES = [];
         { enemy: pool[(i + 2) % pool.length], first: 12, every: 14, maxAlive: 2 },
       ];
       if (i % 3 === 2) spawns.push({ enemy: pool[(i + 3) % pool.length], first: 20, every: 18, maxAlive: 2 });
+      if (i >= 6 && i % 4 === 3) spawns.push({ enemy: 'potgolem', first: 24, every: 40, maxAlive: 1 });    // 큰 유닛
+      if (section(name) >= 3 && i % 5 === 4) spawns.push({ enemy: 'shadow', first: 30, every: 45, maxAlive: 1 });   // 큰 유닛
     }
     DORM_STAGES.push({ id: 'd' + (i + 1), no: i + 1, name, catBaseHp: 1500, spawns,
       bossSlot: DORM_MIDBOSS.includes(name) || name === DORM_BOSS, reward: {} });
@@ -3658,12 +3941,12 @@ const LEGEND_GROUPS = [
 ];
 // '김지솔을 이겨라!' 스테이지 6개. 최초 클리어 때만 통조림 100개. 보스는 사진 받으면 넣을 자리(bossSlot)
 const LEGEND_STAGES = [
-  { id: 'J1', name: '전설의 똥팬 사건',  enemies: ['sock', 'mosquito', 'pig', 'snake'] },
-  { id: 'J2', name: '전설의 내성발톱',   enemies: ['slipper', 'sock', 'hedgehog', 'mosquito'] },
-  { id: 'J3', name: '샤워 100분',        enemies: ['alarm', 'cupramen', 'blanket', 'raccoon'] },
-  { id: 'J4', name: '전교 2등의 시작',   enemies: ['phone', 'alarm', 'pillow', 'eagle'] },
-  { id: 'J5', name: '자칭 알파메일',     enemies: ['boar', 'blanket', 'pillow', 'bear'] },
-  { id: 'J6', name: '간사의 왕',         enemies: ['phone', 'blanket', 'cupramen', 'alarm', 'boar', 'hippo'] },
+  { id: 'J1', name: '전설의 똥팬 사건',  enemies: ['sock', 'mosquito', 'laundry', 'pig', 'snake', 'potgolem'] },
+  { id: 'J2', name: '전설의 내성발톱',   enemies: ['slipper', 'sock', 'scooter', 'hedgehog', 'mosquito', 'eraser'] },
+  { id: 'J3', name: '샤워 100분',        enemies: ['alarm', 'shower', 'cupramen', 'blanket', 'raccoon', 'shadow'] },
+  { id: 'J4', name: '전교 2등의 시작',   enemies: ['paper', 'chalk', 'phone', 'alarm', 'pillow', 'statue'] },
+  { id: 'J5', name: '자칭 알파메일',     enemies: ['boar', 'scooter', 'blanket', 'pillow', 'bear', 'trophyknight'] },
+  { id: 'J6', name: '간사의 왕',         enemies: ['phone', 'shower', 'cupramen', 'alarm', 'trophyknight', 'shadow'] },
 ].map((st, i) => ({
   id: st.id, no: i + 1, name: st.name, group: 'jisol', catBaseHp: 1500, bossSlot: true,
   spawns: st.enemies.map((e, j) => ({ enemy: e, first: 2 + j * 5, every: [5, 9, 13, 16, 20, 40][j], maxAlive: [6, 3, 2, 2, 2, 1][j] })),
@@ -3853,7 +4136,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     return img;
   }
   imgs.soldier = svgImage('soldier', '0 0 240 260');
-  ['mouse','crow','pig','snake','bear','hedgehog','raccoon','bigcoon','boar','eagle','hippo','gatekeeper','milkthief','u-masa','u-jingle','u-battle','u-tank','u-bull','u-bird','u-fish','u-lizard','u-titan','u-eolppak','u-fk','u-jingyeok','u-ssang','u-thanos','u-horror','u-dance','u-kkamnol-box','u-aegi','mosquito','pillow','slipper','alarm','sock','cupramen','blanket','phone','flexduo','u-evil','u-grandpa','u-penguin-body','u-fire','u-gyaru','u-silla','u-grip','u-ttabong','u-oishi'].forEach(id => imgs[id] = svgImage(id, '0 0 240 260'));
+  ['mouse','crow','pig','snake','bear','hedgehog','raccoon','bigcoon','boar','eagle','hippo','gatekeeper','milkthief','u-masa','u-jingle','u-battle','u-tank','u-bull','u-bird','u-fish','u-lizard','u-titan','u-eolppak','u-fk','u-jingyeok','u-ssang','u-thanos','u-horror','u-dance','u-kkamnol-box','u-aegi','mosquito','pillow','slipper','alarm','sock','cupramen','blanket','phone','flexduo','u-evil','u-grandpa','u-penguin-body','u-fire','u-gyaru','u-silla','u-grip','u-ttabong','u-oishi','chalk','paper','eraser','statue','potgolem','laundry','scooter','shadow','trophyknight','shower'].forEach(id => imgs[id] = svgImage(id, '0 0 240 260'));
   imgs['u-kkamnol-head'] = svgImage('u-kkamnol-head', '0 0 180 162');   // 깜놀: 머리는 따로 그려서 용수철로 튀어나오게
   imgs['u-kkamnol'] = imgs['u-kkamnol-box'];
   ['peng-r', 'peng-y', 'peng-g'].forEach(id => imgs[id] = svgImage(id, '0 0 80 90'));   // 펭귄 고양이의 꼬마 펭귄들
@@ -4034,9 +4317,17 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
 
   // 공격 모션: p = 0→1 진행도 (0.5 = 선딜이 끝나고 타격하는 순간)
   // dx 앞쪽 이동, dy 아래(+)/위(-), rot 앞으로 기울기, sx/sy 늘이기
+  const POSE_ALIAS = { chalkthrow:'throw', erase:'charge', papercut:'swoop', stomp:'slam', chomp:'bite', vroom:'charge', goldslash:'slash', jet:'spit' };
   function motionPose(m, p){
+    if (POSE_ALIAS[m]) m = POSE_ALIAS[m];
     const s = Math.sin(Math.PI * p);
     switch (m) {
+      case 'whip':   return p < .5                                                                          // 냄비 골렘: 몸을 비틀었다가 면발 채찍
+                       ? { dx: -p * 10, dy: 0, rot: -p * .3, sx: 1 + p * .06, sy: 1 - p * .04 }
+                       : { dx: -5 + Math.sin(Math.PI * (p - .5) * 2) * 16, dy: 0, rot: -.15 + .35 * Math.sin(Math.PI * (p - .5) * 2), sx: 1, sy: 1 };
+      case 'darkwave': return p < .5                                                                        // 그림자: 부풀어 오르며 떠올랐다가 어둠을 토해냄
+                       ? { dx: 0, dy: -p * 24, rot: 0, sx: 1 + p * .2, sy: 1 + p * .2 }
+                       : { dx: Math.sin(Math.PI * (p - .5) * 2) * 10, dy: -12 * (1 - p) * 2, rot: 0, sx: 1.1 - (p - .5) * .2, sy: 1.1 - (p - .5) * .2 };
       case 'roll':   return { dx: s * 30, dy: -s * 10, rot: p * Math.PI * 2, sx: 1, sy: 1 };                 // 따끔이: 몸을 말아 데굴데굴 굴러 찌르기
       case 'throw':  return { dx: -s * 6, dy: 0, rot: p < .5 ? -p * .6 : (1 - p) * .6, sx: 1, sy: 1 };      // 너굴이: 도토리 던지기
       case 'snap': {                                                                                        // 타노스: 천천히 힘을 모아 손가락 튕기기(딱!)
@@ -4189,6 +4480,23 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     S.shake = Math.max(S.shake, 0.25 + n * 0.1);
     if (n === 2) { S.fx.push({ x: u.x, dir: u.dir, range: u.range, h: u.size, t: -0.15, dur: 2.6, brushFx: true, seed: Math.random() * 100 }); S.flash = Math.max(S.flash || 0, 0.25); S.shake = 0.6; }
   }
+  // 추가 적들의 타격 효과
+  function fxTarget(u, foes, foeBase, foeBaseX){
+    const tg = findTarget(u, foes, foeBase, foeBaseX);
+    return !tg ? u.x + u.dir * u.range * .6 : tg === foeBase ? foeBaseX - BASE_HALF * u.dir : tg.x;
+  }
+  const ENEMY_FX = {
+    chalkthrow: (u, f, b, bx) => S.fx.push({ x: u.x, tx: fxTarget(u, f, b, bx), t: 0, dur: 0.55, chalkFx: true, seed: Math.random() * 50 }),
+    erase:      (u, f, b, bx) => { S.fx.push({ x: u.x + u.dir * 60, dir: u.dir, range: u.range, t: 0, dur: 1.0, chalkCloud: true, seed: Math.random() * 50 }); S.shake = Math.max(S.shake, .3); },
+    papercut:   (u, f, b, bx) => S.fx.push({ x: fxTarget(u, f, b, bx), t: 0, dur: 0.55, paperFx: true, seed: Math.random() * 50 }),
+    stomp:      (u) => { S.fx.push({ x: u.x + u.dir * 50, dir: u.dir, range: u.range, t: 0, dur: 0.8, quake: true, seed: Math.random() * 99 }); S.fx.push({ x: u.x + u.dir * 50, dir: u.dir, range: u.range, t: 0, dur: 0.9, crackFx: true, seed: Math.random() * 99 }); S.shake = Math.max(S.shake, .6); },
+    whip:       (u) => S.fx.push({ x: u.x, dir: u.dir, range: u.range, h: u.size, t: 0, dur: 0.6, noodleFx: true, seed: Math.random() * 50 }),
+    chomp:      (u, f, b, bx) => S.fx.push({ x: fxTarget(u, f, b, bx), t: 0, dur: 0.7, sockFx: true, seed: Math.random() * 50 }),
+    vroom:      (u, f, b, bx) => S.fx.push({ x: u.x, tx: fxTarget(u, f, b, bx), dir: u.dir, t: 0, dur: 0.6, vroomFx: true, seed: Math.random() * 50 }),
+    darkwave:   (u) => { S.fx.push({ x: u.x, dir: u.dir, range: u.range, h: u.size, t: 0, dur: 0.9, darkFx: true, seed: Math.random() * 50 }); S.shake = Math.max(S.shake, .35); },
+    goldslash:  (u) => { S.fx.push({ x: u.x, dir: u.dir, range: u.range, h: u.size, t: 0, dur: 0.5, goldSlash: true }); S.shake = Math.max(S.shake, .25); },
+    jet:        (u, f, b, bx) => S.fx.push({ x: u.x, tx: fxTarget(u, f, b, bx), dir: u.dir, h: u.size, t: 0, dur: 0.6, jetFx: true, seed: Math.random() * 50 }),
+  };
   function stepSide(list, foes, foeBase, foeBaseX, dt){
     for (const u of list) {
       if (u.dead) { u.dead += dt; continue; }
@@ -4211,6 +4519,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
           if (u.motion === 'slam') S.shake = 0.35;
           if (u.motion === 'dance') { const tg = findTarget(u, foes, foeBase, foeBaseX); S.fx.push({ x: u.x, tx: !tg ? u.x + u.dir * u.range * .6 : tg === foeBase ? foeBaseX - BASE_HALF * u.dir : tg.x, t: 0, dur: 0.7, disco: true, h: u.size }); }
           if (u.motion === 'oishi') oishiFx(u, 0, foes, foeBase, foeBaseX);
+          if (ENEMY_FX[u.motion]) ENEMY_FX[u.motion](u, foes, foeBase, foeBaseX);
           if (u.motion === 'ttabong') {                     // 쌍따봉: 두 발에서 거대한 따봉 발이 날아가 쿵! 쿵!
             const fx0 = u.x + (-0.5 + .2) * u.size * 1.4 * 240 / 260, fy0 = (1 - .17) * u.size * 1.4;
             S.fx.push({ x: fx0, my: fy0, dir: u.dir, range: u.range, t: 0, dur: 1.4, ssangFx: true, seed: Math.random() * 100 });
@@ -4854,6 +5163,150 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
         }
         ctx.restore();
         return;
+      }
+      if (f.chalkFx) {                                    // 분필: 빙글 날아가서 하얀 가루 펑
+        ctx.save();
+        const tx = f.tx * k;
+        if (p < .6) {
+          const q = p / .6, x = (f.x + (f.tx - f.x) * q) * k, y = gy - 60 * k - Math.sin(Math.PI * q) * 50 * k;
+          ctx.translate(x, y); ctx.rotate(q * 14);
+          ctx.fillStyle = '#fff'; ctx.strokeStyle = '#2a1708'; ctx.lineWidth = 2;
+          ctx.fillRect(-12 * k - 2, -4 * k - 1, 24 * k + 4, 8 * k + 2); ctx.strokeRect(-12 * k - 2, -4 * k - 1, 24 * k + 4, 8 * k + 2);
+        } else {
+          const q = (p - .6) / .4;
+          for (let i = 0; i < 9; i++) { const a = f.seed + i * .7, r = (8 + 36 * q) * k;
+            ctx.globalAlpha = (1 - q) * .85; ctx.fillStyle = '#fff';
+            ctx.beginPath(); ctx.arc(tx + Math.cos(a) * r, gy - 50 * k + Math.sin(a) * r * .7, (8 + 6 * q) * k, 0, Math.PI * 2); ctx.fill(); }
+        }
+        ctx.restore(); return;
+      }
+      if (f.chalkCloud) {                                 // 칠판지우개: 앞쪽이 하얀 분필 먼지 폭풍으로 뒤덮임
+        ctx.save();
+        for (let i = 0; i < 16; i++) {
+          const a = f.seed + i * 1.3, spread = Math.min(1, p * 2.2);
+          const x = (f.x + f.dir * f.range * (.1 + .8 * ((i * 37) % 100) / 100) * spread) * k, y = gy - (20 + (i * 23) % 70) * k - p * 20 * k;
+          ctx.globalAlpha = Math.max(0, (1 - p) * .8); ctx.fillStyle = i % 3 ? '#ffffff' : '#e6edf3';
+          ctx.beginPath(); ctx.arc(x + Math.sin(a + p * 4) * 8 * k, y, (16 + (i % 4) * 8 + p * 20) * k, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.globalAlpha = Math.max(0, 1 - p * 1.3);
+        ctx.font = Math.max(14, 34 * k) + 'px "Black Han Sans", sans-serif'; ctx.textAlign = 'center';
+        ctx.lineWidth = 6; ctx.strokeStyle = '#2a1708'; ctx.fillStyle = '#fff';
+        ctx.strokeText('박박!', (f.x + f.dir * f.range * .4) * k, gy - 110 * k); ctx.fillText('박박!', (f.x + f.dir * f.range * .4) * k, gy - 110 * k);
+        ctx.restore(); return;
+      }
+      if (f.paperFx) {                                    // 시험지: 종이 조각이 흩날리며 "슥!"
+        ctx.save();
+        for (let i = 0; i < 8; i++) {
+          const a = f.seed + i * .8, r = (10 + 50 * p) * k;
+          ctx.save(); ctx.globalAlpha = 1 - p; ctx.translate(f.x * k + Math.cos(a) * r, gy - 50 * k + Math.sin(a) * r * .6 + p * p * 40 * k); ctx.rotate(a + p * 8);
+          ctx.fillStyle = '#fffdf6'; ctx.strokeStyle = '#9aa6b8'; ctx.lineWidth = 1.5;
+          ctx.fillRect(-7 * k - 2, -5 * k - 1, 14 * k + 4, 10 * k + 2); ctx.strokeRect(-7 * k - 2, -5 * k - 1, 14 * k + 4, 10 * k + 2); ctx.restore();
+        }
+        ctx.globalAlpha = 1 - p; ctx.strokeStyle = '#e8321e'; ctx.lineWidth = 3 * k + 1;
+        ctx.beginPath(); ctx.moveTo(f.x * k - 26 * k, gy - 70 * k); ctx.lineTo(f.x * k + 26 * k, gy - 30 * k); ctx.stroke();
+        ctx.restore(); return;
+      }
+      if (f.crackFx) {                                    // 돌거인: 땅이 쩍쩍 갈라짐
+        ctx.save(); ctx.globalAlpha = Math.max(0, 1 - p * p); ctx.strokeStyle = '#3a2410'; ctx.lineWidth = 4 * k + 1;
+        for (let j = 0; j < 3; j++) {
+          ctx.beginPath(); let x = f.x * k, y = gy + 2;
+          ctx.moveTo(x, y);
+          const n = 6, len = f.range * k * Math.min(1, p * 2.5) * (.6 + j * .2);
+          for (let i = 1; i <= n; i++) { x = f.x * k + f.dir * len * i / n; y = gy + 2 + Math.sin(f.seed + i * 2.3 + j) * 6 * k; ctx.lineTo(x, y); }
+          ctx.stroke();
+        }
+        ctx.font = Math.max(16, 44 * k) + 'px "Black Han Sans", sans-serif'; ctx.textAlign = 'center';
+        ctx.lineWidth = 7; ctx.strokeStyle = '#2a1708'; ctx.fillStyle = '#d8d2c0';
+        ctx.globalAlpha = Math.max(0, 1 - p * 1.2);
+        ctx.strokeText('쿠웅!!', f.x * k, gy - 150 * k); ctx.fillText('쿠웅!!', f.x * k, gy - 150 * k);
+        ctx.restore(); return;
+      }
+      if (f.noodleFx) {                                   // 냄비 골렘: 노란 면발 두 가닥이 앞으로 휘감기듯 채찍
+        ctx.save(); ctx.lineCap = 'round';
+        const reach = Math.sin(Math.PI * Math.min(1, p * 1.4)), ox = f.x * k, oy = gy - f.h * 1.4 * k * .45;
+        for (let j = 0; j < 2; j++) {
+          ctx.beginPath(); ctx.moveTo(ox, oy - j * 16 * k);
+          const N = 20;
+          for (let i = 1; i <= N; i++) {
+            const a = i / N, x = ox + f.dir * f.range * k * a * reach, y = oy - j * 16 * k + Math.sin(a * 12 + f.t * 30 + j * 2) * 14 * k * a + a * a * 60 * k * reach;
+            ctx.lineTo(x, y);
+          }
+          ctx.globalAlpha = 1; ctx.strokeStyle = '#2a1708'; ctx.lineWidth = 12 * k + 3; ctx.stroke();
+          ctx.strokeStyle = j ? '#ffd76a' : '#f2c84b'; ctx.lineWidth = 7 * k + 2; ctx.stroke();
+        }
+        ctx.globalAlpha = Math.max(0, 1 - p); ctx.fillStyle = '#ff7a3d';
+        for (let i = 0; i < 8; i++) { const x = ox + f.dir * f.range * k * reach * (.4 + i * .08); ctx.beginPath(); ctx.arc(x, gy - (20 + (i * 17) % 50) * k, 4 * k + 1, 0, Math.PI * 2); ctx.fill(); }
+        ctx.restore(); return;
+      }
+      if (f.sockFx) {                                     // 빨래통: 덥석! + 양말이 튀어 오름
+        ctx.save();
+        for (let i = 0; i < 4; i++) {
+          const a = -Math.PI / 2 + (i - 1.5) * .6, r = (20 + 80 * p) * k;
+          ctx.save(); ctx.globalAlpha = 1 - p * p; ctx.translate(f.x * k + Math.cos(a) * r, gy - 60 * k + Math.sin(a) * r + p * p * 120 * k); ctx.rotate(p * 10 + i);
+          ctx.fillStyle = ['#ff8fb8', '#8fd61f', '#ffcc33', '#7ec8e8'][i]; ctx.strokeStyle = '#2a1708'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(-5 * k, -12 * k); ctx.lineTo(5 * k, -12 * k); ctx.lineTo(5 * k, 4 * k); ctx.lineTo(12 * k, 8 * k); ctx.lineTo(10 * k, 14 * k); ctx.lineTo(-5 * k, 10 * k); ctx.closePath(); ctx.fill(); ctx.stroke();
+          ctx.restore();
+        }
+        ctx.globalAlpha = Math.max(0, 1 - p); ctx.font = Math.max(12, 30 * k) + 'px "Black Han Sans", sans-serif'; ctx.textAlign = 'center';
+        ctx.lineWidth = 5; ctx.strokeStyle = '#2a1708'; ctx.fillStyle = '#7ec8e8';
+        ctx.strokeText('덥석!', f.x * k, gy - 100 * k); ctx.fillText('덥석!', f.x * k, gy - 100 * k);
+        ctx.restore(); return;
+      }
+      if (f.vroomFx) {                                    // 스쿠터: 매연 + 속도선 + "부릉!"
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, 1 - p); ctx.strokeStyle = '#fff'; ctx.lineWidth = 3 * k + 1;
+        for (let i = 0; i < 5; i++) { const y = gy - (20 + i * 14) * k, x = f.x * k - f.dir * (30 + i * 6) * k; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - f.dir * (40 + 20 * p) * k, y); ctx.stroke(); }
+        for (let i = 0; i < 5; i++) { ctx.fillStyle = 'rgba(200,205,212,' + (1 - p) * .8 + ')'; ctx.beginPath(); ctx.arc(f.x * k - f.dir * (50 + i * 16 + p * 40) * k, gy - 16 * k - i * 4 * k, (8 + i * 3 + p * 10) * k, 0, Math.PI * 2); ctx.fill(); }
+        ctx.font = Math.max(12, 30 * k) + 'px "Black Han Sans", sans-serif'; ctx.textAlign = 'center';
+        ctx.lineWidth = 5; ctx.strokeStyle = '#2a1708'; ctx.fillStyle = '#ff6a5a';
+        ctx.strokeText('부릉!', f.tx * k, gy - 90 * k); ctx.fillText('부릉!', f.tx * k, gy - 90 * k);
+        ctx.restore(); return;
+      }
+      if (f.darkFx) {                                     // 소등 그림자: 화면이 어두워지고 보랏빛 어둠 파동이 앞으로
+        ctx.save();
+        const dark = p < .3 ? p / .3 : 1 - (p - .3) / .7;
+        ctx.globalAlpha = .4 * dark; ctx.fillStyle = '#0a0612'; ctx.fillRect(-10, -10, cw + 20, ch + 20);
+        for (let i = 0; i < 3; i++) {
+          const q = Math.min(1, Math.max(0, (p - i * .12) / .7)); if (q <= 0 || q >= 1) continue;
+          const cx = (f.x + f.dir * f.range * q) * k;
+          ctx.globalAlpha = (1 - q) * .9;
+          const g = ctx.createRadialGradient(cx, gy - 60 * k, 0, cx, gy - 60 * k, (40 + 30 * q) * k);
+          g.addColorStop(0, 'rgba(210,122,255,.8)'); g.addColorStop(1, 'rgba(40,10,60,0)');
+          ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(cx, gy - 60 * k, (30 + 30 * q) * k, (60 + 40 * q) * k, 0, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.globalAlpha = Math.max(0, 1 - p); ctx.font = Math.max(14, 38 * k) + 'px "Black Han Sans", sans-serif'; ctx.textAlign = 'center';
+        ctx.lineWidth = 6; ctx.strokeStyle = '#120a1e'; ctx.fillStyle = '#d27aff';
+        ctx.strokeText('딸깍… 소등!', f.x * k + f.dir * 60 * k, gy - f.h * 1.4 * k - 10 * k); ctx.fillText('딸깍… 소등!', f.x * k + f.dir * 60 * k, gy - f.h * 1.4 * k - 10 * k);
+        ctx.restore(); return;
+      }
+      if (f.goldSlash) {                                  // 트로피 기사: 금빛 초승달 베기
+        ctx.save();
+        const ox = f.x * k + f.dir * 40 * k, oy = gy - f.h * 1.4 * k * .45, R = f.range * k * .8;
+        ctx.globalAlpha = Math.max(0, 1 - p);
+        const a0 = f.dir > 0 ? -1.3 : Math.PI + 1.3, a1 = f.dir > 0 ? 1.0 : Math.PI - 1.0;
+        const sweep = a0 + (a1 - a0) * Math.min(1, p * 2.5);
+        for (let i = 0; i < 3; i++) {
+          ctx.strokeStyle = ['#a87400', '#ffcc33', '#fff6d0'][i]; ctx.lineWidth = (16 - i * 5) * k + 2;
+          ctx.beginPath(); ctx.arc(ox, oy, R * (.9 + i * .03), a0, sweep, f.dir < 0); ctx.stroke();
+        }
+        for (let i = 0; i < 10; i++) { const a = a0 + (sweep - a0) * (i / 10); ctx.fillStyle = '#fff3b0'; ctx.beginPath(); ctx.arc(ox + Math.cos(a) * R * (1 + p * .2), oy + Math.sin(a) * R * (1 + p * .2), 3 * k + 1, 0, Math.PI * 2); ctx.fill(); }
+        ctx.restore(); return;
+      }
+      if (f.jetFx) {                                      // 샤워기: 세 갈래 물줄기가 쏴아
+        ctx.save();
+        const heads = [[-.36, .66], [0, .83], [.36, .66]], spread = Math.min(1, p * 3), fade = p > .7 ? 1 - (p - .7) / .3 : 1;
+        heads.forEach(([hx, hy], i) => {
+          const ox = (f.x + hx * f.h * 1.3) * k, oy = gy - hy * f.h * 1.4 * k, tx = f.tx * k + (i - 1) * 20 * k, ty = gy - 30 * k;
+          const ex = ox + (tx - ox) * spread, ey = oy + (ty - oy) * spread;
+          ctx.globalAlpha = fade * .85; ctx.strokeStyle = '#7cc4ff'; ctx.lineWidth = 10 * k + 2; ctx.lineCap = 'round';
+          ctx.beginPath(); ctx.moveTo(ox, oy); ctx.quadraticCurveTo((ox + ex) / 2, Math.min(oy, ey) - 40 * k, ex, ey); ctx.stroke();
+          ctx.strokeStyle = '#eaf7ff'; ctx.lineWidth = 4 * k + 1; ctx.stroke();
+          for (let j = 0; j < 4; j++) { ctx.fillStyle = '#bfe6ff'; ctx.beginPath(); ctx.arc(ex + Math.sin(f.seed + j * 2 + i) * 18 * k, ey - Math.abs(Math.cos(f.seed + j + i)) * 24 * k * spread, 4 * k + 1, 0, Math.PI * 2); ctx.fill(); }
+        });
+        ctx.globalAlpha = fade; ctx.font = Math.max(12, 30 * k) + 'px "Black Han Sans", sans-serif'; ctx.textAlign = 'center';
+        ctx.lineWidth = 5; ctx.strokeStyle = '#1d4fa8'; ctx.fillStyle = '#eaf7ff';
+        ctx.strokeText('쏴아아!', f.tx * k, gy - 100 * k); ctx.fillText('쏴아아!', f.tx * k, gy - 100 * k);
+        ctx.restore(); return;
       }
       if (f.glyphFx) {                                    // 오이쉬 글자: 금빛 테두리 먹 글자가 빙글 날아가 먹물 폭발 + 외침
         ctx.save();
