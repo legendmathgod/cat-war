@@ -216,7 +216,7 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
 .slot{position:relative;width:7.4cqw;height:6.1cqw;padding:0;cursor:pointer;overflow:hidden;
   background:linear-gradient(var(--btn-hi),var(--btn));border:.35cqw solid var(--ink);border-radius:.5cqw}
 .slot.empty{background:rgba(42,23,8,.35);border-color:rgba(42,23,8,.6);cursor:default}
-.slot svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.slot svg{position:absolute;inset:0;width:100%;height:100%;display:block;will-change:transform;transform:translateZ(0)}   /* 렉 방지: 아이콘을 따로 그려 두고 쿨타임 표시가 바뀌어도 다시 그리지 않음 */
 .slot .cost{position:absolute;right:.5cqw;bottom:.1cqw;font-family:var(--display);font-size:1.7cqw;color:var(--cream);-webkit-text-stroke:.28cqw var(--ink);paint-order:stroke fill}
 .slot .cd{position:absolute;left:0;right:0;bottom:0;height:calc(var(--cd,0) * 100%);background:rgba(42,23,8,.55);pointer-events:none}
 .slot.off{filter:grayscale(.9) brightness(.8);cursor:default}
@@ -4301,12 +4301,30 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
 
   // SVG 캐릭터를 캔버스용 이미지로
   const imgs = {};
+  // 렉 방지: SVG 그림은 그릴 때마다 다시 계산(특히 광란 필터)하면 느려서, 처음 쓸 때 한 번만 비트맵(캔버스)으로 구워 둠
+  const BAKE = 1.6;
+  function bake(img){
+    if (img.bmp || !img.complete || !img.naturalWidth) return img.bmp || null;
+    const c = document.createElement('canvas');
+    c.width = Math.round(img.naturalWidth * BAKE); c.height = Math.round(img.naturalHeight * BAKE);
+    try { c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); img.bmp = c; } catch (e) { img.bmp = null; }
+    return img.bmp;
+  }
   function svgImage(id, vb){
     const g = document.getElementById(id).outerHTML.replace(/ id="[^"]*"/, '');
     const img = new Image();
-    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + vb + '">' + g + '</svg>');
+    const [, , vw, vh] = vb.split(' ').map(Number);
+    img.width = vw; img.height = vh;
+    img.onload = () => setTimeout(() => bake(img), 0);
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="' + vw + '" height="' + vh + '" viewBox="' + vb + '">' + g + '</svg>');
     return img;
   }
+  // 모든 drawImage 에서 구워 둔 비트맵을 대신 씀
+  const _drawImage = ctx.drawImage.bind(ctx);
+  ctx.drawImage = function(src, ...rest){
+    if (src && src.tagName === 'IMG' && src.src.startsWith('data:image/svg')) { const b = src.bmp || bake(src); if (b) return rest.length === 8 ? _drawImage(b, rest[0] * BAKE, rest[1] * BAKE, rest[2] * BAKE, rest[3] * BAKE, rest[4], rest[5], rest[6], rest[7]) : _drawImage(b, ...rest); }
+    return _drawImage(src, ...rest);
+  };
   imgs.soldier = svgImage('soldier', '0 0 240 260');
   CRAZY_LIST.forEach(c => { imgs['cz-' + c.id] = svgImage('czE-' + c.id, '-20 -30 280 300'); imgs['ucz-' + c.id] = svgImage('ucz-' + c.id, '0 0 240 260'); });
   ['mouse','crow','pig','snake','bear','hedgehog','raccoon','bigcoon','boar','eagle','hippo','gatekeeper','milkthief','u-masa','u-jingle','u-battle','u-tank','u-bull','u-bird','u-fish','u-lizard','u-titan','u-eolppak','u-fk','u-jingyeok','u-ssang','u-thanos','u-horror','u-dance','u-kkamnol-box','u-aegi','mosquito','pillow','slipper','alarm','sock','cupramen','blanket','phone','flexduo','u-evil','u-grandpa','u-penguin-body','u-fire','u-gyaru','u-silla','u-grip','u-ttabong','u-oishi','chalk','paper','eraser','statue','potgolem','laundry','scooter','shadow','trophyknight','shower','jboss1','jboss2','jboss3','jboss4','jboss5','u-jisol'].forEach(id => imgs[id] = svgImage(id, '0 0 240 260'));
@@ -5094,9 +5112,8 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     ctx.scale(pose.sx, pose.sy);
     const paint = () => u.img === 'u-kkamnol' ? drawJack(u, w, h) : u.img === 'u-penguin' ? drawPenguins(u, w, h) : ctx.drawImage(img, -w / 2, -h, w, h);
     if (S.pvp && !u.dead) {                          // PvP: 내 캐릭터 초록, 상대 캐릭터 빨강 테두리
-      ctx.shadowColor = u.dir < 0 ? '#2fd34a' : '#ff2e2e'; ctx.shadowBlur = 10 * k + 4;
-      paint();
-      ctx.shadowBlur = 5 * k + 2; paint();
+      ctx.shadowColor = u.dir < 0 ? '#2fd34a' : '#ff2e2e'; ctx.shadowBlur = 6 * k + 3;
+      paint();                                       // 테두리 한 번만 (렉 방지)
       ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
     }
     paint();
