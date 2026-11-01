@@ -4048,10 +4048,10 @@ CRAZY_LIST.forEach((c, i) => {
   LEGEND_STAGES.push({
     id: 'K' + (i + 1), no: 1, name: c.stage, group: 'cz-' + c.id, catBaseHp: 1500, crazy: true,
     spawns: [
-      { enemy: 'cz-' + c.id, first: 0, every: 999, maxAlive: 1, count: 1, onBaseHit: true },   // 적 성을 처음 때리면 등장
-      { enemy: esc[0], first: 8,  every: 12, maxAlive: 3 },
-      { enemy: esc[1], first: 14, every: 16, maxAlive: 2 },
-      { enemy: esc[2], first: 20, every: 20, maxAlive: 2 },
+      { enemy: 'cz-' + c.id, first: 0, every: 999, maxAlive: 1, count: 1, onBaseHit: true, mul: 5 },   // 적 성을 처음 때리면 등장 · 주인공이라 5배
+      { enemy: esc[0], first: 8,  every: 12, maxAlive: 3, mul: 0.15 },                                   // 호위는 약하게
+      { enemy: esc[1], first: 14, every: 16, maxAlive: 2, mul: 0.15 },
+      { enemy: esc[2], first: 20, every: 20, maxAlive: 2, mul: 0.15 },
     ],
     reward: { money: 9000 + i * 500, cans: 100 },
   });
@@ -4382,8 +4382,8 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     S.cats.push(makeFighter(u, hp, ap, CAT_BASE_X - BASE_HALF, -1, { img: u.art || 'soldier', size: u.size || 70, fly: !!u.fly, hand: u.hand, walkStyle: u.walkStyle, mouth: u.mouth }));
   }
 
-  function spawnEnemy(key){
-    const e = ENEMIES[key], m = S.stage.mult || 1;          // 장이 올라갈수록 적 강화
+  function spawnEnemy(key, mul){
+    const e = ENEMIES[key], m = (S.stage.mult || 1) * (mul || 1);          // mul: 스폰마다 따로 주는 배율 (광란: 보스 강하게, 호위 약하게)          // 장이 올라갈수록 적 강화
     S.enemies.push(makeFighter(e, Math.round(e.hp * m), Math.round(e.ap * m), ENEMY_BASE_X + BASE_HALF, 1, { img: e.art, size: e.size, fly: !!e.fly, boss: !!e.boss, key }));
   }
 
@@ -4661,9 +4661,9 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     jet:        (u, f, b, bx) => S.fx.push({ x: u.x, tx: fxTarget(u, f, b, bx), dir: u.dir, h: u.size, t: 0, dur: 0.6, jetFx: true, seed: Math.random() * 50 }),
   };
   // 광란 보스 등장: 적 성에서 보랏빛 폭발 → 아군 전원을 맵 중간 근처까지 날려 보냄 (피해 없음)
-  function bossEntrance(key){
+  function bossEntrance(key, mul){
     const before = S.enemies.length;
-    spawnEnemy(key);
+    spawnEnemy(key, mul);
     const boss = S.enemies[before];
     const mid = (ENEMY_BASE_X + CAT_BASE_X) / 2;
     S.cats.forEach(c => {
@@ -4799,12 +4799,12 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     S.stage.spawns.forEach((sp, i) => {
       const st = S.spawnState[i];
       if (sp.onBaseHit) {                              // 성을 처음 때리는 순간 보스 등장 + 아군 모두 맵 중간까지 넉백
-        if (!st.made && S.enemyBase.hp < S.enemyBase.max) { st.made = 1; bossEntrance(sp.enemy); }
+        if (!st.made && S.enemyBase.hp < S.enemyBase.max) { st.made = 1; bossEntrance(sp.enemy, sp.mul); }
         return;
       }
       if (S.t >= st.next) {
         const alive = S.enemies.filter(e => !e.dead && e.key === sp.enemy).length;
-        if (alive < sp.maxAlive && (!sp.count || st.made < sp.count)) { spawnEnemy(sp.enemy); st.made++; }
+        if (alive < sp.maxAlive && (!sp.count || st.made < sp.count)) { spawnEnemy(sp.enemy, sp.mul); st.made++; }
         st.next += sp.every;
       }
     });
@@ -5371,18 +5371,6 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
           ctx.stroke();
         }
         ctx.globalCompositeOperation = 'source-over';
-        if (p > .12) {                                    // 이름 + "등장!!"
-          const q = Math.min(1, (p - .12) / .1), fade = p > .8 ? 1 - (p - .8) / .2 : 1;
-          ctx.globalAlpha = fade; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-          ctx.save(); ctx.translate(cw / 2 + (q < 1 ? Math.sin(f.t * 90) * 8 : 0), ch * .26); const sc = 1.8 - .8 * q; ctx.scale(sc, sc);
-          ctx.font = Math.max(20, 64 * k) + 'px "Black Han Sans", sans-serif';
-          ctx.lineWidth = 12; ctx.strokeStyle = '#14041e'; ctx.strokeText(f.name, 0, 0);
-          const tg = ctx.createLinearGradient(0, -30 * k, 0, 30 * k); tg.addColorStop(0, '#ffffff'); tg.addColorStop(.5, '#d7a6ff'); tg.addColorStop(1, '#7a22e0');
-          ctx.fillStyle = tg; ctx.fillText(f.name, 0, 0);
-          ctx.font = Math.max(16, 44 * k) + 'px "Black Han Sans", sans-serif';
-          ctx.lineWidth = 9; ctx.strokeText('등장!!', 0, 62 * k); ctx.fillStyle = '#ff5ad0'; ctx.fillText('등장!!', 0, 62 * k);
-          ctx.restore();
-        }
         ctx.restore(); return;
       }
       if (f.crazyFx) {                                    // 광란: 보랏빛 할퀸 자국 3줄 + 번개 충격파
