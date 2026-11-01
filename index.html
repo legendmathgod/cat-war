@@ -4048,7 +4048,7 @@ CRAZY_LIST.forEach((c, i) => {
   LEGEND_STAGES.push({
     id: 'K' + (i + 1), no: 1, name: c.stage, group: 'cz-' + c.id, catBaseHp: 1500, crazy: true,
     spawns: [
-      { enemy: 'cz-' + c.id, first: 0, every: 999, maxAlive: 1, count: 1, onBaseHit: true, mul: 5 },   // 적 성을 처음 때리면 등장 · 주인공이라 5배
+      { enemy: 'cz-' + c.id, first: 0, every: 999, maxAlive: 1, count: 1, onBaseHit: true, mul: 2 },   // 적 성을 처음 때리면 등장 · 주인공이라 2배
       { enemy: esc[0], first: 8,  every: 12, maxAlive: 3, mul: 0.15 },                                   // 호위는 약하게
       { enemy: esc[1], first: 14, every: 16, maxAlive: 2, mul: 0.15 },
       { enemy: esc[2], first: 20, every: 20, maxAlive: 2, mul: 0.15 },
