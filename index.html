@@ -729,7 +729,7 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
           <svg viewBox="0 0 50 30" aria-hidden="true"><use href="#ticket-gold"/></svg>
           <svg viewBox="0 0 50 30" aria-hidden="true"><use href="#ticket-gold"/></svg>
         </div>
-        <div class="w-sub">환영의 의미로 레어 티켓 3장을 지급합니다!</div>
+        <div class="w-sub">환영의 의미로 레어 티켓 10장을 지급합니다!</div>
         <button class="btn w-ok" id="welcome-ok">받기</button>
       </div>
     </div>
@@ -933,7 +933,7 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
     </div>
     <div class="r-caption" id="r-caption"></div>
     <div class="g-buttons">
-      <button class="g-roll" id="r-roll1"><span class="t"><em>1회</em> 뽑기!!</span><span class="n"><svg class="ticket-ic" viewBox="0 0 50 30" aria-hidden="true"><use id="r-roll1-ic" href="#ticket-gold"/></svg>1</span></button>
+      <button class="g-roll" id="r-roll1"><span class="t"><em>1회</em> 뽑기!!</span><span class="n"><svg class="ticket-ic" id="r-roll1-svg" viewBox="0 0 50 30" aria-hidden="true"><use id="r-roll1-ic" href="#ticket-gold"/></svg><b id="r-roll1-n" style="font-weight:inherit">1</b></span></button>
       <button class="g-roll dark" id="r-roll11"><span class="t"><em>10+1회</em> 뽑기!!</span><span class="n"><svg class="ticket-ic" viewBox="0 0 60 60" aria-hidden="true"><use href="#icon-can"/></svg>1500</span></button>
     </div>
     <div class="g-bottom">
@@ -3718,13 +3718,13 @@ const AUTH = (function(){
   return { afterLoading, queueCloudSave, client: () => supa, user: () => user, nick: () => myNick, online: () => ONLINE && !!supa && !!user };
 })();
 
-// ---------- 처음 홈에 들어오면 환영 메시지 + 레어 티켓 3장 ----------
+// ---------- 처음 홈에 들어오면 환영 메시지 + 레어 티켓 10장 ----------
 function showWelcome(){
   if (PLAYER.welcomed) return;
   document.getElementById('welcome').hidden = false;
 }
 document.getElementById('welcome-ok').addEventListener('click', () => {
-  if (!PLAYER.welcomed) { PLAYER.welcomed = true; PLAYER.rareTicket += 3; savePlayer(); renderPlayer(); }
+  if (!PLAYER.welcomed) { PLAYER.welcomed = true; PLAYER.rareTicket += 10; savePlayer(); renderPlayer(); }
   document.getElementById('welcome').hidden = true;
 });
 
@@ -4252,9 +4252,13 @@ const GACHA = (function(){
     const kind = sr.platinum ? 'platinumTicket' : 'rareTicket', ic = sr.platinum ? '#ticket-plat' : '#ticket-gold';
     document.getElementById('r-tickets').textContent = ticketText(kind);
     document.getElementById('r-tickets-ic').setAttribute('href', ic);
-    document.getElementById('r-roll1-ic').setAttribute('href', ic);
+    // 레어 티켓이 1장도 없으면 1회 뽑기는 통조림 150개로
+    const canPay = !sr.platinum && !hasTickets('rareTicket', 1);
+    document.getElementById('r-roll1-ic').setAttribute('href', canPay ? '#icon-can' : ic);
+    document.getElementById('r-roll1-svg').setAttribute('viewBox', canPay ? '0 0 60 60' : '0 0 50 30');
+    document.getElementById('r-roll1-n').textContent = canPay ? '150' : '1';
     document.getElementById('r-cans').textContent = ticketText('cans');
-    document.getElementById('r-roll1').disabled = !hasTickets(kind, 1);
+    document.getElementById('r-roll1').disabled = canPay ? !hasTickets('cans', 150) : !hasTickets(kind, 1);
     document.getElementById('r-roll11').hidden = !!sr.platinum;          // 플래티넘은 1회 뽑기만 (플래티넘 티켓 전용)
     document.getElementById('r-roll11').disabled = !hasTickets('cans', 1500);
     const rr = rareRatesOf(sr.pool.map(id => UNITS.find(u => u.id === id)).filter(Boolean), sr.rates);
@@ -4304,7 +4308,11 @@ const GACHA = (function(){
   document.getElementById('r-back').addEventListener('click', () => { scr.hidden = true; });
   document.getElementById('r-prev').addEventListener('click', () => { if (cur > 0) { cur--; render(); } });
   document.getElementById('r-next').addEventListener('click', () => { if (cur < RARE_SERIES.length - 1) { cur++; render(); } });
-  document.getElementById('r-roll1').addEventListener('click', () => roll(1, RARE_SERIES[cur].platinum ? 'platinumTicket' : 'rareTicket', 1));
+  document.getElementById('r-roll1').addEventListener('click', () => {
+    if (RARE_SERIES[cur].platinum) roll(1, 'platinumTicket', 1);
+    else if (hasTickets('rareTicket', 1)) roll(1, 'rareTicket', 1);
+    else roll(1, 'cans', 150);                                   // 레어 티켓이 없으면 통조림 150개
+  });
   document.getElementById('r-roll11').addEventListener('click', () => roll(11, 'cans', 1500));
 })();
 
