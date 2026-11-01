@@ -1005,7 +1005,7 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
     <div class="cr-panel" id="cr-start">
       <div class="cr-card">
         <h2>통조림 런</h2>
-        <p>달리면서 통조림을 모으자! 화면을 누르거나 <b>점프</b>(스페이스바)로 장애물을 넘어요.<br>장애물에 한 번이라도 부딪히면 끝!</p>
+        <p>달리면서 통조림을 모으자! 화면을 누르거나 <b>점프</b>(스페이스바)로 장애물을 넘어요. 두 번 누르면 2단 점프!<br>장애물에 한 번이라도 부딪히면 끝!</p>
         <p class="big">오늘 남은 기회 <span id="cr-left">3</span></p>
         <p>최고 기록: 통조림 <b id="cr-best">0</b>개</p>
         <div class="row"><button class="cr-out" id="cr-exit1">나가기</button><button class="cr-go" id="cr-go">달리기!</button></div>
@@ -3617,7 +3617,7 @@ document.getElementById('welcome-ok').addEventListener('click', () => {
   function jump(){
     if (!G || G.over) return;
     const p = G.p;
-    if (p.y >= GY) { p.vy = -1000; p.jumps = 1; }
+    if (p.jumps < 2) { p.vy = p.jumps ? -880 : -1000; p.jumps++; }   // 2단 점프까지
   }
   const jb = $('cr-jump');
   jb.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); jump(); });
