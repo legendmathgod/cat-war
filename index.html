@@ -247,6 +247,8 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
 .canrun{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .cr-btn:active,.cr-btn.on{transform:translateY(.4cqw);box-shadow:inset 0 -.8cqw 0 rgba(0,0,0,.2),0 .2cqw 0 var(--ink)}
 .cr-jump{right:2.4cqw;background:linear-gradient(#7ad0ff,#2f8ae0)}
+.cr-jump{display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.cr-jump small{margin-top:.5cqw;font-size:1.7cqw;-webkit-text-stroke:.1cqw var(--ink)}
 .cr-panel{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(20,10,30,.55);z-index:3}
 .cr-card{width:52cqw;padding:3cqw;background:#fff7e6;border:.6cqw solid var(--ink);border-radius:3cqw;text-align:center;box-shadow:0 1cqw 0 var(--ink)}
 .cr-card h2{margin:0 0 1cqw;font-family:var(--display);font-size:5cqw;color:#e8463a;-webkit-text-stroke:.25cqw var(--ink);paint-order:stroke fill;font-weight:400}
@@ -1001,7 +1003,7 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
       <div class="cr-cans"><svg viewBox="0 0 60 60" aria-hidden="true"><use href="#icon-can"/></svg><span id="cr-score">0</span></div>
       <div class="cr-dist" id="cr-dist">0m</div>
     </div>
-    <button class="cr-btn cr-jump" id="cr-jump">점프</button>
+    <button class="cr-btn cr-jump" id="cr-jump">점프<small>space</small></button>
     <div class="cr-panel" id="cr-start">
       <div class="cr-card">
         <h2>통조림 런</h2>
