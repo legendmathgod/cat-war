@@ -4106,7 +4106,7 @@ const CRAZY_ESCORT = [
   ['potgolem', 'laundry', 'shower'], ['phone', 'trophyknight', 'cupramen'], ['statue', 'shadow', 'trophyknight'],
 ];
 // 광란 보스 강화 배율 (기본 2배, 너무 어려운 보스는 따로)
-const CRAZY_BOSS_MUL = { bull: 0.1, lizard: 1.3, jingle: 1.7 };
+const CRAZY_BOSS_MUL = { bull: 0.05, lizard: 1.3, jingle: 1.7 };
 // 여러 마리가 차례로 나오는 광란 보스 (첫 마리는 성을 때리면, 그다음은 every 초마다)
 const CRAZY_BOSS_COUNT = { bull: { count: 3, every: 30 } };
 CRAZY_LIST.forEach((c, i) => {
@@ -4717,7 +4717,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     const mid = (ENEMY_BASE_X + CAT_BASE_X) / 2;
     S.cats.forEach(c => {
       if (c.dead || c.dying) return;
-      const far = Math.max(KB_DIST, mid + 40 + Math.random() * 80 - c.x);
+      const far = Math.max(300 + Math.random() * 60, mid + 40 + Math.random() * 80 - c.x);   // 전원 크게 뒤로 (앞줄은 맵 중간까지)
       c.state = 'kb'; c.kbTime = 0.9; c.st = 0.9; c.kbFar = far; c.hitDone = true;
     });
     S.fx.push({ x: ENEMY_BASE_X + BASE_HALF, t: 0, dur: 1.6, entranceFx: true, name: boss ? ENEMIES[key].name : '', seed: Math.random() * 50 });
