@@ -4733,7 +4733,7 @@ document.getElementById('gift-ok').addEventListener('click', () => {
 
   let G = null, raf = 0, last = 0, dpr = 1;
   function resize(){
-    const r = scr.getBoundingClientRect(); dpr = Math.min(2, window.devicePixelRatio || 1);
+    const r = scr.getBoundingClientRect(); dpr = Math.min(1.25, window.devicePixelRatio || 1);
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
   }
   function newGame(){
@@ -6327,19 +6327,42 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     try { c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); img.bmp = c; } catch (e) { img.bmp = null; }
     return img.bmp;
   }
+  // 렉 줄이기: 화면에 그려질 크기(8px 단위)로 미리 줄여 둔 그림을 써서, 매 프레임 큰 그림을 줄이는 일을 없앰
+  function sized(src, b, dw, dh){
+    if (dw < 4 || dh < 4) return null;
+    const bw = Math.min(b.width, Math.ceil(dw / 8) * 8), bh = Math.max(1, Math.round(bw * b.height / b.width));
+    if (bw >= b.width) return b;
+    const cache = src.sz || (src.sz = new Map());
+    let c = cache.get(bw);
+    if (!c) {
+      if (cache.size > 6) cache.delete(cache.keys().next().value);       // 크기별로 몇 장만 기억
+      c = document.createElement('canvas'); c.width = bw; c.height = bh;
+      const cx = c.getContext('2d'); cx.imageSmoothingQuality = 'high'; cx.drawImage(b, 0, 0, bw, bh);
+      cache.set(bw, c);
+    }
+    return c;
+  }
+  const bakeQ = [];
+  (function bakeIdle(){
+    const run = dl => { let n = 0; while (bakeQ.length && (dl ? dl.timeRemaining() > 4 : n < 2)) { bake(bakeQ.shift()); n++; } setTimeout(bakeIdle, 50); };
+    if (window.requestIdleCallback) requestIdleCallback(run, { timeout: 500 }); else run(null);
+  })();
   function svgImage(id, vb){
     const g = document.getElementById(id).outerHTML.replace(/ id="[^"]*"/, '');
     const img = new Image();
     const [, , vw, vh] = vb.split(' ').map(Number);
     img.width = vw; img.height = vh;
-    img.onload = () => setTimeout(() => bake(img), 0);
+    img.onload = () => bakeQ.push(img);
     img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="' + vw + '" height="' + vh + '" viewBox="' + vb + '">' + g + '</svg>');
     return img;
   }
   // 모든 drawImage 에서 구워 둔 비트맵을 대신 씀
   const _drawImage = ctx.drawImage.bind(ctx);
   ctx.drawImage = function(src, ...rest){
-    if (src && src.tagName === 'IMG' && src.src.startsWith('data:image/svg')) { const b = src.bmp || bake(src); if (b) return rest.length === 8 ? _drawImage(b, rest[0] * BAKE, rest[1] * BAKE, rest[2] * BAKE, rest[3] * BAKE, rest[4], rest[5], rest[6], rest[7]) : _drawImage(b, ...rest); }
+    if (src && src.tagName === 'IMG' && src.src.startsWith('data:image/svg')) { const b = src.bmp || bake(src); if (b) {
+      if (rest.length === 8) return _drawImage(b, rest[0] * BAKE, rest[1] * BAKE, rest[2] * BAKE, rest[3] * BAKE, rest[4], rest[5], rest[6], rest[7]);
+      if (rest.length === 4) { const m = ctx.getTransform(), sc = Math.hypot(m.a, m.b) || 1, sm = sized(src, b, rest[2] * sc, rest[3] * sc); if (sm) return _drawImage(sm, rest[0], rest[1], rest[2], rest[3]); }
+      return _drawImage(b, ...rest); } }
     return _drawImage(src, ...rest);
   };
   imgs.soldier = svgImage('soldier', '0 0 240 260');
@@ -7121,7 +7144,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
   let cw = 0, ch = 0, dpr = 1;
   function resize(){
     const r = cv.getBoundingClientRect();
-    dpr = Math.min(2, window.devicePixelRatio || 1);
+    dpr = Math.min(1.25, window.devicePixelRatio || 1);   // 렉 줄이기: 고해상도 화면에서도 1.25배까지만
     cw = r.width; ch = r.height;
     cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr);
   }
@@ -9476,21 +9499,26 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     if (S.flash > 0) { ctx.fillStyle = 'rgba(255,255,255,' + Math.min(.85, S.flash * 2.4) + ')'; ctx.fillRect(-10, -10, cw + 20, ch + 20); }
   }
 
+  // 렉 줄이기: 화면 글자·버튼은 값이 바뀔 때만 고침 (매 프레임 DOM 을 건드리면 브라우저가 계속 다시 그림)
+  const hudCache = new WeakMap();
+  function setTxt(el, v){ if (hudCache.get(el) !== v) { hudCache.set(el, v); el.textContent = v; } }
+  function setVar(el, name, v){ const key = name + '|' + v, c = hudCache.get(el) || {}; if (c[name] !== v) { c[name] = v; hudCache.set(el, c); el.style.setProperty(name, v); } }
+  function setCls(el, cls, on){ if (el.classList.contains(cls) !== on) el.classList.toggle(cls, on); }
   function hud(){
     const cb = document.getElementById('cannon'), ready = S.cannon.charge >= 1 && !S.cannon.wave && !S.over;
-    cb.style.setProperty('--charge', S.cannon.charge);
-    cb.classList.toggle('ready', ready);
-    document.getElementById('c-txt').textContent = S.cannon.wave ? '발사!' : ready ? '발사!!' : Math.floor(S.cannon.charge * 100) + '%';
-    moneyEl.textContent = Math.floor(S.money);
-    walletEl.textContent = S.walletMax;
+    setVar(cb, '--charge', Math.round(S.cannon.charge * 100) / 100);
+    setCls(cb, 'ready', ready);
+    setTxt(document.getElementById('c-txt'), S.cannon.wave ? '발사!' : ready ? '발사!!' : Math.floor(S.cannon.charge * 100) + '%');
+    setTxt(moneyEl, String(Math.floor(S.money)));
+    setTxt(walletEl, String(S.walletMax));
     const wb = document.getElementById('worker'), max = S.workerLv >= S.workerMax;
-    document.getElementById('w-lv').textContent = max ? 'LEVEL MAX' : 'LEVEL ' + S.workerLv;
-    document.getElementById('w-cost').textContent = max ? 'MAX' : workerCost() + '원';
-    wb.classList.toggle('off', S.over || max || S.money < workerCost());
+    setTxt(document.getElementById('w-lv'), max ? 'LEVEL MAX' : 'LEVEL ' + S.workerLv);
+    setTxt(document.getElementById('w-cost'), max ? 'MAX' : workerCost() + '원');
+    setCls(wb, 'off', S.over || max || S.money < workerCost());
     S.deck.forEach(d => {
       if (!d) return;
-      d.el.classList.toggle('off', d.cd > 0 || S.money < d.unit.cost || S.over);
-      d.el.style.setProperty('--cd', d.cd / (d.cdMax || d.unit.cooldown));
+      setCls(d.el, 'off', d.cd > 0 || S.money < d.unit.cost || S.over);
+      setVar(d.el, '--cd', Math.round(d.cd / (d.cdMax || d.unit.cooldown) * 100) / 100);
     });
   }
 
