@@ -3550,7 +3550,7 @@ const UNITS = [
     id: 'tlgoddess', name: 'The Legend 여신', rarity: 'mythic', gacha: 'rare', art: 'u-tlgoddess', iconBox: '70 4 100 100', size: 150, walkStyle: 'float',
     desc: '시상식의 주인공. 트로피를 높이 들면 무대 조명이 켜지고 하늘에서 황금 트로피가 쏟아져 사거리 안의 적을 모두 쓸어버리는 전설의 여신',
     maxLevel: 30, level: 1, plusLevel: 0,
-    baseHp: 14250, baseAp: 5750, range: 480, kb: 4, speed: 9,
+    baseHp: 14250, baseAp: 57500, range: 480, kb: 4, speed: 9,   // 공격력 10배 (5750 → 57500)
     attackType: 'area', attackInterval: 6.23, foreswing: 1.27, backswing: 1.0,
     cooldown: 157.87, cost: 6000, motion: 'legend',
   },
@@ -6616,13 +6616,13 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
             if (u.critNow > 1) S.shake = Math.max(S.shake, .35);
           }
           if (u.motion === 'legend') {                    // The Legend: 시상식! 무대 조명 + 카메라 플래시 + 황금 트로피 비 + 거대한 왕관 폭발 + "THE LEGEND"
-            S.fx.push({ x: u.x, dir: u.dir, range: u.range, t: 0, dur: 2.6, legendFx: true, h: u.size, seed: Math.random() * 50 });
+            S.fx.push({ x: u.x, dir: u.dir, range: u.range, t: 0, dur: 3.2, legendFx: true, h: u.size, seed: Math.random() * 50 });
             S.shake = Math.max(S.shake, 1.0); S.flash = Math.max(S.flash || 0, .25);
           }
           if (u.motion === 'goddess') {                   // 여신: 하늘에서 빛기둥 + 거대한 빛의 고양이 발바닥 쿵! + 별·하트·꽃잎 폭발
             const tg = findTarget(u, foes, foeBase, foeBaseX);
             const tx = !tg ? u.x + u.dir * u.range * .6 : tg === foeBase ? foeBaseX - BASE_HALF * u.dir : tg.x;
-            S.fx.push({ x: u.x, tx, dir: u.dir, t: 0, dur: 1.9, goddessFx: true, h: u.size, seed: Math.random() * 50 });
+            S.fx.push({ x: u.x, tx, dir: u.dir, t: 0, dur: 2.4, goddessFx: true, h: u.size, seed: Math.random() * 50 });
             S.shake = Math.max(S.shake, .6);
           }
           if (u.motion === 'hat') {                       // 신사: 모자가 적에게 '퍽' + "실례합니다!"
@@ -8531,6 +8531,37 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
       if (f.legendFx) {                                   // The Legend: 시상식 대연출
         ctx.save();
         const ux = f.x * k, x1 = (f.x + f.dir * 40) * k, x2 = (f.x + f.dir * f.range) * k, ax = Math.min(x1, x2), bx = Math.max(x1, x2), mx = (ax + bx) / 2;
+        {                                                                             // 0) 여신 발밑부터 적 진영까지 레드카펫이 촤르륵 펼쳐짐 (금테 + 반짝임)
+          const roll = Math.min(1, p / .18), fade = p < .85 ? 1 : 1 - (p - .85) / .15, cx2 = ux + (x2 - ux) * roll;
+          const l = Math.min(ux, cx2), r = Math.max(ux, cx2), y0 = gy - 6 * k, hh = 22 * k;
+          ctx.globalAlpha = fade;
+          const cg = ctx.createLinearGradient(0, y0, 0, y0 + hh); cg.addColorStop(0, '#e8283a'); cg.addColorStop(1, '#8a0a1a');
+          ctx.fillStyle = cg; ctx.beginPath(); ctx.moveTo(l, y0); ctx.lineTo(r, y0); ctx.lineTo(r + 16 * k, y0 + hh); ctx.lineTo(l - 16 * k, y0 + hh); ctx.closePath(); ctx.fill();
+          ctx.strokeStyle = '#ffd23f'; ctx.lineWidth = 3 * k + 1; ctx.beginPath(); ctx.moveTo(l, y0 + 2 * k); ctx.lineTo(r, y0 + 2 * k); ctx.moveTo(l - 14 * k, y0 + hh - 2 * k); ctx.lineTo(r + 14 * k, y0 + hh - 2 * k); ctx.stroke();
+          ctx.fillStyle = '#c80a20'; ctx.beginPath(); ctx.ellipse(cx2, y0 + hh / 2, 8 * k, hh / 2, 0, 0, Math.PI * 2); ctx.fill();   // 말려 있는 끝
+          ctx.fillStyle = '#fff6c0'; for (let i = 0; i < 10; i++) { const sx = l + ((i * 97 + f.seed * 13) % 100) / 100 * (r - l), tw = Math.abs(Math.sin(f.t * 8 + i)); ctx.globalAlpha = fade * tw; ctx.beginPath(); ctx.arc(sx, y0 + hh * .5, 2.5 * k + 1, 0, Math.PI * 2); ctx.fill(); }
+          ctx.globalAlpha = 1;
+        }
+        for (let i = 0; i < 7; i++) {                                                 // 0-2) 하늘에서 불꽃놀이가 차례로 펑펑
+          const t0 = .12 + i * .09, q = (p - t0) / .35; if (q < 0 || q > 1) continue;
+          const fx = ax - 60 * k + ((Math.sin(f.seed * 2.3 + i * 1.9) + 1) / 2) * (bx - ax + 120 * k), fy = gy - (150 + (i * 47 % 90)) * k;
+          const col = ['#ff5a8a', '#ffd23f', '#5ad8ff', '#9a7aff', '#7aff9a', '#ff9a3a', '#ffffff'][i];
+          if (q < .25) { const r2 = q / .25; ctx.strokeStyle = col; ctx.lineWidth = 3 * k + 1; ctx.beginPath(); ctx.moveTo(fx, gy); ctx.lineTo(fx, gy - (gy - fy) * r2); ctx.stroke(); continue; }   // 쏘아 올림
+          const r2 = (q - .25) / .75;
+          for (let j = 0; j < 22; j++) { const a = j / 22 * Math.PI * 2 + i, d = (70 + 10 * (j % 3)) * k * Math.sqrt(r2);
+            ctx.globalAlpha = Math.max(0, 1 - r2); ctx.fillStyle = j % 4 ? col : '#fff';
+            ctx.beginPath(); ctx.arc(fx + Math.cos(a) * d, fy + Math.sin(a) * d + r2 * r2 * 30 * k, (3.5 - 2 * r2) * k + 1, 0, Math.PI * 2); ctx.fill(); }
+          ctx.globalAlpha = Math.max(0, .6 * (1 - r2 * 2)); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(fx, fy, 22 * k * (1 - r2), 0, Math.PI * 2); ctx.fill();
+          ctx.globalAlpha = 1;
+        }
+        for (let i = 0; i < 10; i++) {                                                // 0-3) 금빛 별똥별이 사선으로 쏟아짐
+          const t0 = .2 + i * .035, q = (p - t0) / .22; if (q < 0 || q > 1) continue;
+          const ex2 = ax + ((Math.sin(f.seed + i * 4.1) + 1) / 2) * (bx - ax), sx = ex2 - f.dir * 260 * k, sy = -40;
+          const x = sx + (ex2 - sx) * q, y = sy + (gy - 30 * k - sy) * q;
+          const tg = ctx.createLinearGradient(x, y, x - (ex2 - sx) * .25, y - (gy - sy) * .25); tg.addColorStop(0, 'rgba(255,250,210,1)'); tg.addColorStop(1, 'rgba(255,200,80,0)');
+          ctx.strokeStyle = tg; ctx.lineWidth = 6 * k + 1; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - (ex2 - sx) * .25, y - (gy - sy) * .25); ctx.stroke();
+          ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x, y, 5 * k + 1, 0, Math.PI * 2); ctx.fill();
+        }
         const sp = p < .1 ? p / .1 : p < .75 ? 1 : 1 - (p - .75) / .25;              // 1) 무대 조명 두 줄기가 적 진영을 훑음
         ctx.globalCompositeOperation = 'lighter';
         [[-1, 0], [1, 1.7]].forEach(([side, ph]) => {
@@ -8599,12 +8630,59 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
           ctx.fillStyle = tg; ctx.fillText('THE LEGEND', 0, 0);
           ctx.globalAlpha *= .8; ctx.fillStyle = '#fff'; ctx.beginPath(); const sx2 = -200 * k + ((f.t * 400) % 400) * k; ctx.ellipse(sx2, -10 * k, 30 * k, 6 * k, -.3, 0, Math.PI * 2); ctx.fill();
           ctx.restore();
+          const dq = Math.min(1, Math.max(0, (q - .1) / .6));                         // 6) 금빛 돔 파동이 사거리 전체를 덮으며 지나감
+          if (dq > 0 && dq < 1) {
+            const R = (bx - ax) * .75 * dq + 60 * k;
+            ctx.globalAlpha = (1 - dq) * .7; ctx.save(); ctx.globalCompositeOperation = 'lighter';
+            const dg = ctx.createRadialGradient(mx, gy, R * .7, mx, gy, R); dg.addColorStop(0, 'rgba(255,220,120,0)'); dg.addColorStop(.85, 'rgba(255,240,180,.8)'); dg.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = dg; ctx.beginPath(); ctx.arc(mx, gy, R, Math.PI, Math.PI * 2); ctx.fill(); ctx.restore();
+          }
+          ctx.globalAlpha = Math.max(0, .9 * (1 - q * 1.5));                           // 7) 렌즈 플레어
+          ctx.save(); ctx.globalCompositeOperation = 'lighter';
+          [[0, 46, '#fff6d0'], [.35, 18, '#ffb0e0'], [.6, 28, '#a0e0ff'], [.85, 12, '#fff']].forEach(([t2, r2, c]) => {
+            const fx2 = mx + (ux - mx) * t2, fy2 = gy - 110 * k + (gy - 30 * k - (gy - 110 * k)) * t2;
+            const fg = ctx.createRadialGradient(fx2, fy2, 0, fx2, fy2, r2 * k); fg.addColorStop(0, c); fg.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = fg; ctx.beginPath(); ctx.arc(fx2, fy2, r2 * k, 0, Math.PI * 2); ctx.fill(); });
+          ctx.fillStyle = 'rgba(255,250,220,.9)'; ctx.fillRect(mx - 300 * k * (1 - q), gy - 111 * k, 600 * k * (1 - q), 2 * k + 1);
+          ctx.restore();
         }
         ctx.restore(); return;
       }
       if (f.goddessFx) {                                  // 여신의 축복: 빛기둥 → 하늘에서 거대한 빛의 고양이 발바닥이 쿵 → 별·하트·꽃잎 폭발 + 무지개 + "여신의 축복!"
         ctx.save();
         const ex = f.tx * k, ey = gy - 4 * k, top = -20;
+        {                                                                             // 0) 하늘의 구름이 양옆으로 갈라지며 천국 문이 열림
+          const op = Math.min(1, p / .2), fade = p < .8 ? 1 : 1 - (p - .8) / .2, gap = op * 120 * k, cy0 = 30 * k;
+          ctx.globalAlpha = fade;
+          const gg = ctx.createRadialGradient(ex, cy0, 0, ex, cy0, 160 * k * op + 1); gg.addColorStop(0, 'rgba(255,250,220,.95)'); gg.addColorStop(1, 'rgba(255,220,240,0)');
+          ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(ex, cy0, 160 * k * op + 1, 0, Math.PI * 2); ctx.fill();
+          [-1, 1].forEach(side => { for (let i = 0; i < 4; i++) { const cx3 = ex + side * (gap + 30 * k + i * 34 * k), cy3 = cy0 + (i % 2) * 14 * k;
+            ctx.fillStyle = i % 2 ? '#f6f0ff' : '#ffffff'; ctx.strokeStyle = '#d8c8f0'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(cx3, cy3, 26 * k, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); } });
+          for (let i = 0; i < 7; i++) { const a = Math.PI / 2 + (i - 3) * .16;          // 열린 틈으로 쏟아지는 빛줄기
+            ctx.globalAlpha = fade * op * .35; ctx.fillStyle = '#fff6d0'; ctx.beginPath(); ctx.moveTo(ex, cy0); ctx.lineTo(ex + Math.cos(a - .04) * 600 * k, cy0 + Math.sin(a - .04) * 600 * k); ctx.lineTo(ex + Math.cos(a + .04) * 600 * k, cy0 + Math.sin(a + .04) * 600 * k); ctx.fill(); }
+          ctx.globalAlpha = 1;
+          ctx.save(); ctx.translate(ex, ey); ctx.scale(1, .28); ctx.rotate(f.t * 2);     // 바닥 금빛 마법진
+          ctx.globalAlpha = fade * Math.min(1, p / .15); ctx.strokeStyle = '#ffd23f'; ctx.lineWidth = 4 * k + 1;
+          ctx.beginPath(); ctx.arc(0, 0, 130 * k, 0, Math.PI * 2); ctx.stroke(); ctx.beginPath(); ctx.arc(0, 0, 104 * k, 0, Math.PI * 2); ctx.stroke();
+          ctx.beginPath(); for (let i = 0; i <= 5; i++) { const a = i * Math.PI * 4 / 5; ctx[i ? 'lineTo' : 'moveTo'](Math.cos(a) * 104 * k, Math.sin(a) * 104 * k); } ctx.stroke();
+          ctx.fillStyle = '#ff9ad0'; for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2; ctx.beginPath(); ctx.arc(Math.cos(a) * 117 * k, Math.sin(a) * 117 * k, 5 * k, 0, Math.PI * 2); ctx.fill(); }
+          ctx.restore(); ctx.globalAlpha = 1;
+          for (let i = 0; i < 3; i++) {                                               // 작은 빛 발바닥 세 번 콩콩콩 (큰 발바닥 전에)
+            const t0 = .04 + i * .06, q = (p - t0) / .14; if (q < 0 || q > 1) continue;
+            const px2 = ex + (i - 1) * 70 * k, py3 = ey - 30 * k, s = 30 * k * (q < .3 ? q / .3 : 1);
+            ctx.globalAlpha = q < .6 ? 1 : 1 - (q - .6) / .4; ctx.fillStyle = '#ffd6ea'; ctx.strokeStyle = '#ff7ab8'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.ellipse(px2, py3 + s * .25, s * .62, s * .5, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            [[-.62, -.38], [-.22, -.72], [.22, -.72], [.62, -.38]].forEach(([dx, dy]) => { ctx.beginPath(); ctx.ellipse(px2 + dx * s, py3 + dy * s, .2 * s, .24 * s, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); });
+          }
+          ctx.globalAlpha = 1;
+          for (let i = 0; i < 14; i++) {                                              // 하늘하늘 떨어지는 천사 깃털
+            const t0 = (i * .05) % .6, q = (p - t0) / .5; if (q < 0 || q > 1) continue;
+            const fx = ex + Math.sin(f.seed + i * 2.7) * 200 * k + Math.sin(q * 6 + i) * 24 * k, fy = -10 + q * (gy - 10 * k);
+            ctx.save(); ctx.globalAlpha = q < .8 ? 1 : 1 - (q - .8) / .2; ctx.translate(fx, fy); ctx.rotate(Math.sin(q * 5 + i) * .6);
+            ctx.fillStyle = '#fff'; ctx.strokeStyle = '#c8b8e8'; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.ellipse(0, 0, 5 * k + 1, 14 * k + 2, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, -14 * k); ctx.lineTo(0, 16 * k); ctx.stroke(); ctx.restore();
+          }
+        }
         const pil = p < .15 ? p / .15 : p < .7 ? 1 : 1 - (p - .7) / .3;           // 빛기둥
         const pw = (70 + 30 * Math.sin(f.t * 20)) * k * pil;
         let g = ctx.createLinearGradient(ex - pw, 0, ex + pw, 0);
@@ -8631,6 +8709,13 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
             const r = Math.min(1, Math.max(0, q * 1.6 - i * .15)); if (r <= 0 || r >= 1) continue;
             ctx.globalAlpha = (1 - r) * .9; ctx.strokeStyle = ['#fff', '#ffd23f', '#ff9ad0'][i]; ctx.lineWidth = (10 - i * 2) * k * (1 - r) + 2;
             ctx.beginPath(); ctx.ellipse(ex, ey, (60 + 320 * r) * k, (16 + 80 * r) * k, 0, 0, Math.PI * 2); ctx.stroke();
+          }
+          {                                                                       // 하트 모양 빛 고리가 크게 퍼짐
+            const hq = Math.min(1, q * 1.3), HS = (40 + 160 * hq) * k;
+            ctx.globalAlpha = Math.max(0, 1 - hq); ctx.strokeStyle = '#ff7ab8'; ctx.lineWidth = 6 * k * (1 - hq) + 2;
+            ctx.beginPath(); ctx.moveTo(ex, ey - 60 * k + HS * .55);
+            ctx.bezierCurveTo(ex - HS * 1.1, ey - 60 * k - HS * .2, ex - HS * .45, ey - 60 * k - HS * .95, ex, ey - 60 * k - HS * .35);
+            ctx.bezierCurveTo(ex + HS * .45, ey - 60 * k - HS * .95, ex + HS * 1.1, ey - 60 * k - HS * .2, ex, ey - 60 * k + HS * .55); ctx.stroke();
           }
           ctx.globalAlpha = Math.max(0, .8 * (1 - q * 1.3));                       // 무지개
           ['#ff7a9a', '#ffb24a', '#ffe14d', '#7ad87a', '#7ac8ff', '#b08aff'].forEach((c, i) => {
