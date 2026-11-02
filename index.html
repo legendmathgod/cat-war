@@ -738,7 +738,7 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
       <div class="w-box">
         <div class="w-title outline">선물이 도착했어요!</div>
         <div class="w-tickets"><svg viewBox="0 0 60 60" aria-hidden="true"><use href="#icon-can"/></svg></div>
-        <div class="w-sub" id="gift-msg"></div>
+        <div class="w-sub" id="gift-msg" style="white-space:pre-line"></div>
         <button class="btn w-ok" id="gift-ok">받기</button>
       </div>
     </div>
@@ -3958,6 +3958,7 @@ document.getElementById('welcome-ok').addEventListener('click', () => {
 // ---------- 운영 선물: 모든 유저에게 계정마다 한 번씩 (받기를 눌러야 들어감) ----------
 const GIFTS = [
   { id: 'cans1500-20261101', cans: 1500, msg: '모든 유저에게 통조림 1500개를 드려요!' },
+  { id: 'cans750-20261102', cans: 750, msg: '와이파이 문제로 혼란을 드려 죄송합니다.\n모든 유저에게 통조림 750개를 드려요!' },
 ];
 function pendingGift(){ const got = PLAYER.gifts || []; return GIFTS.find(g => !got.includes(g.id)); }
 function showGift(){
