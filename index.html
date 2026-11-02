@@ -3156,7 +3156,7 @@ const UNITS = [
     id: 'fk', name: '뻐큐 고양이', rarity: 'rare', gacha: 'rare', art: 'u-fk', iconBox: '50 0 140 120', size: 100,
     desc: '손가락 하나로 번개를 쏘아 멀리 있는 적들을 한꺼번에 날려 버리는 고양이',
     maxLevel: 30, level: 1, plusLevel: 0,
-    baseHp: 1200, baseAp: 450, range: 350, kb: 3, speed: 10,
+    baseHp: 1200, baseAp: 180, range: 350, kb: 3, speed: 10,   // 너무 세서 공격력 450 → 180
     attackType: 'area', attackInterval: 4.20, foreswing: 0.23, backswing: 0.2,
     cooldown: 2.2, cost: 900, motion: 'finger',
   },
@@ -3221,7 +3221,7 @@ const UNITS = [
     id: 'horror', name: '공포의 고양이', rarity: 'uber', gacha: 'rare', art: 'u-horror', iconBox: '35 0 170 129', size: 105,
     desc: '스르르 다가와 얼굴을 확 들이밀고 "왁!" 하고 놀래켜서 주변 적들을 한꺼번에 날려 버리는 공포의 고양이',
     maxLevel: 30, level: 1, plusLevel: 0,
-    baseHp: 2250, baseAp: 1000, range: 320, kb: 3, speed: 14,
+    baseHp: 2250, baseAp: 400, range: 320, kb: 3, speed: 14,   // 너무 세서 공격력 1000 → 400
     attackType: 'area', attackInterval: 3.27, foreswing: 0.63, backswing: 0.3,
     cooldown: 3.87, cost: 750, motion: 'scare', fly: true,
   },
@@ -3428,12 +3428,14 @@ const CATEGORIES = [
 // 캐릭터: (200 + 100 × (현재레벨 - 1)) × 등급 배율  → Lv1→2: 200, Lv9→10: 1,000, Lv29→30: 3,000
 // 패시브: 400 × 현재레벨 (최대 20레벨, 플러스 최대 +10) → Lv1→2: 400, Lv9→10: 3,600, Lv19→20: 7,600
 // 패시브 만렙: 모두 20레벨 (플러스 최대 +10)
-function maxLv(u){ return u.passive ? 20 : u.maxLevel; }
+function maxLv(u){ return u.passive ? 20 : u.maxLevel + 10 * koreaChaptersCleared(); }   // 한국편 장을 하나 깰 때마다 레벨 제한 +10 (패시브는 20 그대로)
+function koreaChaptersCleared(){ return KOREA_CHAPTERS.filter(c => c.stages.length && chapterCleared(c.no)).length; }
 function pLv(id){ const u = UNITS.find(x => x.id === id); return u ? totalLevel(u) : 1; }   // 패시브 레벨 + 플러스
 const RARITY_COST = { basic:1, ex:1.5, rare:2, super:3, uber:5, legend:8 };
+const UNIT_COST_MUL = 2;                                             // 캐릭터 업그레이드 비용 배율 (돈이 너무 쌓여서 2배)
 function levelCost(u){
   if (u.passive) return 400 * u.level;
-  return Math.round((200 + 100 * (u.level - 1)) * (RARITY_COST[u.rarity] || 1));
+  return Math.round((200 + 100 * (u.level - 1)) * (RARITY_COST[u.rarity] || 1) * UNIT_COST_MUL);
 }
 
 (function(){
@@ -4949,7 +4951,7 @@ if (IS_DEV_LINK) UNITS.forEach(u => { if (!u.passive && u.gacha !== 'reward' && 
 // 저장 기록을 캐릭터 레벨 등에 적용 (처음 불러올 때, 계정 기록을 받아올 때 사용)
 function applyUnitsFromPlayer(){
   UNITS.forEach(u => { u.level = 1; u.plusLevel = 0; });
-  (PLAYER.levels && UNITS.forEach(u => { if (PLAYER.levels[u.id]) u.level = Math.min(u.maxLevel, PLAYER.levels[u.id]); }));
+  (PLAYER.levels && UNITS.forEach(u => { if (PLAYER.levels[u.id]) u.level = Math.min(u.passive ? u.maxLevel : u.maxLevel + 100, PLAYER.levels[u.id]); }));
   (PLAYER.plusLevels && UNITS.forEach(u => { if (PLAYER.plusLevels[u.id]) u.plusLevel = u.maxPlus !== undefined ? Math.min(u.maxPlus, PLAYER.plusLevels[u.id]) : PLAYER.plusLevels[u.id]; }));
   PLAYER.owned = (PLAYER.owned || ['cat']).filter(id => id !== 'chungmin');
   if (PLAYER.ch1Reward && !PLAYER.owned.includes('masa')) PLAYER.owned.push('masa');   // 예전 보상 받은 기록은 마사 고양이로
@@ -5617,6 +5619,7 @@ function castleHp(){
   return hp + tfx('wall') + 7000 * ktPct('kstone') / 100;   // 한국편 고대의 석판: 100%당 +7000
 }
 // 회계력: 적 처치 머니 배율 (레벨당 +5%, 보물 레지스터 100%당 +50%) → 다 올리면 3.95배
+const KILL_MONEY = 0.5;                                              // 전투 중 적 처치 머니 배율 (너무 많아서 절반으로)
 function killMoneyMul(){ return 1 + 0.05 * (pLv('accounting') - 1) + 0.5 * treasurePct('register') / 100; }
 // 공부력: 클리어 보상 돈 레벨당 +5%
 function studyMul(){ return 1 + 0.05 * (pLv('study') - 1); }
@@ -6320,7 +6323,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     stepSide(S.enemies, S.cats, S.catBase, CAT_BASE_X, dt);
     if (!S.pvp) for (const e of S.enemies) if (e.dead && !e.paid) {       // 적 처치 머니
       e.paid = true;
-      S.money = Math.min(S.walletMax, S.money + Math.round((ENEMIES[e.key].money || 0) * killMoneyMul()));
+      S.money = Math.min(S.walletMax, S.money + Math.round((ENEMIES[e.key].money || 0) * KILL_MONEY * killMoneyMul()));   // 좀비는 완전히 죽어야(부활 뒤) 받음
     }
     S.cats = S.cats.filter(u => u.dead < 0.6);
     S.enemies = S.enemies.filter(u => u.dead < 0.6);
