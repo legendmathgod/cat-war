@@ -548,6 +548,40 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
 .lg-item.crazy{background:linear-gradient(#b06bff,#6a1fd0 50%,#2a0a5a);color:#fff;-webkit-text-stroke:.2cqw #2a0a3a;paint-order:stroke fill;font-size:3.1cqw;letter-spacing:.1cqw;
   box-shadow:inset 0 -.7cqw 0 rgba(0,0,0,.25),0 .7cqw 0 var(--ink),0 0 2cqw .3cqw rgba(170,90,255,.8);animation:crazyPulse 1.4s ease-in-out infinite alternate}
 @keyframes crazyPulse{to{box-shadow:inset 0 -.7cqw 0 rgba(0,0,0,.25),0 .7cqw 0 var(--ink),0 0 3.4cqw .8cqw rgba(200,120,255,.95)}}
+.lg-item.dcrazy{background:linear-gradient(#ff3a5a,#8a0020 45%,#14000a);color:#fff3c0;-webkit-text-stroke:.22cqw #14000a;paint-order:stroke fill;font-size:2.9cqw;letter-spacing:.1cqw;border-color:#14000a;
+  box-shadow:inset 0 -.7cqw 0 rgba(0,0,0,.35),0 .7cqw 0 #14000a,0 0 2cqw .4cqw rgba(255,40,70,.85);animation:dcrazyPulse .9s ease-in-out infinite alternate}
+.lg-item.dcrazy::before{content:"";position:absolute;inset:-.5cqw;border-radius:2.4cqw;border:.35cqw dashed #ffcc33;opacity:.75;pointer-events:none}
+.lg-item.dcrazy:disabled{filter:grayscale(.85) brightness(.6);animation:none;cursor:default}
+@keyframes dcrazyPulse{to{box-shadow:inset 0 -.7cqw 0 rgba(0,0,0,.35),0 .7cqw 0 #14000a,0 0 3.6cqw 1cqw rgba(255,60,90,1)}}
+/* 진화 */
+.btn.evolve{position:absolute;right:1cqw;top:-1.4cqw;width:22cqw;z-index:2;font-size:3cqw;padding:.6cqw 0 .8cqw;background:linear-gradient(#ffe680,#ffb000 50%,#c86a00);color:#fff;-webkit-text-stroke:.2cqw var(--ink);paint-order:stroke fill;
+  box-shadow:0 .5cqw 0 var(--ink),0 0 2cqw .4cqw rgba(255,200,60,.85);animation:evoGlow 1s ease-in-out infinite alternate}
+@keyframes evoGlow{to{box-shadow:0 .5cqw 0 var(--ink),0 0 3.4cqw .9cqw rgba(255,90,200,.9)}}
+.evo-anim{position:absolute;inset:0;z-index:12;overflow:hidden;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 50%,#3a0a5a,#05000a 75%)}
+.evo-anim .rays{position:absolute;left:50%;top:50%;width:240cqw;height:240cqw;margin:-120cqw 0 0 -120cqw;border-radius:50%;opacity:0;
+  background:repeating-conic-gradient(rgba(255,230,120,.85) 0 5deg,rgba(255,80,200,.35) 5deg 10deg,transparent 10deg 18deg);-webkit-mask:radial-gradient(circle,#000 4%,transparent 50%);mask:radial-gradient(circle,#000 4%,transparent 50%);animation:raysSpin 1.4s linear infinite}
+.evo-anim.boom .rays{opacity:1;transition:opacity .2s}
+.evo-anim .art{position:relative;width:34cqw;height:34cqw;transition:transform .3s}
+.evo-anim .art svg{position:absolute;inset:0;width:100%;height:100%}
+.evo-anim .art .old{animation:evoShake .12s linear infinite}
+.evo-anim .art .new{opacity:0}
+.evo-anim.boom .art .old{opacity:0}
+.evo-anim.boom .art .new{opacity:1;animation:evoPop .6s cubic-bezier(.3,1.7,.5,1) both}
+@keyframes evoShake{0%{transform:translate(-.4cqw,0) scale(1)}50%{transform:translate(.4cqw,-.3cqw) scale(1.04)}100%{transform:translate(-.2cqw,.3cqw) scale(1)}}
+@keyframes evoPop{from{transform:scale(.2) rotate(-20deg)}to{transform:scale(1) rotate(0)}}
+.evo-anim .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.evo-anim.boom .flash{animation:evoFlash .7s ease-out both}
+@keyframes evoFlash{0%{opacity:1}100%{opacity:0}}
+.evo-anim .orbs i{position:absolute;left:50%;top:50%;width:1.6cqw;height:1.6cqw;margin:-.8cqw;border-radius:50%;background:#fff6a0;box-shadow:0 0 1.6cqw .5cqw #ffcc33;animation:evoSuck 1.6s ease-in infinite}
+@keyframes evoSuck{from{transform:rotate(var(--a)) translateX(42cqw) scale(1.4);opacity:0}30%{opacity:1}to{transform:rotate(calc(var(--a) + 160deg)) translateX(0) scale(.2);opacity:0}}
+.evo-anim .ttl{position:absolute;top:5cqw;left:0;right:0;text-align:center;font-family:var(--display);font-size:9cqw;letter-spacing:1cqw;color:#ffd23f;-webkit-text-stroke:.5cqw #2a0a3a;paint-order:stroke fill;opacity:0;
+  text-shadow:0 0 2cqw #ff5ad0}
+.evo-anim.boom .ttl{animation:evoTitle .7s cubic-bezier(.3,1.8,.5,1) both}
+@keyframes evoTitle{from{opacity:0;transform:scale(3)}to{opacity:1;transform:scale(1)}}
+.evo-anim .nm{position:absolute;bottom:10cqw;left:0;right:0;text-align:center;font-family:var(--display);font-size:4cqw;color:#fff;-webkit-text-stroke:.3cqw #2a0a3a;paint-order:stroke fill;opacity:0}
+.evo-anim.boom .nm{opacity:1;transition:opacity .4s .3s}
+.evo-anim .ok{position:absolute;bottom:2.5cqw;opacity:0;pointer-events:none}
+.evo-anim.done .ok{opacity:1;pointer-events:auto;transition:opacity .3s}
 .lg-item:active{transform:translateY(.5cqw);box-shadow:inset 0 -.7cqw 0 rgba(0,0,0,.15),0 .2cqw 0 var(--ink)}
 .lg-item .lg-clear{position:absolute;left:1cqw;bottom:-1.9cqw;font-size:1.7cqw;color:var(--red);-webkit-text-stroke:.18cqw var(--ink);paint-order:stroke fill}
 .lg-item .lg-prog{position:absolute;right:1.4cqw;bottom:-1.9cqw;font-size:1.6cqw;color:var(--cream);-webkit-text-stroke:.18cqw var(--ink);paint-order:stroke fill}
@@ -762,6 +796,22 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
         <button class="btn w-ok" id="gift-ok">받기</button>
       </div>
     </div>
+    <!-- 진화 확인 -->
+    <div class="welcome" id="evo-ask" hidden>
+      <div class="w-box">
+        <div class="w-title outline">진화를 하시겠습니까?</div>
+        <div class="w-sub" id="evo-ask-msg"></div>
+        <div style="display:flex;gap:2cqw;justify-content:center"><button class="btn w-ok" id="evo-no" style="filter:grayscale(.7)">취소</button><button class="btn w-ok" id="evo-yes">진화</button></div>
+      </div>
+    </div>
+    <!-- 진화 연출 -->
+    <div class="evo-anim" id="evo-anim" hidden>
+      <div class="rays"></div><div class="orbs" id="evo-orbs"></div>
+      <div class="art"><svg class="old" viewBox="0 0 240 260" aria-hidden="true"><use id="evo-old"/></svg><svg class="new" viewBox="0 0 240 260" aria-hidden="true"><use id="evo-new"/></svg></div>
+      <div class="flash"></div>
+      <div class="ttl">진화!!</div><div class="nm" id="evo-nm"></div>
+      <button class="btn w-ok ok" id="evo-ok">확인</button>
+    </div>
     <form class="dev-code" id="dev-code" hidden>
       <label for="dev-code-input">개발자 코드</label>
       <input id="dev-code-input" type="password" autocomplete="off">
@@ -807,6 +857,7 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
     </div>
 
     <div class="p-bottom">
+      <button class="btn evolve" id="btn-evolve" hidden>진화!</button>
       <button class="btn powerup" id="btn-levelup">파워업!!</button>
       <div class="desc" id="desc"></div>
     </div>
@@ -3977,6 +4028,7 @@ function levelCost(u){
       costEl.innerHTML = '';
       levelBtn.disabled = true;
     }
+    evoBtn.hidden = !(it.type === 'unit' && canEvolve(it.unit));
     prev.disabled = idx === 0;
     next.disabled = idx === items.length - 1;
     const inCat = mode !== 'basic';
@@ -3986,6 +4038,30 @@ function levelCost(u){
     if (it.type === 'empty') desc.textContent = '이 칸에는 아직 캐릭터가 없어요.';
   }
   ['p-back-l', 'p-back-r'].forEach(id => document.getElementById(id).addEventListener('click', () => { mode = 'basic'; idx = basicIdx; build(); }));
+
+  // 진화: 대광란을 깬 광란 캐릭터 → "진화를 하시겠습니까?" → 화려한 진화 연출
+  const evoBtn = document.getElementById('btn-evolve');
+  evoBtn.addEventListener('click', () => {
+    const it = items[idx]; if (!it || it.type !== 'unit' || !canEvolve(it.unit)) return;
+    const id = it.unit.id.slice(3);
+    document.getElementById('evo-ask-msg').textContent = "'" + it.unit.name + "' → '" + DCRAZY[id].name + "'";
+    document.getElementById('evo-ask').hidden = false;
+    document.getElementById('evo-yes').onclick = () => {
+      document.getElementById('evo-ask').hidden = true;
+      const u = it.unit, oldArt = u.art;
+      PLAYER.evolved = (PLAYER.evolved || []).concat(id); applyEvolutions(); savePlayer(); renderPlayer();
+      const an = document.getElementById('evo-anim');
+      document.getElementById('evo-old').setAttribute('href', '#' + oldArt);
+      document.getElementById('evo-new').setAttribute('href', '#' + u.art);
+      document.getElementById('evo-nm').textContent = u.name;
+      document.getElementById('evo-orbs').innerHTML = Array.from({ length: 18 }, (_, i) => '<i style="--a:' + (i * 20) + 'deg;animation-delay:' + (i % 6) * .25 + 's"></i>').join('');
+      an.classList.remove('boom', 'done'); an.hidden = false;
+      setTimeout(() => an.classList.add('boom'), 1700);
+      setTimeout(() => an.classList.add('done'), 2600);
+      document.getElementById('evo-ok').onclick = () => { an.hidden = true; build(); };
+    };
+    document.getElementById('evo-no').onclick = () => { document.getElementById('evo-ask').hidden = true; };
+  });
 
   levelBtn.addEventListener('click', () => {
     const it = items[idx];
@@ -5360,12 +5436,67 @@ function crazyMarkup(baseId, seed, uid, flip){
     (flip ? '<g transform="translate(240 0) scale(-1 1)">' : '<g>') + '<g filter="url(#' + F + ')" transform="translate(-18 -30) scale(1.15)">' + g + '</g></g>' +
     '<ellipse cx="120" cy="270" rx="100" ry="10" fill="#14041e" opacity=".6"/>';
 }
+// 대광란 그림: 광란보다 더 미친 버전 — 핏빛·검보라 이중 가시 오라, 지옥불 혓바닥, 색이 찢어지는 글리치 잔상, 가시 왕관, 핏빛·금빛 번개
+// gold = true 면 진화한 아군용 (금빛 테마)
+function dcrazyMarkup(baseId, seed, uid, flip, gold){
+  const g = document.getElementById(baseId).outerHTML.replace(/ id="[^"]*"/, '');
+  const spk = (n, r0, r1, cy, sq, jit) => { const o = []; for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2, r = i % 2 ? r0 : r1 + (i * 53 % 7) * jit; o.push((120 + Math.cos(a) * r).toFixed(1) + ',' + (cy + Math.sin(a) * r * sq).toFixed(1)); } return o.join(' '); };
+  const A = 'dca' + uid, B = 'dcb' + uid, F = 'dcf' + uid, G = 'dcg' + uid, R = 'dcr' + uid, C = 'dcc' + uid, L = 'dcl' + uid;
+  const c1 = gold ? '#fff2a0' : '#ff2a4a', c2 = gold ? '#ffb000' : '#8a0020', c3 = gold ? '#7a3a00' : '#1a0010', c4 = gold ? '#ffd23f' : '#c040ff';
+  const bolt = gold ? '#fff6c0' : '#ff8a9a', bolt2 = gold ? '#ffd23f' : '#ff2a4a';
+  const flames = []; for (let i = 0; i < 9; i++) { const x = 6 + i * 28, h = 40 + (i * 37 % 5) * 12;
+    flames.push('M' + (x - 14) + ' 268 Q' + (x - 16) + ' ' + (268 - h * .5) + ' ' + (x + (i % 2 ? 6 : -6)) + ' ' + (268 - h) + ' Q' + (x + 2) + ' ' + (268 - h * .45) + ' ' + (x + 14) + ' 268 Z'); }
+  return '<defs>' +
+      '<radialGradient id="' + A + '"><stop offset="0" stop-color="' + c3 + '" stop-opacity="1"/><stop offset=".5" stop-color="' + c2 + '" stop-opacity=".95"/><stop offset=".78" stop-color="' + c1 + '" stop-opacity=".75"/><stop offset="1" stop-color="' + c1 + '" stop-opacity="0"/></radialGradient>' +
+      '<radialGradient id="' + B + '"><stop offset="0" stop-color="#05000a"/><stop offset=".6" stop-color="' + (gold ? '#3a1a00' : '#2a0040') + '"/><stop offset="1" stop-color="' + c4 + '" stop-opacity=".7"/></radialGradient>' +
+      '<linearGradient id="' + L + '" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fff6a0"/><stop offset=".35" stop-color="#ffa020"/><stop offset=".75" stop-color="' + (gold ? '#ff6a00' : '#e8203a') + '"/><stop offset="1" stop-color="' + (gold ? '#ff6a00' : '#e8203a') + '" stop-opacity="0"/></linearGradient>' +
+      '<filter id="' + F + '" x="-25%" y="-25%" width="150%" height="150%">' +
+        '<feTurbulence type="fractalNoise" baseFrequency="0.13" numOctaves="2" seed="' + seed + '" result="n"/>' +
+        '<feDisplacementMap in="SourceGraphic" in2="n" scale="16" xChannelSelector="R" yChannelSelector="G" result="d"/>' +
+        '<feColorMatrix in="d" type="matrix" values="0.33 0.5 0.17 0 0  0.33 0.5 0.17 0 0  0.33 0.5 0.17 0 0  0 0 0 1 0" result="g"/>' +
+        '<feComponentTransfer in="g" result="c"><feFuncR type="table" tableValues="' + (gold ? '0.1 0.3 1 1' : '0.06 0.12 0.97 1') + '"/><feFuncG type="table" tableValues="' + (gold ? '0.04 0.15 0.92 1' : '0 0.03 0.95 1') + '"/><feFuncB type="table" tableValues="' + (gold ? '0 0.02 0.75 0.95' : '0.06 0.08 0.97 1') + '"/></feComponentTransfer>' +
+        '<feMorphology in="d" operator="dilate" radius="5" result="fat"/>' +
+        '<feTurbulence type="turbulence" baseFrequency="0.4" numOctaves="1" seed="' + (seed + 5) + '" result="n2"/>' +
+        '<feDisplacementMap in="fat" in2="n2" scale="20" xChannelSelector="R" yChannelSelector="B" result="spk"/>' +
+        '<feFlood flood-color="#050008"/><feComposite in2="spk" operator="in" result="outl"/>' +
+        '<feMorphology in="spk" operator="dilate" radius="4" result="rim0"/><feGaussianBlur in="rim0" stdDeviation="4" result="rim1"/>' +
+        '<feFlood flood-color="' + (gold ? '#ffcc33' : '#ff1a3a') + '"/><feComposite in2="rim1" operator="in" result="rim"/>' +
+        '<feTurbulence type="turbulence" baseFrequency="0.02 0.45" numOctaves="2" seed="' + (seed + 9) + '" result="hatch"/>' +
+        '<feColorMatrix in="hatch" type="matrix" values="0 0 0 0 ' + (gold ? '0.25' : '0.2') + '  0 0 0 0 ' + (gold ? '0.12' : '0') + '  0 0 0 0 0.06  0 0 -3.6 0 1" result="hk"/>' +
+        '<feComposite in="hk" in2="d" operator="in" result="ink"/>' +
+        '<feMerge><feMergeNode in="rim"/><feMergeNode in="rim"/><feMergeNode in="outl"/><feMergeNode in="c"/><feMergeNode in="ink"/></feMerge>' +
+      '</filter>' +
+      '<filter id="' + R + '" x="-20%" y="-20%" width="140%" height="140%"><feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 0.05  0 0 0 0 0.3  0 0 0 .75 0"/></filter>' +
+      '<filter id="' + C + '" x="-20%" y="-20%" width="140%" height="140%"><feColorMatrix type="matrix" values="0 0 0 0 0.1  0 0 0 0 0.95  0 0 0 0 1  0 0 0 .6 0"/></filter>' +
+      '<filter id="' + G + '" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>' +
+    '</defs>' +
+    '<polygon points="' + spk(44, 128, 186, 150, .98, 7) + '" fill="url(#' + A + ')"/>' +                         // 바깥 핏빛 가시 오라
+    '<polygon points="' + spk(30, 92, 128, 150, .95, 5) + '" fill="url(#' + B + ')" opacity=".9"/>' +             // 안쪽 검보라 오라
+    '<ellipse cx="120" cy="150" rx="122" ry="112" fill="none" stroke="' + c4 + '" stroke-width="3" stroke-dasharray="2 10" opacity=".8"/>' +
+    '<path d="' + flames.join(' ') + '" fill="url(#' + L + ')" opacity=".95"/>' +                                    // 지옥불 혓바닥
+    '<path d="M-10 20 L30 88 L14 92 L56 164 M250 10 L208 80 L226 84 L184 150 M120 -40 L106 10 L126 14 L110 56 M-14 150 L30 170 L16 182 L48 200 M254 140 L214 162 L230 172 L198 192" fill="none" stroke="' + bolt2 + '" stroke-width="9" stroke-linejoin="round" filter="url(#' + G + ')"/>' +
+    '<path d="M-10 20 L30 88 L14 92 L56 164 M250 10 L208 80 L226 84 L184 150 M120 -40 L106 10 L126 14 L110 56 M-14 150 L30 170 L16 182 L48 200 M254 140 L214 162 L230 172 L198 192" fill="none" stroke="' + bolt + '" stroke-width="3" stroke-linejoin="round"/>' +
+    (flip ? '<g transform="translate(240 0) scale(-1 1)">' : '<g>') +
+      '<g filter="url(#' + R + ')" transform="translate(-33 -36) scale(1.17)">' + g + '</g>' +                         // 글리치: 빨강 잔상
+      '<g filter="url(#' + C + ')" transform="translate(-5 -28) scale(1.17)">' + g + '</g>' +                         // 글리치: 청록 잔상
+      '<g filter="url(#' + F + ')" transform="translate(-19 -32) scale(1.17)">' + g + '</g>' +
+    '</g>' +
+    '<g fill="' + (gold ? '#ffd23f' : '#14000a') + '" stroke="' + (gold ? '#7a3a00' : c1) + '" stroke-width="2.5" stroke-linejoin="round">' +       // 가시 왕관
+      [-46, -30, -14, 2, 18, 34, 50].map((dx, i) => { const x = 120 + dx, h = i === 3 ? 34 : 18 + (i % 2) * 8; return '<path d="M' + (x - 8) + ' 0 L' + x + ' ' + (-h) + ' L' + (x + 8) + ' 0 Z"/>'; }).join('') +
+      '<path d="M66 0 Q120 12 174 0 L170 8 Q120 20 70 8 Z"/>' +
+    '</g>' +
+    '<g fill="' + (gold ? '#fff' : '#ff2a4a') + '"><circle cx="120" cy="-26" r="4"/><circle cx="72" cy="-14" r="3"/><circle cx="168" cy="-14" r="3"/></g>' +
+    '<ellipse cx="120" cy="272" rx="118" ry="12" fill="' + (gold ? '#3a1a00' : '#14000a') + '" opacity=".7"/>' +
+    '<path d="M40 272 l20 -6 l14 8 l22 -10 l16 8 M150 270 l18 -8 l14 10 l20 -6" fill="none" stroke="' + c1 + '" stroke-width="2.5" opacity=".9"/>';   // 땅 갈라짐
+}
 (function(){   // 광란 그림을 SVG 묶음에 넣어 둠: czE- = 적(오른쪽을 봄), ucz- = 아군 캐릭터(카드·전투)
   const sprite = document.getElementById('soldier').parentNode;
   let html = '';
   CRAZY_LIST.forEach((c, i) => {
     html += '<g id="czE-' + c.id + '">' + crazyMarkup(c.art, 3 + i * 7, 'e' + i, true) + '</g>';
     html += '<g id="ucz-' + c.id + '"><g transform="translate(20 26) scale(.857 .867)">' + crazyMarkup(c.art, 3 + i * 7, 'u' + i, false) + '</g></g>';
+    html += '<g id="dczE-' + c.id + '">' + dcrazyMarkup(c.art, 5 + i * 7, 'de' + i, true, false) + '</g>';                         // 대광란 보스
+    html += '<g id="udcz-' + c.id + '"><g transform="translate(30 40) scale(.75 .76)">' + dcrazyMarkup(c.art, 5 + i * 7, 'du' + i, false, true) + '</g></g>';   // 진화한 아군 (금빛)
   });
   const tmp = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   tmp.innerHTML = html;
@@ -5393,6 +5524,42 @@ CRAZY_LIST.forEach(c => {
     attackType: t.type, attackInterval: t.iv, foreswing: t.fore, backswing: b.backswing || 0.2,
     cooldown: t.cd, cost: t.cost, motion: b.motion, fly: !!b.fly,
   });
+});
+// ---------- 대광란: 광란 캐릭터의 3단 진화 (대광란 스테이지를 깨면 진화 가능) — 능력치는 원작 3단 진화 1레벨 표 그대로 ----------
+const DCRAZY = {
+  'cat':        { name:'대광란의 고양이 모히칸',   cost:75,   hp:1100,  ap:85,   range:140, kb:3, speed:28, type:'single', iv:1.23, fore:.27, cd:2.00  },
+  'tank':       { name:'대광란의 고무 고양이',     cost:150,  hp:3275,  ap:18,   range:110, kb:1, speed:20, type:'area',   iv:2.23, fore:.27, cd:2.00  },
+  'battle-cat': { name:'대광란의 암흑 고양이',     cost:300,  hp:2175,  ap:550,  range:150, kb:3, speed:12, type:'single', iv:0.90, fore:.27, cd:2.00  },
+  'jingle':     { name:'대광란의 불끈다리 고양이', cost:600,  hp:4375,  ap:900,  range:350, kb:3, speed:10, type:'single', iv:4.17, fore:.20, cd:28.80 },
+  'bull':       { name:'대광란의 고양이 라이온',   cost:750,  hp:4500,  ap:118,  range:140, kb:5, speed:66, type:'area',   iv:0.33, fore:.20, cd:4.20  },
+  'bird':       { name:'대광란의 천공의 고양이',   cost:975,  hp:2700,  ap:1810, range:220, kb:4, speed:10, type:'area',   iv:1.97, fore:.67, cd:3.53  },
+  'fish':       { name:'대광란의 고양이 섬',       cost:735,  hp:7650,  ap:1970, range:150, kb:3, speed:13, type:'single', iv:1.77, fore:.33, cd:8.20  },
+  'lizard':     { name:'대광란의 고양이 킹드래곤', cost:1500, hp:4050,  ap:2200, range:415, kb:3, speed:10, type:'single', iv:4.23, fore:.27, cd:16.87 },
+  'titan':      { name:'대광란의 고양이 쟈라미',   cost:1950, hp:11000, ap:2960, range:150, kb:1, speed:11, type:'area',   iv:2.70, fore:1.57, cd:22.20 },
+};
+function dczStageKey(id){ return stageKey('L', 'D' + (CRAZY_LIST.findIndex(c => c.id === id) + 1)); }
+function canEvolve(u){ const id = u.id.slice(3); return u.id.startsWith('cz-') && DCRAZY[id] && isOwned(u) && PLAYER.cleared.includes(dczStageKey(id)) && !(PLAYER.evolved || []).includes(id); }
+function applyEvolutions(){                                         // 진화한 광란 캐릭터는 이름·그림·능력치가 대광란 형태로 바뀜
+  CRAZY_LIST.forEach(c => {
+    const u = UNITS.find(x => x.id === 'cz-' + c.id); if (!u) return;
+    if (!u._base) u._base = { name: u.name, art: u.art, desc: u.desc, baseHp: u.baseHp, baseAp: u.baseAp, range: u.range, kb: u.kb, speed: u.speed, attackType: u.attackType, attackInterval: u.attackInterval, foreswing: u.foreswing, cooldown: u.cooldown, cost: u.cost, size: u.size };
+    Object.assign(u, u._base);
+    if ((PLAYER.evolved || []).includes(c.id)) {
+      const t = DCRAZY[c.id];
+      Object.assign(u, { name: t.name, art: 'udcz-' + c.id, baseHp: t.hp, baseAp: t.ap, range: t.range, kb: t.kb, speed: t.speed, attackType: t.type, attackInterval: t.iv, foreswing: t.fore, cooldown: t.cd, cost: t.cost,
+        size: Math.round(u._base.size * 1.12), desc: "대광란을 이겨내고 진화한 '" + t.name + "'. 광란의 힘을 완전히 손에 넣었다" });
+    }
+  });
+}
+CRAZY_LIST.forEach((c, i) => {
+  const u = UNITS.find(x => x.id === c.id);
+  ENEMIES['dcz-' + c.id] = {                                        // 대광란 보스: 광란보다 훨씬 세고 큼
+    name: c.name.replace('광란의', '대광란의'), money: 4000 + i * 500, crazy: true, boss: true,
+    hp: Math.round(Math.max(u.baseHp, 600) * 12), ap: Math.round(Math.max(u.baseAp, 60) * 2.2),
+    range: Math.round(u.range * 1.15), kb: 1, speed: u.speed * 1.2, attackType: u.attackType === 'single' ? 'area' : u.attackType,
+    attackInterval: u.attackInterval, foreswing: u.foreswing, backswing: u.backswing,
+    art: 'dcz-' + c.id, size: Math.round((u.size || 70) * 3.0), motion: u.motion, fly: !!u.fly,
+  };
 });
 CRAZY_LIST.forEach((c, i) => {
   const u = UNITS.find(x => x.id === c.id);
@@ -5433,6 +5600,7 @@ function replacePlayer(data){
   Object.keys(PLAYER).forEach(k => delete PLAYER[k]);
   Object.assign(PLAYER, { money: 0, nyankoTicket: 0, rareTicket: 0, platinumTicket: 0, cans: 0, cleared: [], owned: ['cat'] }, data || {});
   applyUnitsFromPlayer();
+  applyEvolutions();
 }
 function isOwned(u){ return u.passive || !u.gacha || (PLAYER.owned || []).includes(u.id); }
 let saveKey = SAVE_KEY;            // 로그인하면 계정마다 따로 저장
@@ -5451,6 +5619,7 @@ function hasTickets(kind, n){ return DEV || PLAYER[kind] >= n; }
 function useTickets(kind, n){ if (!DEV) PLAYER[kind] -= n; }
 function ticketText(kind){ return DEV ? '∞' : PLAYER[kind]; }
 
+applyEvolutions();
 function renderPlayer(){
   document.getElementById('p-money').textContent = moneyText();
   document.getElementById('p-ticket').textContent = ticketText('nyankoTicket');
@@ -5924,6 +6093,26 @@ CRAZY_LIST.forEach((c, i) => {
     reward: { money: 9000 + i * 500, cans: 100 },
   });
 });
+// '대광란' 스테이지 9개 (광란보다 훨씬 어려움): 같은 광란을 깨야 열림. 깨면 그 광란 캐릭터를 진화할 수 있음
+const DCRAZY_ESCORT = [
+  ['dumptruck', 'shadow', 'schoolbus'], ['locker', 'statue', 'piano'], ['trophyknight', 'washer', 'bunkbed'],
+  ['ginkgotree', 'potgolem', 'eraser'], ['schoolbus', 'dumptruck', 'potgolem'], ['shadow', 'piano', 'locker'],
+  ['washer', 'bunkbed', 'ginkgotree'], ['statue', 'trophyknight', 'schoolbus'], ['dumptruck', 'locker', 'shadow'],
+];
+CRAZY_LIST.forEach((c, i) => {
+  LEGEND_GROUPS.push({ id: 'dcz-' + c.id, name: c.stage.replace('광란의', '대광란의'), dcrazy: true, need: 'cz-' + c.id });
+  const esc = DCRAZY_ESCORT[i], bc = CRAZY_BOSS_COUNT[c.id] || {};
+  LEGEND_STAGES.push({
+    id: 'D' + (i + 1), no: 1, name: c.stage.replace('광란의', '대광란의'), group: 'dcz-' + c.id, catBaseHp: 1500, crazy: true, dcrazy: true,
+    spawns: [
+      { enemy: 'dcz-' + c.id, batch: bc.batch || 1, first: 0, every: bc.every || 999, maxAlive: bc.count || 1, count: bc.count || 1, onBaseHit: true, mul: CRAZY_BOSS_MUL[c.id] || 2 },
+      { enemy: esc[0], first: 6,  every: 14, maxAlive: 2, mul: 0.2 },                                    // 호위: 큰 유닛들
+      { enemy: esc[1], first: 12, every: 18, maxAlive: 2, mul: 0.2 },
+      { enemy: esc[2], first: 18, every: 22, maxAlive: 1, mul: 0.2 },
+    ],
+    reward: { money: 20000 + i * 1000, cans: 300 },
+  });
+});
 const LEGEND_CH = { no: 'L', name: '레전드 스토리', enemyMult: 1, baseMult: 1, rewardMult: 1, stages: LEGEND_STAGES };
 (function(){
   // 난이도: 2장 기숙사 마지막(새벽 탈출)과 같은 수준
@@ -5939,9 +6128,14 @@ const LEGEND_CH = { no: 'L', name: '레전드 스토리', enemyMult: 1, baseMult
     st.enemyBaseHp = 60000 + i * 16000;
   });
   // 광란: 극난도 — 9개 모두 똑같이 아주 어렵게 (간사의 왕의 약 5배, 적 성 체력 50만)
-  LEGEND_STAGES.filter(st => st.crazy).forEach(st => {
+  LEGEND_STAGES.filter(st => st.crazy && !st.dcrazy).forEach(st => {
     st.mult = +(DORM_END * 4.0 * 5 / power(st)).toFixed(2);
     st.enemyBaseHp = 500000;
+  });
+  // 대광란: 광란의 3배 어렵게, 적 성 체력 150만
+  LEGEND_STAGES.filter(st => st.dcrazy).forEach(st => {
+    st.mult = +(DORM_END * 4.0 * 5 * 3 / power(st)).toFixed(2);
+    st.enemyBaseHp = 1500000;
   });
 })();
 
@@ -6149,7 +6343,8 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     return _drawImage(src, ...rest);
   };
   imgs.soldier = svgImage('soldier', '0 0 240 260');
-  CRAZY_LIST.forEach(c => { imgs['cz-' + c.id] = svgImage('czE-' + c.id, '-20 -30 280 300'); imgs['ucz-' + c.id] = svgImage('ucz-' + c.id, '0 0 240 260'); });
+  CRAZY_LIST.forEach(c => { imgs['cz-' + c.id] = svgImage('czE-' + c.id, '-20 -30 280 300'); imgs['ucz-' + c.id] = svgImage('ucz-' + c.id, '0 0 240 260');
+    imgs['dcz-' + c.id] = svgImage('dczE-' + c.id, '-40 -56 320 346'); imgs['udcz-' + c.id] = svgImage('udcz-' + c.id, '0 0 240 260'); });
   ['mouse','crow','pig','snake','bear','hedgehog','raccoon','bigcoon','boar','eagle','hippo','gatekeeper','milkthief','u-masa','u-jingle','u-battle','u-tank','u-bull','u-bird','u-fish','u-lizard','u-titan','u-eolppak','u-fk','u-jingyeok','u-ssang','u-thanos','u-horror','u-dance','u-kkamnol-box','u-aegi','u-gao','u-gao-body','u-gao-arm','u-lms','u-hacker','u-trio','u-sinsa','u-sinsa-body','u-sinsa-hat','u-goddess','u-tlgoddess','u-hunsu','u-qcat','u-butta','mosquito','pillow','slipper','alarm','sock','cupramen','blanket','phone','flexduo','u-evil','u-grandpa','u-penguin-body','u-fire','u-gyaru','u-silla','u-grip','u-ttabong','u-oishi','bsagam','sunboss','pigeon','ginkgo','jjajang','tray','chicken','cart','dumptruck','locker','piano','bunkbed','washer','ginkgotree','schoolbus','zrat','zcrow','zdog','zstudent','zombie','zfat','ztitan','zhorde','zroach','zbat','zhand','zoffice','zgranny','zrider','znurse','zcop','zskel','zmummy','zrex','zbus','chalk','paper','eraser','statue','potgolem','laundry','scooter','shadow','trophyknight','shower','jboss1','jboss2','jboss3','jboss4','jboss5','u-jisol'].forEach(id => imgs[id] = svgImage(id, '0 0 240 260'));
   imgs['u-kkamnol-head'] = svgImage('u-kkamnol-head', '0 0 180 162');   // 깜놀: 머리는 따로 그려서 용수철로 튀어나오게
   imgs['u-kkamnol'] = imgs['u-kkamnol-box'];
@@ -6883,7 +7078,14 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
         PLAYER.owned.push('jisol');
         rw.innerHTML += '<div class="ch-reward">EX 캐릭터 \'간사의 왕 지솔\'을 획득하셨습니다!</div>';
       }
-      if (S.stage.crazy) {                                // 광란 스테이지: 광란 캐릭터 획득 (아직 없으면)
+      if (S.stage.dcrazy) {                               // 대광란: 그 광란 캐릭터를 진화할 수 있게 됨
+        const cz = CRAZY_LIST.find(c => S.stage.group === 'dcz-' + c.id), t = cz && DCRAZY[cz.id];
+        if (t && !(PLAYER.evolved || []).includes(cz.id)) {
+          const last = t.name.charCodeAt(t.name.length - 1) - 0xAC00, jong = last >= 0 && last < 11172 ? last % 28 : 0;
+          rw.innerHTML += '<div class="ch-reward">' + t.name + (jong === 0 || jong === 8 ? '로' : '으로') + ' 진화할 수 있습니다!</div>';
+        }
+      }
+      if (S.stage.crazy && !S.stage.dcrazy) {             // 광란 스테이지: 광란 캐릭터 획득 (아직 없으면)
         const cz = CRAZY_LIST.find(c => S.stage.group === 'cz-' + c.id);
         if (cz && !PLAYER.owned.includes('cz-' + cz.id)) {
           PLAYER.owned.push('cz-' + cz.id);
@@ -7182,6 +7384,12 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     ctx.rotate(pose.rot * u.dir);
     ctx.scale(pose.sx, pose.sy);
     const paint = () => u.img === 'u-kkamnol' ? drawJack(u, w, h) : u.img === 'u-penguin' ? drawPenguins(u, w, h) : u.img === 'u-gao' ? drawGao(u, w, h) : u.img === 'u-sinsa' ? drawSinsa(u, w, h) : ctx.drawImage(img, -w / 2, -h, w, h);
+    if (u.key && u.key.startsWith('dcz-') && !u.dead) {          // 대광란 보스: 몸 뒤에서 핏빛 오라가 쿵쿵 맥동
+      const pul = .5 + .5 * Math.sin(S.t * 6), R = w * (.62 + .1 * pul);
+      const g = ctx.createRadialGradient(0, -h * .5, R * .2, 0, -h * .5, R);
+      g.addColorStop(0, 'rgba(255,40,70,' + (.35 + .25 * pul) + ')'); g.addColorStop(.6, 'rgba(120,0,40,.25)'); g.addColorStop(1, 'rgba(120,0,40,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, -h * .5, R, 0, Math.PI * 2); ctx.fill();
+    }
     if (S.pvp && !u.dead) {                          // PvP: 내 캐릭터 초록, 상대 캐릭터 빨강 테두리
       ctx.shadowColor = u.dir < 0 ? '#2fd34a' : '#ff2e2e'; ctx.shadowBlur = 6 * k + 3;
       paint();                                       // 테두리 한 번만 (렉 방지)
@@ -9800,7 +10008,9 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
       const list = chapterStageList('L').filter(st => st.group === g.id);
       const done = list.filter(st => PLAYER.cleared.includes(st.key)).length;
       const b = document.createElement('button');
-      b.className = 'lg-item' + (g.crazy ? ' crazy' : '');
+      b.className = 'lg-item' + (g.crazy ? ' crazy' : '') + (g.dcrazy ? ' dcrazy' : '');
+      const locked = g.need && !PLAYER.cleared.includes(chapterStageList('L').find(st => st.group === g.need).key);
+      if (locked) { b.disabled = true; b.title = g.name.replace('대광란의', '광란의') + '를 먼저 깨야 열려요'; }
       b.innerHTML = '<span>' + g.name + '</span>' + (done === list.length ? '<span class="lg-clear">CLEAR!</span>' : '') +
         '<span class="lg-prog">' + done + ' / ' + list.length + '</span>' +
         '<svg class="lg-talkicon" viewBox="0 0 48 40" aria-hidden="true"><path d="M6 4 H42 A4 4 0 0 1 46 8 V26 A4 4 0 0 1 42 30 H18 L8 38 L10 30 H6 A4 4 0 0 1 2 26 V8 A4 4 0 0 1 6 4 Z" fill="#fff" stroke="#2a1708" stroke-width="3"/><circle cx="14" cy="17" r="3" fill="#2a1708"/><circle cx="24" cy="17" r="3" fill="#2a1708"/><circle cx="34" cy="17" r="3" fill="#2a1708"/></svg>';
