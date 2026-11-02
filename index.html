@@ -6130,6 +6130,7 @@ const LEGEND_CH = { no: 'L', name: '레전드 스토리', enemyMult: 1, baseMult
   // 광란: 극난도 — 9개 모두 똑같이 아주 어렵게 (간사의 왕의 약 5배, 적 성 체력 50만)
   // 너무 쉬운 광란은 따로 더 어렵게: 탱크고양이 (보스 공격력 4배 + 스테이지 전체 2.5배)
   ['cz-tank', 'dcz-tank'].forEach(k => { ENEMIES[k].ap *= 4; });
+  ENEMIES['cz-tank'].range = 280; ENEMIES['dcz-tank'].range = 320;   // 탱크 보스 사정거리 늘림 (110 → 280 / 126 → 320)
   const EXTRA = { 'cz-tank': 2.5, 'dcz-tank': 2.5 };
   LEGEND_STAGES.filter(st => st.crazy && !st.dcrazy).forEach(st => {
     st.mult = +(DORM_END * 4.0 * 5 * (EXTRA[st.group] || 1) / power(st)).toFixed(2);
