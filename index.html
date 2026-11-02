@@ -5072,6 +5072,8 @@ const ENEMIES = {
   jboss5: { name:'흔들린 김지솔',   money:1500, hp:6400, ap:220, range:360, kb:2, speed:5, attackType:'area', attackInterval:3.0, foreswing:.90, backswing:.50, art:'jboss5', size:170, motion:'blurshake', boss:true }, // 잔상 흔들기
   hippo:    { name:'하마 장군', money:800,  hp:15000, ap:300, range:160, kb:2, speed:4, attackType:'area',   attackInterval:3.4, foreswing:1.0, backswing:.60, art:'hippo',    size:135, motion:'slam', boss:true },
 };
+// 큰 유닛(몸집 큰 몬스터, 보스 제외)은 너무 느려서 1.5배 빠르게
+Object.values(ENEMIES).forEach(e => { if (e.size >= 150 && !e.boss) e.speed = Math.round(e.speed * 1.5 * 10) / 10; });
 
 // ---------- 광란 보스 9종: 기본 캐릭터가 광란 상태로 변한 보스 ----------
 const CRAZY_LIST = [
@@ -6558,7 +6560,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     stepSide(S.enemies, S.cats, S.catBase, CAT_BASE_X, dt);
     if (!S.pvp) for (const e of S.enemies) if (e.dead && !e.paid) {       // 적 처치 머니
       e.paid = true;
-      S.money = Math.min(S.walletMax, S.money + Math.round((ENEMIES[e.key].money || 0) * KILL_MONEY * killMoneyMul()));   // 좀비는 완전히 죽어야(부활 뒤) 받음
+      if (!ENEMIES[e.key].zombie) S.money = Math.min(S.walletMax, S.money + Math.round((ENEMIES[e.key].money || 0) * KILL_MONEY * killMoneyMul()));   // 좀비는 죽여도 돈 없음
     }
     S.cats = S.cats.filter(u => u.dead < 0.6);
     S.enemies = S.enemies.filter(u => u.dead < 0.6);
