@@ -594,6 +594,29 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
 .tb-open svg{width:8cqw;height:8cqw;filter:drop-shadow(0 .5cqw 0 var(--ink))}
 .tb-open span{font-family:var(--display);font-size:2.2cqw}
 .tb-open:active{transform:translateY(.4cqw)}
+.ms-open{left:22cqw;position:absolute}
+.ms-open .dot{position:absolute;top:-.2cqw;right:.4cqw;width:2.4cqw;height:2.4cqw;border-radius:50%;background:#ff3b30;border:.35cqw solid #fff;box-shadow:0 .2cqw 0 var(--ink);display:none}
+.ms-open.on .dot{display:block;animation:legendPulse .6s ease-in-out infinite alternate}
+.mission{position:absolute;inset:0;z-index:8;background:linear-gradient(#5a9be0,#2f6ab8);display:flex;flex-direction:column}
+.ms-head{display:flex;align-items:center;gap:2cqw;padding:1.6cqw 2.5cqw;background:linear-gradient(#ffd23f,#e8a010);border-bottom:.5cqw solid var(--ink)}
+.ms-head h2{margin:0;font-family:var(--display);font-weight:400;font-size:4.2cqw;color:#fff;-webkit-text-stroke:.3cqw var(--ink);paint-order:stroke fill}
+.ms-tab{font-family:var(--display);font-size:2.6cqw;padding:.6cqw 2.4cqw;border:.4cqw solid var(--ink);border-radius:3cqw;background:#e9dcc4;cursor:pointer}
+.ms-tab.on{background:#ff8a3a;color:#fff;-webkit-text-stroke:.12cqw var(--ink);paint-order:stroke fill}
+.ms-left{margin-left:auto;font-size:2cqw;color:#2a1708;font-weight:700}
+.ms-list{flex:1;overflow-y:auto;padding:1.6cqw 3cqw 10cqw;display:flex;flex-direction:column;gap:1.4cqw}
+.ms-row{display:flex;align-items:center;gap:2cqw;padding:1.2cqw 1.6cqw;background:#fff7e6;border:.45cqw solid var(--ink);border-radius:1.6cqw;box-shadow:0 .5cqw 0 var(--ink)}
+.ms-row.got{filter:grayscale(.7) brightness(.85)}
+.ms-ic{flex:none;width:8cqw;height:6cqw;border-radius:1cqw;border:.35cqw solid var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:2.2cqw;color:#fff;-webkit-text-stroke:.15cqw var(--ink);paint-order:stroke fill;text-align:center;line-height:1.05}
+.ms-body{flex:1;min-width:0}
+.ms-t{font-size:2.3cqw;font-weight:700;color:#2a1708}
+.ms-bar{position:relative;height:2.2cqw;margin-top:.6cqw;background:#d8c8a8;border:.3cqw solid var(--ink);border-radius:1.2cqw;overflow:hidden}
+.ms-bar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(#8fe08a,#3aa04a)}
+.ms-bar b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.6cqw;color:#2a1708}
+.ms-rw{font-size:1.8cqw;color:#a85a10;margin-top:.3cqw;font-weight:700}
+.ms-go{flex:none;min-width:13cqw;font-family:var(--display);font-size:2.8cqw;padding:1cqw 1.6cqw;border:.45cqw solid var(--ink);border-radius:1.6cqw;cursor:pointer;
+  background:linear-gradient(#ffe680,#ffb000);box-shadow:0 .5cqw 0 var(--ink);color:#2a1708}
+.ms-go:disabled{background:#c8c0b0;cursor:default;color:#6a6050}
+.ms-go.ready{animation:evoGlow .7s ease-in-out infinite alternate}
 .tb-open:focus-visible{outline:.5cqw solid var(--cream);outline-offset:.3cqw;border-radius:1cqw}
 .tbook{position:absolute;inset:0;z-index:4;background:#1c1a1f}
 .tb-grid{position:absolute;left:2cqw;right:2cqw;top:8.5cqw;bottom:2cqw;overflow-y:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1.4cqw;padding:.4cqw .4cqw 8cqw}
@@ -788,6 +811,12 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
       </div>
     </div>
     <!-- 운영 선물 (모든 유저에게 한 번씩) -->
+    <!-- 미션 -->
+    <div class="mission" id="mission" hidden>
+      <div class="ms-head"><h2>냥코 미션</h2><button class="ms-tab on" data-k="d">일일 미션</button><button class="ms-tab" data-k="w">주간 미션</button><span class="ms-left" id="ms-left"></span></div>
+      <div class="ms-list" id="ms-list"></div>
+      <button class="back" id="ms-back" aria-label="돌아가기"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M12 14 H26 A9 9 0 0 1 26 32 H16" fill="none" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/><path d="M17 8 L10 14 L17 20" fill="none" stroke="var(--ink)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
     <div class="welcome" id="gift" hidden>
       <div class="w-box">
         <div class="w-title outline">선물이 도착했어요!</div>
@@ -826,6 +855,11 @@ body{background:var(--page);color:var(--cream);font-family:var(--body);margin:0;
     <button class="tb-open" id="btn-tbook">
       <svg viewBox="0 0 60 60" aria-hidden="true"><use href="#icon-chest"/></svg>
       <span class="outline">보물도감</span>
+    </button>
+    <button class="tb-open ms-open" id="btn-mission">
+      <svg viewBox="0 0 60 60" aria-hidden="true"><rect x="12" y="6" width="36" height="48" rx="5" fill="#fff7e6" stroke="#2a1708" stroke-width="3.5"/><rect x="22" y="2" width="16" height="9" rx="3" fill="#ffcc33" stroke="#2a1708" stroke-width="3"/>
+        <path d="M18 22 l4 4 l7 -8 M18 34 l4 4 l7 -8" fill="none" stroke="#3aa04a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M33 23 h9 M33 35 h9 M18 46 h24" stroke="#2a1708" stroke-width="3" stroke-linecap="round"/></svg>
+      <span class="outline">미션</span><i class="dot"></i>
     </button>
 
     <div class="cans" title="통조림">
@@ -4070,6 +4104,7 @@ function levelCost(u){
     if (u.level >= maxLv(u) || !hasMoney(cost)) return;
     spendMoney(cost);
     u.level++;
+    mission('upgrade');
     PLAYER.levels = PLAYER.levels || {};
     PLAYER.levels[u.id] = u.level;
     savePlayer(); renderPlayer();
@@ -4945,7 +4980,7 @@ document.getElementById('gift-ok').addEventListener('click', () => {
   }
   function startRun(){
     if (left() <= 0) return;
-    useOne();
+    useOne(); mission('run');
     newGame(); resize();
     $('cr-start').hidden = true; $('cr-end').hidden = true;
     last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(loop);
@@ -4971,6 +5006,43 @@ document.getElementById('gift-ok').addEventListener('click', () => {
   $('cr-exit2').addEventListener('click', exit);
   document.getElementById('btn-canrun').addEventListener('click', () => { scr.hidden = false; showStart(); });
   window.addEventListener('resize', () => { if (!scr.hidden) { resize(); if (G) draw(); } });
+})();
+
+// ---------- 미션 화면 ----------
+(function(){
+  const scr = document.getElementById('mission'), list = document.getElementById('ms-list');
+  let tab = 'd';
+  function leftText(){
+    const now = new Date(), end = tab === 'd' ? new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
+      : new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7 - (now.getDay() + 6) % 7);
+    const h = Math.ceil((end - now) / 3600000);
+    return '초기화까지 ' + (h > 24 ? Math.floor(h / 24) + '일 ' + (h % 24) + '시간' : h + '시간');
+  }
+  function render(){
+    const M = missionState(), daily = tab === 'd', L = daily ? DAILY_MISSIONS : WEEKLY_MISSIONS, P = daily ? M.d : M.w, C = daily ? M.dc : M.wc;
+    const pick = UNITS.find(u => u.id === M.pick);
+    document.getElementById('ms-left').textContent = leftText();
+    scr.querySelectorAll('.ms-tab').forEach(b => b.classList.toggle('on', b.dataset.k === tab));
+    list.innerHTML = L.map(m => {
+      const n = Math.min(m.goal, P[m.id] || 0), got = C.includes(m.id), done = n >= m.goal;
+      return '<div class="ms-row' + (got ? ' got' : '') + '"><div class="ms-ic" style="background:' + (daily ? '#3a9be6' : '#a35cff') + '">' + (daily ? '일일' : '주간') + '</div>' +
+        '<div class="ms-body"><div class="ms-t">' + m.text(pick ? pick.name : '') + '</div>' +
+        '<div class="ms-bar"><i style="width:' + (n / m.goal * 100) + '%"></i><b>' + n + ' / ' + m.goal + '</b></div>' +
+        '<div class="ms-rw">보상: ' + (m.cans ? '통조림 ' + m.cans + '개' : '레어 티켓 ' + m.rare + '장') + '</div></div>' +
+        '<button class="ms-go' + (done && !got ? ' ready' : '') + '" data-id="' + m.id + '"' + (done && !got ? '' : ' disabled') + '>' + (got ? '받음' : done ? '받기!' : '진행 중') + '</button></div>';
+    }).join('');
+    list.querySelectorAll('.ms-go').forEach(b => b.addEventListener('click', () => {
+      const M2 = missionState(), m = L.find(x => x.id === b.dataset.id), C2 = daily ? M2.dc : M2.wc;
+      if (C2.includes(m.id) || ((daily ? M2.d : M2.w)[m.id] || 0) < m.goal) return;
+      C2.push(m.id);
+      if (m.cans) PLAYER.cans = (PLAYER.cans || 0) + m.cans; else PLAYER.rareTicket = (PLAYER.rareTicket || 0) + m.rare;
+      savePlayer(); renderPlayer(); render();
+      GACHA.showToast((m.cans ? '통조림 +' + m.cans : '레어 티켓 +' + m.rare) + ' 받았어요!');
+    }));
+  }
+  scr.querySelectorAll('.ms-tab').forEach(b => b.addEventListener('click', () => { tab = b.dataset.k; render(); }));
+  document.getElementById('btn-mission').addEventListener('click', () => { tab = 'd'; render(); scr.hidden = false; });
+  document.getElementById('ms-back').addEventListener('click', () => { scr.hidden = true; });
 })();
 
 // ---------- 보물도감 ----------
@@ -5099,6 +5171,8 @@ const GACHA = (function(){
   }
   // 뽑은 캐릭터 지급: 처음이면 NEW, 중복이면 +1 레벨
   function grant(u){
+    mission('gacha', 0); missionState().d.gacha = (missionState().d.gacha || 0) + 1;
+    if (['uber', 'legend', 'mythic'].includes(u.rarity)) mission('uber');
     PLAYER.owned = PLAYER.owned || ['cat'];
     const isNew = !isOwned(u);
     if (isNew) PLAYER.owned.push(u.id);
@@ -5620,7 +5694,52 @@ function useTickets(kind, n){ if (!DEV) PLAYER[kind] -= n; }
 function ticketText(kind){ return DEV ? '∞' : PLAYER[kind]; }
 
 applyEvolutions();
+// ---------- 일일·주간 미션 ----------
+// 일일: 매일 0시 초기화, 미션마다 하루 1번 수령 (통조림) / 주간: 매주 월요일 0시 초기화, 1주일에 1번 수령 (레어 티켓)
+const DAILY_MISSIONS = [
+  { id: 'use',     goal: 5,   cans: 100, text: u => "'" + u + "'을(를) 5판 이상 쓰기" },
+  { id: 'pvpwin',  goal: 3,   cans: 100, text: () => 'PvP 3번 이기기' },
+  { id: 'clear',   goal: 10,  cans: 100, text: () => '스테이지 10번 클리어하기' },
+  { id: 'upgrade', goal: 15,  cans: 50,  text: () => '캐릭터·능력 15번 업그레이드하기' },
+  { id: 'kill',    goal: 150, cans: 50,  text: () => '적 150마리 처치하기' },
+  { id: 'cannon',  goal: 20,  cans: 50,  text: () => '냥코 대포 20번 쏘기' },
+  { id: 'run',     goal: 1,   cans: 30,  text: () => '통조림 런 1판 하기' },
+  { id: 'gacha',   goal: 3,   cans: 30,  text: () => '뽑기 3번 하기' },
+];
+const WEEKLY_MISSIONS = [
+  { id: 'uber',    goal: 2,    rare: 3, text: () => '울트라슈퍼레어 이상 2개 뽑기' },
+  { id: 'clear',   goal: 50,   rare: 3, text: () => '스테이지 50번 클리어하기' },
+  { id: 'kill',    goal: 1500, rare: 3, text: () => '적 1500마리 처치하기' },
+  { id: 'cannon',  goal: 300,  rare: 3, text: () => '냥코 대포 300번 쏘기' },
+  { id: 'pvpwin',  goal: 15,   rare: 3, text: () => 'PvP 15번 이기기' },
+  { id: 'upgrade', goal: 100,  rare: 2, text: () => '캐릭터·능력 100번 업그레이드하기' },
+  { id: 'run',     goal: 10,   rare: 2, text: () => '통조림 런 10판 하기' },
+  { id: 'legend',  goal: 3,    rare: 3, text: () => '레전드 스토리 스테이지 3번 클리어하기' },
+];
+function dayKey(d = new Date()){ return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+function weekKey(d = new Date()){ const m = new Date(d.getFullYear(), d.getMonth(), d.getDate() - (d.getDay() + 6) % 7); return 'W' + dayKey(m); }   // 그 주 월요일
+function missionState(){
+  const M = PLAYER.missions = PLAYER.missions || {};
+  if (M.day !== dayKey()) {
+    const pool = UNITS.filter(u => !u.passive && isOwned(u));
+    Object.assign(M, { day: dayKey(), d: {}, dc: [], pick: pool.length ? pool[Math.floor(Math.random() * pool.length)].id : 'cat' });
+  }
+  if (M.week !== weekKey()) Object.assign(M, { week: weekKey(), w: {}, wc: [] });
+  return M;
+}
+function mission(id, n = 1, unitId){                                // 미션 진행도 올리기
+  const M = missionState();
+  if (id === 'use') { if (unitId !== M.pick) return; M.d.use = (M.d.use || 0) + 1; }
+  else { M.d[id] = (M.d[id] || 0) + n; M.w[id] = (M.w[id] || 0) + n; }
+  clearTimeout(mission.t); mission.t = setTimeout(() => { savePlayer(); missionBadge(); }, 400);
+}
+function missionBadge(){
+  const M = missionState(), b = document.getElementById('btn-mission'); if (!b) return;
+  const ready = DAILY_MISSIONS.some(m => (M.d[m.id] || 0) >= m.goal && !M.dc.includes(m.id)) || WEEKLY_MISSIONS.some(m => (M.w[m.id] || 0) >= m.goal && !M.wc.includes(m.id));
+  b.classList.toggle('on', ready);
+}
 function renderPlayer(){
+  missionBadge();
   document.getElementById('p-money').textContent = moneyText();
   document.getElementById('p-ticket').textContent = ticketText('nyankoTicket');
   document.getElementById('p-rare').textContent = ticketText('rareTicket');
@@ -6433,6 +6552,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     S.cannon.charge = 0;
     S.cannon.wave = { t: 0, hit: new Set() };
     S.shake = 0.3;
+    mission('cannon');
   });
 
   function buildSlots(){
@@ -6470,6 +6590,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     d.cd = d.cdMax;
     const u = d.unit, hp = Math.round(unitHp(u) * tfx('shield')), ap = Math.round(unitAp(u) * tfx('sword') * 10) / 10;
     S.cats.push(makeFighter(u, hp, ap, CAT_BASE_X - BASE_HALF, -1, { img: u.art || 'soldier', size: u.size || 70, fly: !!u.fly, hand: u.hand, walkStyle: u.walkStyle, mouth: u.mouth }));
+    S.usedU = S.usedU || {}; if (!S.usedU[u.id]) { S.usedU[u.id] = 1; mission('use', 1, u.id); }   // 미션: 이 판에서 이 캐릭터를 씀
   }
 
   const ZOMBIE_DOWN = 1.8;                                          // 좀비: 쓰러지면 1.8초 뒤 한 번 부활 (체력 가득)
@@ -7080,7 +7201,8 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     stepSide(S.enemies, S.cats, S.catBase, CAT_BASE_X, dt);
     if (!S.pvp) for (const e of S.enemies) if (e.dead && !e.paid) {       // 적 처치 머니
       e.paid = true;
-      if (!ENEMIES[e.key].zombie) S.money = Math.min(S.walletMax, S.money + Math.round((ENEMIES[e.key].money || 0) * KILL_MONEY * killMoneyMul()));   // 좀비는 죽여도 돈 없음
+      S.money = Math.min(S.walletMax, S.money + Math.round((ENEMIES[e.key].money || 0) * KILL_MONEY * killMoneyMul() * (ENEMIES[e.key].zombie ? 0.3 : 1)));   // 좀비: 두 번 죽여야(부활 뒤) 조금만
+      mission('kill');
     }
     S.cats = S.cats.filter(u => u.dead < 0.6);
     S.enemies = S.enemies.filter(u => u.dead < 0.6);
@@ -7096,6 +7218,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     rw.innerHTML = '';
     if (win) {
       const r = S.stage.reward, first = !PLAYER.cleared.includes(S.stage.key);
+      mission('clear'); if (S.stage.ch === 'L') mission('legend');
       PLAYER.clearCount = PLAYER.clearCount || {};
       PLAYER.clearCount[S.stage.key] = (PLAYER.clearCount[S.stage.key] || 0) + 1;
       const gain = Math.round(r.money * tfx('stone') * studyMul());
@@ -9673,6 +9796,7 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
     document.getElementById('rewards').innerHTML = note ? '<div>' + note + '</div>' : '';
     resultText.textContent = won ? '승리!' : '패배...';
     result.classList.toggle('lose', !won);
+    if (won && !note) mission('pvpwin');
     setTimeout(() => { result.hidden = false; }, 700);
   }
 
