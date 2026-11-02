@@ -8496,10 +8496,8 @@ function workerUpCost(workLv, workerLv){ return (workLv <= 8 ? 10 * (workLv - 1)
         ctx.restore();
         return;
       }
-      if (f.boo) {                                        // 화면이 어둑해지고 "왁!" + 보라 유령들이 앞으로 날아감
+      if (f.boo) {                                        // "왁!" + 보라 유령들이 앞으로 날아감 (화면 색은 안 바뀜)
         ctx.save();
-        const dark = p < .3 ? p / .3 : 1 - (p - .3) / .7;
-        ctx.globalAlpha = .35 * dark; ctx.fillStyle = '#140a24'; ctx.fillRect(-10, -10, cw + 20, ch + 20);
         ctx.globalAlpha = Math.max(0, 1 - p);
         const hx = f.x * k, hy = gy - f.h * 1.4 * k * .8;
         ctx.font = Math.max(16, 60 * k) + 'px "Black Han Sans", sans-serif'; ctx.textAlign = 'center';
