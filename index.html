@@ -6386,7 +6386,7 @@ const KOREA_CHAPTERS = [
       if (g >= 3) spawns.push({ enemy: BIGS[g % BIGS.length], first: 24, every: 40, maxAlive: 1 });           // 좀비 큰 유닛
       if (g >= 20 || last) spawns.push({ enemy: BIGS[(g + 2) % BIGS.length], first: 36, every: 50, maxAlive: 1 });
       const th = THEME[c.no]; if (th) spawns.push({ enemy: th[i % th.length], first: 4, every: 9, maxAlive: 3 });           // 지역 좀비
-      if (last && BOSS[c.no]) spawns.push({ enemy: BOSS[c.no], first: 18, every: 999, maxAlive: 1, count: 1, mul: 0.35 });   // 보스는 많이 약하게 (35%)              // 지역 보스
+      if (last && BOSS[c.no]) spawns.push({ enemy: BOSS[c.no], first: 18, every: 999, maxAlive: 1, count: 1, mul: 0.65 });   // 보스는 조금 약하게 (65%)              // 지역 보스
       const rw = {};                                                          // 최초 클리어 티켓: 장마다 마지막 레어 3장, 5의 배수 레어, 나머지 냥코
       if (last) rw.rareTicket = 3; else if ((i + 1) % 5 === 0) rw.rareTicket = 1; else rw.nyankoTicket = 1;
       const st = { id: c.no.toLowerCase() + '-' + (i + 1), no: i + 1, name, catBaseHp: 1500, spawns, reward: rw, gi: g };
@@ -6408,8 +6408,8 @@ const KOREA_CHAPTERS = [
   KOREA_CHAPTERS.forEach(c => c.stages.forEach(st => {
     const last = st.no === c.stages.length;
     const zm = Math.max(1, 7 - (st.crystalBefore || 0) / 100);
-    st.mult = +Math.max(0.1, CH3_END * 0.6 * Math.pow(1.025, st.gi) * (last ? 1.25 : 1) / power(st) / zm).toFixed(3);   // 난이도 낮춤: 전체 60%, 상승폭 3% → 2.5%
-    st.enemyBaseHp = Math.round(220000 * Math.pow(1.025, st.gi) * (last ? 1.2 : 1) / 1000) * 1000;
+    st.mult = +Math.max(0.1, CH3_END * 0.8 * Math.pow(1.0275, st.gi) * (last ? 1.32 : 1) / power(st) / zm).toFixed(3);   // 난이도: 전체 80%, 스테이지마다 2.75%씩 상승
+    st.enemyBaseHp = Math.round(260000 * Math.pow(1.0275, st.gi) * (last ? 1.2 : 1) / 1000) * 1000;
     st.reward.money = Math.round((600 + 900 * Math.log(150 + st.gi)) * 2 / 50) * 50;
   }));
   KOREA_CHAPTERS.forEach(c => Object.assign(c, { enemyMult: 1, baseMult: 1, rewardMult: 1 }));
